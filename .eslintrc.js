@@ -11,7 +11,13 @@ module.exports = {
     node: true,
     jest: true,
   },
-  plugins: ['@typescript-eslint', 'jest', 'prettier', 'import', 'unused-imports'],
+  plugins: [
+    '@typescript-eslint',
+    'jest',
+    'prettier',
+    'import',
+    'unused-imports',
+  ],
   extends: [
     // airbnb规范
     // https://github.com/airbnb/javascript/tree/master/packages/eslint-config-airbnb
@@ -128,6 +134,8 @@ module.exports = {
     '@typescript-eslint/no-unsafe-call': 0,
     '@typescript-eslint/no-unsafe-argument': 0,
     '@typescript-eslint/ban-ts-comment': 0,
+    '@typescript-eslint/lines-between-class-members': 0,
+    '@typescript-eslint/no-throw-literal': 0,
   },
 
   settings: {
