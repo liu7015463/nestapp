@@ -1,4 +1,4 @@
-import { Global, Injectable, Module } from '@nestjs/common';
+import { DynamicModule, Global, Injectable, Module } from '@nestjs/common';
 import { get } from 'lodash';
 
 import { AppController } from '@/app.controller';
@@ -11,6 +11,12 @@ const config: Record<string, any> = {
 
 @Injectable()
 export class ConfigService {
+    protected config: RecordAny = {};
+
+    constructor(data: RecordAny) {
+        this.config = data;
+    }
+
     get<T>(key: string, defaultValue?: T): T | undefined {
         return get(config, key, defaultValue);
     }
@@ -21,10 +27,26 @@ export class ConfigService {
     providers: [ConfigService],
     exports: [ConfigService],
 })
-export class CoreModule {}
+export class CoreModule {
+    static forRoot(options: { config: RecordAny }): DynamicModule {
+        return {
+            module: CoreModule,
+            global: true,
+            providers: [
+                {
+                    provide: ConfigService,
+                    useFactory() {
+                        return new ConfigService(options.config);
+                    },
+                },
+            ],
+            exports: [ConfigService],
+        };
+    }
+}
 
 @Module({
-    imports: [ContentModule, CoreModule],
+    imports: [ContentModule, CoreModule.forRoot({ config: { name: 'ray' } })],
     providers: [AppService],
     controllers: [AppController],
 })
