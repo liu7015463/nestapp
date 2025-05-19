@@ -48,7 +48,6 @@ export class PostService {
         await this.repository.update(data.id, {
             ...omit(data, ['id', 'publish']),
             publishedAt,
-            updatedAt: new Date(),
         });
         return this.detail(data.id);
     }

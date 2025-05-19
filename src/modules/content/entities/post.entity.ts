@@ -1,5 +1,12 @@
 import { Expose } from 'class-transformer';
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
+import {
+    BaseEntity,
+    Column,
+    CreateDateColumn,
+    Entity,
+    PrimaryColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 
 import { PostBodyType } from '@/modules/content/constants';
 
@@ -21,7 +28,7 @@ export class PostEntity extends BaseEntity {
     @Column({ comment: '关键字', type: 'simple-array', nullable: true })
     keywords?: [];
 
-    @Column({ comment: '文章类型', type: 'enum', enum: PostBodyType })
+    @Column({ comment: '文章类型', type: 'enum', enum: PostBodyType, default: PostBodyType.HTML })
     type: PostBodyType;
 
     @Column({ comment: '发布时间', type: 'varchar', nullable: true })
@@ -33,6 +40,6 @@ export class PostEntity extends BaseEntity {
     @CreateDateColumn({ comment: '创建时间' })
     createdAt?: Date;
 
-    @Column({ comment: '更新时间', nullable: true })
+    @UpdateDateColumn({ comment: '更新时间' })
     updatedAt?: Date;
 }
