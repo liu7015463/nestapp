@@ -4,7 +4,6 @@ import {
     Delete,
     Get,
     Param,
-    ParseIntPipe,
     ParseUUIDPipe,
     Patch,
     Post,
@@ -24,7 +23,7 @@ export class PostController {
     }
 
     @Get(':id')
-    async show(@Param('id', new ParseIntPipe()) id: string) {
+    async show(@Param('id') id: string) {
         return this.postService.detail(id);
     }
 

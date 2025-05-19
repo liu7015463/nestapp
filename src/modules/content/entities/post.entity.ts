@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
 
 import { PostBodyType } from '@/modules/content/constants';
 
@@ -30,9 +30,9 @@ export class PostEntity extends BaseEntity {
     @Column({ comment: '自定义文章排序', default: 0 })
     customOrder: number;
 
-    @Column({ comment: '创建时间' })
+    @CreateDateColumn({ comment: '创建时间' })
     createdAt?: Date;
 
-    @Column({ comment: '更新时间' })
+    @Column({ comment: '更新时间', nullable: true })
     updatedAt?: Date;
 }

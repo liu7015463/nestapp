@@ -36,8 +36,9 @@ export class PostService {
     }
 
     async update(data: RecordAny) {
+        data.updatedAt = new Date();
         await this.repository.update(data.id, omit(data, ['id']));
-        return this.delete(data.id);
+        return this.detail(data.id);
     }
 
     async delete(id: string) {
