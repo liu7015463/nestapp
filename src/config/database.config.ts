@@ -9,4 +9,6 @@ export const database = (): TypeOrmModuleOptions => ({
     username: '3r',
     password: '12345678',
     database: '3r',
+    synchronize: true,
+    autoLoadEntities: true,
 });
