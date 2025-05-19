@@ -23,7 +23,7 @@ export class PostController {
     }
 
     @Get(':id')
-    async show(@Param('id') id: string) {
+    async show(@Param('id', new ParseUUIDPipe()) id: string) {
         return this.postService.detail(id);
     }
 
