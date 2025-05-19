@@ -12,15 +12,15 @@ import { paginate } from '@/modules/database/utils';
 
 @Injectable()
 export class PostService {
-    constructor(protected repositopry: PostRepository) {}
+    constructor(protected repository: PostRepository) {}
 
     async paginate(options: PaginateOptions, callback?: QueryHook<PostEntity>) {
-        const qb = await this.buildListQuery(this.repositopry.buildBaseQB(), options, callback);
+        const qb = await this.buildListQuery(this.repository.buildBaseQB(), options, callback);
         return paginate(qb, options);
     }
 
     async detail(id: string, callback?: QueryHook<PostEntity>) {
-        let qb = this.repositopry.buildBaseQB();
+        let qb = this.repository.buildBaseQB();
         qb.where(`post.id = :id`, { id });
         qb = !isNil(callback) && isFunction(callback) ? await callback(qb) : qb;
         const item = await qb.getOne();
@@ -31,18 +31,18 @@ export class PostService {
     }
 
     async create(data: RecordAny) {
-        const item = await this.repositopry.save(data);
+        const item = await this.repository.save(data);
         return this.detail(item.id);
     }
 
     async update(data: RecordAny) {
-        await this.repositopry.update(data.id, omit(data, ['id']));
+        await this.repository.update(data.id, omit(data, ['id']));
         return this.delete(data.id);
     }
 
     async delete(id: string) {
-        const item = await this.repositopry.findOneByOrFail({ id });
-        return this.repositopry.remove(item);
+        const item = await this.repository.findOneByOrFail({ id });
+        return this.repository.remove(item);
     }
 
     protected async buildListQuery(
