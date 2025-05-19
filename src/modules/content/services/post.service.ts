@@ -1,58 +1,83 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { isNil } from '@nestjs/common/utils/shared.utils';
 
-import { CreatePostDto } from '@/modules/content/dtos/create-post.dto';
-import { UpdatePostDto } from '@/modules/content/dtos/update-post.dto';
-import { PostEntity } from '@/modules/content/types';
+import { isFunction, omit } from 'lodash';
+import { EntityNotFoundError, IsNull, Not, SelectQueryBuilder } from 'typeorm';
+
+import { PostOrder } from '@/modules/content/constants';
+import { PostEntity } from '@/modules/content/entities/post.entity';
+import { PostRepository } from '@/modules/content/repositories/post.repository';
+import { PaginateOptions, QueryHook } from '@/modules/database/types';
+import { paginate } from '@/modules/database/utils';
 
 @Injectable()
 export class PostService {
-    protected posts: PostEntity[] = [
-        { title: '第一篇文章标题', body: '第一篇文章内容' },
-        { title: '第二篇文章标题', body: '第二篇文章内容' },
-        { title: '第三篇文章标题', body: '第三篇文章内容' },
-        { title: '第四篇文章标题', body: '第四篇文章内容' },
-        { title: '第五篇文章标题', body: '第五篇文章内容' },
-        { title: '第六篇文章标题', body: '第六篇文章内容' },
-    ].map((v, id) => ({ ...v, id }));
+    constructor(protected repositopry: PostRepository) {}
 
-    async findAll() {
-        return this.posts;
+    async paginate(options: PaginateOptions, callback?: QueryHook<PostEntity>) {
+        const qb = await this.buildListQuery(this.repositopry.buildBaseQB(), options, callback);
+        return paginate(qb, options);
     }
 
-    async findOne(id: number) {
-        const post = this.posts.find((item) => item.id === id);
-        if (isNil(post)) {
-            throw new NotFoundException(`the post with id ${id} not exits!`);
+    async detail(id: string, callback?: QueryHook<PostEntity>) {
+        let qb = this.repositopry.buildBaseQB();
+        qb.where(`post.id = :id`, { id });
+        qb = !isNil(callback) && isFunction(callback) ? await callback(qb) : qb;
+        const item = await qb.getOne();
+        if (!item) {
+            throw new EntityNotFoundError(PostEntity, `The post ${id} not exists!`);
         }
-        return post;
+        return item;
     }
 
-    async create(data: CreatePostDto) {
-        const newPost: PostEntity = {
-            id: Math.max(...this.posts.map(({ id }) => id + 1)),
-            ...data,
-        };
-        this.posts.push(newPost);
-        return newPost;
+    async create(data: RecordAny) {
+        const item = await this.repositopry.save(data);
+        return this.detail(item.id);
     }
 
-    async update(data: UpdatePostDto) {
-        let toUpdate = this.posts.find((item) => item.id === data.id);
-        if (isNil(toUpdate)) {
-            throw new NotFoundException(`the post with id ${data.id} not exits!`);
+    async update(data: RecordAny) {
+        await this.repositopry.update(data.id, omit(data, ['id']));
+        return this.delete(data.id);
+    }
+
+    async delete(id: string) {
+        const item = await this.repositopry.findOneByOrFail({ id });
+        return this.repositopry.remove(item);
+    }
+
+    protected async buildListQuery(
+        qb: SelectQueryBuilder<PostEntity>,
+        options: RecordAny,
+        callback?: QueryHook<PostEntity>,
+    ) {
+        const { orderBy, isPublished } = options;
+        if (typeof isPublished === 'boolean') {
+            isPublished
+                ? qb.where({ publishedAt: Not(IsNull) })
+                : qb.where({ publishedAt: IsNull() });
         }
-        toUpdate = { ...toUpdate, ...data };
-        this.posts = this.posts.filter((item) => (item.id === data.id ? toUpdate : item));
-        return toUpdate;
+        this.queryOrderBy(qb, orderBy);
+        if (callback) {
+            return callback(qb);
+        }
+        return qb;
     }
 
-    async delete(id: number) {
-        const toDelete = this.posts.find((item) => item.id === id);
-        if (isNil(toDelete)) {
-            throw new NotFoundException(`the post with id ${id} not exits!`);
+    protected queryOrderBy(qb: SelectQueryBuilder<PostEntity>, orderBy?: PostOrder) {
+        switch (orderBy) {
+            case PostOrder.CREATED:
+                return qb.orderBy('post.createdAt', 'DESC');
+            case PostOrder.UPDATED:
+                return qb.orderBy('post.updatedAt', 'DESC');
+            case PostOrder.PUBLISHED:
+                return qb.orderBy('post.publishedAt', 'DESC');
+            case PostOrder.CUSTOM:
+                return qb.orderBy('post.custom', 'DESC');
+            default:
+                return qb
+                    .orderBy('post.createdAt', 'DESC')
+                    .addOrderBy('post.updatedAt', 'DESC')
+                    .addOrderBy('post.publishedAt', 'DESC');
         }
-        this.posts = this.posts.filter((item) => item.id !== id);
-        return toDelete;
     }
 }
