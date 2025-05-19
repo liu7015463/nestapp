@@ -5,64 +5,47 @@ import {
     Get,
     Param,
     ParseIntPipe,
+    ParseUUIDPipe,
     Patch,
     Post,
-    ValidationPipe,
+    Query,
 } from '@nestjs/common';
 
-import { CreatePostDto } from '@/modules/content/dtos/create-post.dto';
-import { UpdatePostDto } from '@/modules/content/dtos/update-post.dto';
-
 import { PostService } from '@/modules/content/services/post.service';
+import { PaginateOptions } from '@/modules/database/types';
 
 @Controller('posts')
 export class PostController {
     constructor(private postService: PostService) {}
 
     @Get()
-    async index() {
-        return this.postService.findAll();
+    async list(@Query() options: PaginateOptions) {
+        return this.postService.paginate(options);
     }
 
     @Get(':id')
-    async show(@Param('id', new ParseIntPipe()) id: number) {
-        return this.postService.findOne(id);
+    async show(@Param('id', new ParseIntPipe()) id: string) {
+        return this.postService.detail(id);
     }
 
     @Post()
     async store(
-        @Body(
-            new ValidationPipe({
-                transform: true,
-                forbidNonWhitelisted: true,
-                forbidUnknownValues: true,
-                validationError: { target: false },
-                groups: ['create'],
-            }),
-        )
-        data: CreatePostDto,
+        @Body()
+        data: RecordAny,
     ) {
         return this.postService.create(data);
     }
 
     @Patch()
     async update(
-        @Body(
-            new ValidationPipe({
-                transform: true,
-                forbidNonWhitelisted: true,
-                forbidUnknownValues: true,
-                validationError: { target: false },
-                groups: ['update'],
-            }),
-        )
-        data: UpdatePostDto,
+        @Body()
+        data: RecordAny,
     ) {
         return this.postService.update(data);
     }
 
     @Delete(':id')
-    async delete(@Param('id', new ParseIntPipe()) id: number) {
+    async delete(@Param('id', new ParseUUIDPipe()) id: string) {
         return this.postService.delete(id);
     }
 }
