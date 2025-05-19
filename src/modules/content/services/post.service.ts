@@ -5,6 +5,7 @@ import { isFunction, omit } from 'lodash';
 import { EntityNotFoundError, IsNull, Not, SelectQueryBuilder } from 'typeorm';
 
 import { PostOrder } from '@/modules/content/constants';
+import { CreatePostDto, UpdatePostDto } from '@/modules/content/dtos/post.dto';
 import { PostEntity } from '@/modules/content/entities/post.entity';
 import { PostRepository } from '@/modules/content/repositories/post.repository';
 import { PaginateOptions, QueryHook } from '@/modules/database/types';
@@ -30,14 +31,25 @@ export class PostService {
         return item;
     }
 
-    async create(data: RecordAny) {
-        const item = await this.repository.save(data);
+    async create(data: CreatePostDto) {
+        let publishedAt: Date | null;
+        if (!isNil(data.publish)) {
+            publishedAt = data.publish ? new Date() : null;
+        }
+        const item = await this.repository.save({ ...omit(data, ['publish']), publishedAt });
         return this.detail(item.id);
     }
 
-    async update(data: RecordAny) {
-        data.updatedAt = new Date();
-        await this.repository.update(data.id, omit(data, ['id']));
+    async update(data: UpdatePostDto) {
+        let publishedAt: Date | null;
+        if (!isNil(data.publish)) {
+            publishedAt = data.publish ? new Date() : null;
+        }
+        await this.repository.update(data.id, {
+            ...omit(data, ['id', 'publish']),
+            publishedAt,
+            updatedAt: new Date(),
+        });
         return this.detail(data.id);
     }
 

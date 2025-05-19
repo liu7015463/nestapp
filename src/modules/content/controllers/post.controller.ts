@@ -8,17 +8,29 @@ import {
     Patch,
     Post,
     Query,
+    ValidationPipe,
 } from '@nestjs/common';
 
+import { CreatePostDto, QueryPostDto, UpdatePostDto } from '@/modules/content/dtos/post.dto';
 import { PostService } from '@/modules/content/services/post.service';
-import { PaginateOptions } from '@/modules/database/types';
 
 @Controller('posts')
 export class PostController {
     constructor(private postService: PostService) {}
 
     @Get()
-    async list(@Query() options: PaginateOptions) {
+    async list(
+        @Query(
+            new ValidationPipe({
+                transform: true,
+                whitelist: true,
+                forbidUnknownValues: true,
+                forbidNonWhitelisted: true,
+                validationError: { target: false },
+            }),
+        )
+        options: QueryPostDto,
+    ) {
         return this.postService.paginate(options);
     }
 
@@ -29,16 +41,34 @@ export class PostController {
 
     @Post()
     async store(
-        @Body()
-        data: RecordAny,
+        @Body(
+            new ValidationPipe({
+                transform: true,
+                whitelist: true,
+                forbidUnknownValues: true,
+                forbidNonWhitelisted: true,
+                validationError: { target: false },
+                groups: ['create'],
+            }),
+        )
+        data: CreatePostDto,
     ) {
         return this.postService.create(data);
     }
 
     @Patch()
     async update(
-        @Body()
-        data: RecordAny,
+        @Body(
+            new ValidationPipe({
+                transform: true,
+                whitelist: true,
+                forbidUnknownValues: true,
+                forbidNonWhitelisted: true,
+                validationError: { target: false },
+                groups: ['update'],
+            }),
+        )
+        data: UpdatePostDto,
     ) {
         return this.postService.update(data);
     }
