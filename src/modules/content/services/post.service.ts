@@ -65,7 +65,7 @@ export class PostService {
         const { orderBy, isPublished } = options;
         if (typeof isPublished === 'boolean') {
             isPublished
-                ? qb.where({ publishedAt: Not(IsNull) })
+                ? qb.where({ publishedAt: Not(IsNull()) })
                 : qb.where({ publishedAt: IsNull() });
         }
         this.queryOrderBy(qb, orderBy);

@@ -26,18 +26,20 @@ export class QueryPostDto implements PaginateOptions {
     @IsOptional()
     isPublished?: boolean;
 
-    @IsEnum(PostOrder, { message: `` })
+    @IsEnum(PostOrder, {
+        message: `The sorting rule must be one of ${Object.values(PostOrder).join(',')}`,
+    })
     @IsOptional()
     orderBy: PostOrder;
 
     @Transform(({ value }) => toNumber(value))
-    @Min(1, { message: '' })
+    @Min(1, { message: 'The current page must be greater than 1.' })
     @IsNumber()
     @IsOptional()
     page = 1;
 
     @Transform(({ value }) => toNumber(value))
-    @Min(1, { message: '' })
+    @Min(1, { message: 'The number of data displayed per page must be greater than 1.' })
     @IsNumber()
     @IsOptional()
     limit = 10;
