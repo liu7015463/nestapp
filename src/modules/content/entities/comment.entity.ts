@@ -1,9 +1,21 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn, Relation } from 'typeorm';
+import {
+    BaseEntity,
+    Column,
+    CreateDateColumn,
+    Entity,
+    ManyToOne,
+    PrimaryColumn,
+    Relation,
+    Tree,
+    TreeChildren,
+    TreeParent,
+} from 'typeorm';
 
 import { PostEntity } from '@/modules/content/entities/post.entity';
 
 @Entity('content_comment')
-export class CommentEntity {
+@Tree('materialized-path')
+export class CommentEntity extends BaseEntity {
     @PrimaryColumn({ type: 'varchar', length: 36, generated: 'uuid' })
     id: string;
 
@@ -19,4 +31,12 @@ export class CommentEntity {
         onUpdate: 'CASCADE',
     })
     post: Relation<PostEntity>;
+
+    depth = 0;
+
+    @TreeParent({ onDelete: 'CASCADE' })
+    parent: Relation<CommentEntity> | null;
+
+    @TreeChildren({ cascade: true })
+    children: Relation<CommentEntity>[];
 }

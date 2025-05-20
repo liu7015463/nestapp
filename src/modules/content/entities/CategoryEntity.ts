@@ -1,9 +1,20 @@
-import { Column, Entity, OneToMany, PrimaryColumn, Relation } from 'typeorm';
+import {
+    BaseEntity,
+    Column,
+    Entity,
+    OneToMany,
+    PrimaryColumn,
+    Relation,
+    Tree,
+    TreeChildren,
+    TreeParent,
+} from 'typeorm';
 
 import { PostEntity } from '@/modules/content/entities/post.entity';
 
 @Entity('content_category')
-export class CategoryEntity {
+@Tree('materialized-path')
+export class CategoryEntity extends BaseEntity {
     @PrimaryColumn({ type: 'varchar', generated: 'uuid', length: 36 })
     id: string;
 
@@ -14,5 +25,13 @@ export class CategoryEntity {
     customOrder: number;
 
     @OneToMany(() => PostEntity, (post) => post.category, { cascade: true })
-    posts: Relation<PostEntity[]>;
+    posts: Relation<PostEntity>[];
+
+    depth = 0;
+
+    @TreeParent({ onDelete: 'NO ACTION' })
+    parent: Relation<CategoryEntity> | null;
+
+    @TreeChildren({ cascade: true })
+    children: Relation<CategoryEntity>[];
 }

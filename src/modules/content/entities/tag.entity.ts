@@ -16,5 +16,5 @@ export class TagEntity {
 
     @Expose()
     @ManyToMany(() => PostEntity, (post) => post.tags)
-    posts: Relation<PostEntity[]>;
+    posts: Relation<PostEntity>[];
 }
