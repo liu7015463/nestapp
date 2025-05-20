@@ -84,7 +84,7 @@ export class PostService {
             case PostOrder.PUBLISHED:
                 return qb.orderBy('post.publishedAt', 'DESC');
             case PostOrder.CUSTOM:
-                return qb.orderBy('post.custom', 'DESC');
+                return qb.orderBy('post.customOrder', 'DESC');
             default:
                 return qb
                     .orderBy('post.createdAt', 'DESC')
