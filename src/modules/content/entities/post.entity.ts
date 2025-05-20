@@ -64,6 +64,9 @@ export class PostEntity extends BaseEntity {
     updatedAt?: Date;
 
     @Expose()
+    commentCount: number;
+
+    @Expose()
     @OneToMany(() => CategoryEntity, (category) => category.posts, {
         nullable: true,
         onDelete: 'SET NULL',
@@ -71,6 +74,7 @@ export class PostEntity extends BaseEntity {
     category: Relation<CategoryEntity>;
 
     @Expose()
+    @Type(() => TagEntity)
     @ManyToMany(() => TagEntity, (tag) => tag.posts, { cascade: true })
     @JoinTable()
     tags: Relation<TagEntity>[];
