@@ -30,3 +30,31 @@ export const paginate = async <T extends ObjectLiteral>(
         },
     };
 };
+
+export function treePaginate<T extends ObjectLiteral>(
+    options: PaginateOptions,
+    data: T[],
+): PaginateReturn<T> {
+    const { page, limit } = options;
+    let items: T[] = [];
+    const totalItems = data.length;
+    const totalRst = totalItems / limit;
+    const totalPages =
+        totalRst > Math.floor(totalRst) ? Math.floor(totalRst) + 1 : Math.floor(totalRst);
+    let itemCount = 0;
+    if (page <= totalPages) {
+        itemCount = page === totalPages ? totalItems - (totalPages - 1) * limit : limit;
+        const start = (page - 1) * limit;
+        items = data.slice(start, start + itemCount);
+    }
+    return {
+        meta: {
+            itemCount,
+            totalItems,
+            perPage: limit,
+            totalPages,
+            currentPage: page,
+        },
+        items,
+    };
+}

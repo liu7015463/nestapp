@@ -43,6 +43,14 @@ export class QueryPostDto implements PaginateOptions {
     @IsNumber()
     @IsOptional()
     limit = 10;
+
+    @IsUUID(undefined, { message: 'The ID format is incorrect' })
+    @IsOptional()
+    category?: string;
+
+    @IsUUID(undefined, { message: 'The ID format is incorrect' })
+    @IsOptional()
+    tag?: string;
 }
 
 export class CreatePostDto {
@@ -84,6 +92,21 @@ export class CreatePostDto {
     @IsNumber(undefined, { always: true })
     @IsOptional({ always: true })
     customOrder?: number;
+
+    @IsUUID(undefined, {
+        always: true,
+        message: 'The ID format is incorrect',
+    })
+    @IsOptional({ always: true })
+    category?: string;
+
+    @IsUUID(undefined, {
+        always: true,
+        each: true,
+        message: 'The ID format is incorrect',
+    })
+    @IsOptional({ always: true })
+    tags?: string[];
 }
 
 export class UpdatePostDto extends PartialType(CreatePostDto) {
