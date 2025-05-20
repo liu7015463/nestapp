@@ -1,4 +1,7 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Expose } from 'class-transformer';
+import { Column, Entity, ManyToMany, PrimaryColumn, Relation } from 'typeorm';
+
+import { PostEntity } from '@/modules/content/entities/post.entity';
 
 @Entity('content_tag')
 export class TagEntity {
@@ -10,4 +13,8 @@ export class TagEntity {
 
     @Column({ comment: '标签描述', nullable: true })
     desc?: string;
+
+    @Expose()
+    @ManyToMany(() => PostEntity, (post) => post.tags)
+    posts: Relation<PostEntity[]>;
 }

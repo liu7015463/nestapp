@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryColumn, Relation } from 'typeorm';
+
+import { PostEntity } from '@/modules/content/entities/post.entity';
 
 @Entity('content_category')
 export class CategoryEntity {
@@ -10,4 +12,7 @@ export class CategoryEntity {
 
     @Column({ comment: '分类排序', default: 0 })
     customOrder: number;
+
+    @OneToMany(() => PostEntity, (post) => post.category, { cascade: true })
+    posts: Relation<PostEntity[]>;
 }

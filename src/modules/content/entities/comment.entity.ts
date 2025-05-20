@@ -1,4 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn, Relation } from 'typeorm';
+
+import { PostEntity } from '@/modules/content/entities/post.entity';
 
 @Entity('content_comment')
 export class CommentEntity {
@@ -10,4 +12,11 @@ export class CommentEntity {
 
     @CreateDateColumn({ comment: '创建时间' })
     createdAt: Date;
+
+    @ManyToOne(() => PostEntity, (post) => post.comments, {
+        nullable: false,
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
+    post: Relation<PostEntity>;
 }
