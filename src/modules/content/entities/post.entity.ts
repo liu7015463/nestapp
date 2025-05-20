@@ -26,7 +26,7 @@ export class PostEntity extends BaseEntity {
 
     @Expose()
     @Column({ comment: '关键字', type: 'simple-array', nullable: true })
-    keywords?: [];
+    keywords?: string[];
 
     @Column({ comment: '文章类型', type: 'enum', enum: PostBodyType, default: PostBodyType.HTML })
     type: PostBodyType;
