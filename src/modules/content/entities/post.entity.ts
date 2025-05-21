@@ -13,7 +13,7 @@ import {
 } from 'typeorm';
 
 import { PostBodyType } from '@/modules/content/constants';
-import { CategoryEntity } from '@/modules/content/entities/CategoryEntity';
+import { CategoryEntity } from '@/modules/content/entities/category.entity';
 import { CommentEntity } from '@/modules/content/entities/comment.entity';
 import { TagEntity } from '@/modules/content/entities/tag.entity';
 

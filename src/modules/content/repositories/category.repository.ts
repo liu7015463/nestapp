@@ -1,7 +1,7 @@
 import { pick, unset } from 'lodash';
 import { FindOptionsUtils, FindTreeOptions, TreeRepository, TreeRepositoryUtils } from 'typeorm';
 
-import { CategoryEntity } from '@/modules/content/entities/CategoryEntity';
+import { CategoryEntity } from '@/modules/content/entities/category.entity';
 import { CustomRepository } from '@/modules/database/decorators/repository.decorator';
 
 @CustomRepository(CategoryEntity)

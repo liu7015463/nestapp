@@ -7,7 +7,7 @@ import {
     QueryCategoryDto,
     UpdateCategoryDto,
 } from '@/modules/content/dtos/category.dto';
-import { CategoryEntity } from '@/modules/content/entities/CategoryEntity';
+import { CategoryEntity } from '@/modules/content/entities/category.entity';
 import { CategoryRepository } from '@/modules/content/repositories/category.repository';
 import { treePaginate } from '@/modules/database/utils';
 
