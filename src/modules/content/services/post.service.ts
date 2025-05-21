@@ -7,11 +7,11 @@ import { EntityNotFoundError, In, IsNull, Not, SelectQueryBuilder } from 'typeor
 import { PostOrder } from '@/modules/content/constants';
 import { CreatePostDto, QueryPostDto, UpdatePostDto } from '@/modules/content/dtos/post.dto';
 import { PostEntity } from '@/modules/content/entities/post.entity';
+import { CategoryRepository } from '@/modules/content/repositories';
 import { PostRepository } from '@/modules/content/repositories/post.repository';
 import { QueryHook } from '@/modules/database/types';
 import { paginate } from '@/modules/database/utils';
 
-import { CategoryRepository } from '../repositories/category.repository';
 import { TagRepository } from '../repositories/tag.repository';
 
 import { CategoryService } from './category.service';
