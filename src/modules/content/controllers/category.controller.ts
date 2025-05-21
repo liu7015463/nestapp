@@ -15,6 +15,7 @@ import {
 
 import { AppInterceptor } from '@/modules/core/providers/app.interceptor';
 
+import { DEFAULT_VALIDATION_CONFIG } from '../constants';
 import { CreateCategoryDto, QueryCategoryDto, UpdateCategoryDto } from '../dtos/category.dto';
 import { CategoryService } from '../services';
 
@@ -32,15 +33,7 @@ export class CategoryController {
     @Get()
     @SerializeOptions({ groups: ['category-list'] })
     async list(
-        @Query(
-            new ValidationPipe({
-                transform: true,
-                whitelist: true,
-                forbidNonWhitelisted: true,
-                forbidUnknownValues: true,
-                validationError: { target: false },
-            }),
-        )
+        @Query(new ValidationPipe(DEFAULT_VALIDATION_CONFIG))
         options: QueryCategoryDto,
     ) {
         return this.service.paginate(options);
@@ -57,11 +50,7 @@ export class CategoryController {
     async store(
         @Body(
             new ValidationPipe({
-                transform: true,
-                whitelist: true,
-                forbidNonWhitelisted: true,
-                forbidUnknownValues: true,
-                validationError: { target: false },
+                ...DEFAULT_VALIDATION_CONFIG,
                 groups: ['create'],
             }),
         )
@@ -75,11 +64,7 @@ export class CategoryController {
     async update(
         @Body(
             new ValidationPipe({
-                transform: true,
-                whitelist: true,
-                forbidNonWhitelisted: true,
-                forbidUnknownValues: true,
-                validationError: { target: false },
+                ...DEFAULT_VALIDATION_CONFIG,
                 groups: ['update'],
             }),
         )

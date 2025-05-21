@@ -10,3 +10,11 @@ export enum PostOrder {
     COMMENTCOUNT = 'commentCount',
     CUSTOM = 'custom',
 }
+
+export const DEFAULT_VALIDATION_CONFIG = Object.freeze({
+    transform: true,
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    forbidUnknownValues: true,
+    validationError: { target: false },
+});

@@ -17,6 +17,8 @@ import { CreatePostDto, QueryPostDto, UpdatePostDto } from '@/modules/content/dt
 import { PostService } from '@/modules/content/services/post.service';
 import { AppInterceptor } from '@/modules/core/providers/app.interceptor';
 
+import { DEFAULT_VALIDATION_CONFIG } from '../constants';
+
 @UseInterceptors(AppInterceptor)
 @Controller('posts')
 export class PostController {
@@ -25,15 +27,7 @@ export class PostController {
     @Get()
     @SerializeOptions({ groups: ['post-list'] })
     async list(
-        @Query(
-            new ValidationPipe({
-                transform: true,
-                whitelist: true,
-                forbidUnknownValues: true,
-                forbidNonWhitelisted: true,
-                validationError: { target: false },
-            }),
-        )
+        @Query(new ValidationPipe(DEFAULT_VALIDATION_CONFIG))
         options: QueryPostDto,
     ) {
         return this.postService.paginate(options);
@@ -50,11 +44,7 @@ export class PostController {
     async store(
         @Body(
             new ValidationPipe({
-                transform: true,
-                whitelist: true,
-                forbidUnknownValues: true,
-                forbidNonWhitelisted: true,
-                validationError: { target: false },
+                ...DEFAULT_VALIDATION_CONFIG,
                 groups: ['create'],
             }),
         )
@@ -68,11 +58,7 @@ export class PostController {
     async update(
         @Body(
             new ValidationPipe({
-                transform: true,
-                whitelist: true,
-                forbidUnknownValues: true,
-                forbidNonWhitelisted: true,
-                validationError: { target: false },
+                ...DEFAULT_VALIDATION_CONFIG,
                 groups: ['update'],
             }),
         )
