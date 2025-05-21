@@ -1,5 +1,6 @@
 declare type RecordAny = Record<string, any>;
 declare type RecordNever = Record<never, never>;
+declare type RecordString = Record<string, string>;
 declare type RecordAnyOrNever = RecordAny | RecordNever;
 
 declare type BaseType = boolean | number | string | undefined | null;

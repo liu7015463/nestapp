@@ -1,9 +1,11 @@
+import { Injectable } from '@nestjs/common';
 import { omit } from 'lodash';
 
 import { CreateTagDto, QueryTagDto } from '@/modules/content/dtos/tag.dto';
 import { TagRepository } from '@/modules/content/repositories/tag.repository';
 import { paginate } from '@/modules/database/utils';
 
+@Injectable()
 export class TagService {
     constructor(protected repository: TagRepository) {}
 
