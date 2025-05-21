@@ -43,7 +43,7 @@ export class CreateCategoryDto {
     })
     @ValidateIf((value) => value.parent !== null && value.parent)
     @IsOptional({ always: true })
-    @Transform((value) => (value === 'null' ? null : value))
+    @Transform(({ value }) => (value === 'null' ? null : value))
     parent?: string;
 
     @Transform(({ value }) => toNumber(value))

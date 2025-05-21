@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { isNil, omit } from 'lodash';
 import { EntityNotFoundError } from 'typeorm';
 
-import { CreateCategoryDto, QueryCategoryDto } from '@/modules/content/dtos/category.dto';
+import {
+    CreateCategoryDto,
+    QueryCategoryDto,
+    UpdateCategoryDto,
+} from '@/modules/content/dtos/category.dto';
 import { CategoryEntity } from '@/modules/content/entities/CategoryEntity';
 import { CategoryRepository } from '@/modules/content/repositories/category.repository';
 import { treePaginate } from '@/modules/database/utils';
@@ -22,7 +26,7 @@ export class CategoryService {
     }
 
     async detail(id: string) {
-        return this.repository.findOneByOrFail({ where: { id }, relations: ['parent'] });
+        return this.repository.findOneOrFail({ where: { id }, relations: ['parent'] });
     }
 
     async create(data: CreateCategoryDto) {
@@ -35,7 +39,7 @@ export class CategoryService {
 
     async update(data: UpdateCategoryDto) {
         await this.repository.update(data.id, omit(data, ['id', 'parent']));
-        const item = await this.repository.findOneByOrFail({
+        const item = await this.repository.findOneOrFail({
             where: { id: data.id },
             relations: ['parent'],
         });
@@ -53,7 +57,7 @@ export class CategoryService {
     }
 
     async delete(id: string) {
-        const item = await this.repository.findOneByOrFail({
+        const item = await this.repository.findOneOrFail({
             where: { id },
             relations: ['parent', 'children'],
         });

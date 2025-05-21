@@ -4,9 +4,16 @@ import { isNil } from 'lodash';
 
 import { EntityNotFoundError, SelectQueryBuilder } from 'typeorm';
 
-import { QueryCommentTreeDto } from '@/modules/content/dtos/comment.dto';
+import {
+    CreateCommentDto,
+    QueryCommentDto,
+    QueryCommentTreeDto,
+} from '@/modules/content/dtos/comment.dto';
 import { CommentEntity } from '@/modules/content/entities/comment.entity';
 import { treePaginate } from '@/modules/database/utils';
+
+import { CommentRepository } from '../repositories/comment.repository';
+import { PostRepository } from '../repositories/post.repository';
 
 @Injectable()
 export class CommentService {
@@ -44,7 +51,7 @@ export class CommentService {
 
     async create(data: CreateCommentDto) {
         const parent = await this.getParent(undefined, data.parent);
-        if (!isNil(parent) && parent.post.id !== data.post.id) {
+        if (!isNil(parent) && parent.post.id !== data.post) {
             throw new ForbiddenException('Parent comment and child comment must belong same post!');
         }
         const item = await this.repository.save({

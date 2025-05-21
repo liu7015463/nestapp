@@ -11,6 +11,8 @@ import {
 } from 'class-validator';
 import { toNumber } from 'lodash';
 
+import { PaginateOptions } from '@/modules/database/types';
+
 export class QueryTagDto implements PaginateOptions {
     @Transform(({ value }) => toNumber(value))
     @Min(1, { message: 'The current page must be greater than 1.' })
