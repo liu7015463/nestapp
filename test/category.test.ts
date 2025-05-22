@@ -27,7 +27,7 @@ describe('category test', () => {
         controller = module.get<CategoryController>(CategoryController);
         repository = module.get<CategoryRepository>(CategoryRepository);
         datasource = module.get<DataSource>(DataSource);
-        repository.clear();
+        await repository.clear();
     });
     it('check datasource', () => {
         expect(datasource).toBeDefined();
