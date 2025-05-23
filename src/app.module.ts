@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 
 import { AppInterceptor } from '@/modules/core/providers/app.interceptor';
 
@@ -9,6 +9,7 @@ import { database } from './config';
 import { DEFAULT_VALIDATION_CONFIG } from './modules/content/constants';
 import { ContentModule } from './modules/content/content.module';
 import { CoreModule } from './modules/core/core.module';
+import { AppFilter } from './modules/core/providers/app.filter';
 import { AppPipe } from './modules/core/providers/app.pipe';
 import { DatabaseModule } from './modules/database/database.module';
 
@@ -22,6 +23,10 @@ import { DatabaseModule } from './modules/database/database.module';
         {
             provide: APP_INTERCEPTOR,
             useClass: AppInterceptor,
+        },
+        {
+            provide: APP_FILTER,
+            useClass: AppFilter,
         },
     ],
 })
