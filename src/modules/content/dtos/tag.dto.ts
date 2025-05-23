@@ -11,8 +11,10 @@ import {
 } from 'class-validator';
 import { toNumber } from 'lodash';
 
+import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
 import { PaginateOptions } from '@/modules/database/types';
 
+@DtoValidation({ type: 'query' })
 export class QueryTagDto implements PaginateOptions {
     @Transform(({ value }) => toNumber(value))
     @Min(1, { message: 'The current page must be greater than 1.' })
@@ -27,6 +29,7 @@ export class QueryTagDto implements PaginateOptions {
     limit = 10;
 }
 
+@DtoValidation({ groups: ['create'] })
 export class CreateTagDto {
     @MaxLength(255, {
         always: true,
@@ -44,6 +47,7 @@ export class CreateTagDto {
     desc?: string;
 }
 
+@DtoValidation({ groups: ['update'] })
 export class UpdateTagDto extends PartialType(CreateTagDto) {
     @IsUUID(undefined, { message: 'The ID format is incorrect', groups: ['update'] })
     @IsDefined({ groups: ['update'], message: 'The ID must be specified' })

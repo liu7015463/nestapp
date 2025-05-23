@@ -10,14 +10,11 @@ import {
     Query,
     SerializeOptions,
     UseInterceptors,
-    ValidationPipe,
 } from '@nestjs/common';
 
 import { CreatePostDto, QueryPostDto, UpdatePostDto } from '@/modules/content/dtos/post.dto';
 import { PostService } from '@/modules/content/services/post.service';
 import { AppInterceptor } from '@/modules/core/providers/app.interceptor';
-
-import { DEFAULT_VALIDATION_CONFIG } from '../constants';
 
 @UseInterceptors(AppInterceptor)
 @Controller('posts')
@@ -27,7 +24,7 @@ export class PostController {
     @Get()
     @SerializeOptions({ groups: ['post-list'] })
     async list(
-        @Query(new ValidationPipe(DEFAULT_VALIDATION_CONFIG))
+        @Query()
         options: QueryPostDto,
     ) {
         return this.postService.paginate(options);
@@ -42,12 +39,7 @@ export class PostController {
     @Post()
     @SerializeOptions({ groups: ['post-detail'] })
     async store(
-        @Body(
-            new ValidationPipe({
-                ...DEFAULT_VALIDATION_CONFIG,
-                groups: ['create'],
-            }),
-        )
+        @Body()
         data: CreatePostDto,
     ) {
         return this.postService.create(data);
@@ -56,12 +48,7 @@ export class PostController {
     @Patch()
     @SerializeOptions({ groups: ['post-detail'] })
     async update(
-        @Body(
-            new ValidationPipe({
-                ...DEFAULT_VALIDATION_CONFIG,
-                groups: ['update'],
-            }),
-        )
+        @Body()
         data: UpdatePostDto,
     ) {
         return this.postService.update(data);

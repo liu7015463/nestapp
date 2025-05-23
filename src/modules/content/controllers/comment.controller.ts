@@ -9,14 +9,10 @@ import {
     Query,
     SerializeOptions,
     UseInterceptors,
-    ValidationPipe,
 } from '@nestjs/common';
-
-import { pick } from 'lodash';
 
 import { AppInterceptor } from '@/modules/core/providers/app.interceptor';
 
-import { DEFAULT_VALIDATION_CONFIG } from '../constants';
 import { CreateCommentDto, QueryCommentDto, QueryCommentTreeDto } from '../dtos/comment.dto';
 import { CommentService } from '../services';
 
@@ -27,18 +23,14 @@ export class CommentController {
 
     @Get('tree')
     @SerializeOptions({ groups: ['comment-tree'] })
-    async tree(@Query(new ValidationPipe(DEFAULT_VALIDATION_CONFIG)) options: QueryCommentTreeDto) {
+    async tree(@Query() options: QueryCommentTreeDto) {
         return this.service.findTrees(options);
     }
 
     @Get()
     @SerializeOptions({ groups: ['comment-list'] })
     async list(
-        @Query(
-            new ValidationPipe({
-                ...pick(DEFAULT_VALIDATION_CONFIG, ['forbidNonWhitelisted', 'whitelist']),
-            }),
-        )
+        @Query()
         options: QueryCommentDto,
     ) {
         return this.service.paginate(options);
@@ -46,7 +38,7 @@ export class CommentController {
 
     @Post()
     @SerializeOptions({ groups: ['comment-detail'] })
-    async store(@Body(new ValidationPipe(DEFAULT_VALIDATION_CONFIG)) data: CreateCommentDto) {
+    async store(@Body() data: CreateCommentDto) {
         return this.service.create(data);
     }
 

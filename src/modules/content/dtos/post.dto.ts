@@ -17,9 +17,11 @@ import {
 import { isNil, toNumber } from 'lodash';
 
 import { PostOrder } from '@/modules/content/constants';
+import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
 import { toBoolean } from '@/modules/core/helpers';
 import { PaginateOptions } from '@/modules/database/types';
 
+@DtoValidation({ type: 'query' })
 export class QueryPostDto implements PaginateOptions {
     @Transform(({ value }) => toBoolean(value))
     @IsBoolean()
@@ -53,6 +55,7 @@ export class QueryPostDto implements PaginateOptions {
     tag?: string;
 }
 
+@DtoValidation({ groups: ['create'] })
 export class CreatePostDto {
     @MaxLength(255, {
         always: true,
@@ -109,6 +112,7 @@ export class CreatePostDto {
     tags?: string[];
 }
 
+@DtoValidation({ groups: ['update'] })
 export class UpdatePostDto extends PartialType(CreatePostDto) {
     @IsUUID(undefined, {
         groups: ['update'],

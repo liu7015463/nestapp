@@ -10,12 +10,10 @@ import {
     Query,
     SerializeOptions,
     UseInterceptors,
-    ValidationPipe,
 } from '@nestjs/common';
 
 import { AppInterceptor } from '@/modules/core/providers/app.interceptor';
 
-import { DEFAULT_VALIDATION_CONFIG } from '../constants';
 import { CreateTagDto, QueryTagDto, UpdateTagDto } from '../dtos/tag.dto';
 import { TagService } from '../services';
 
@@ -27,7 +25,7 @@ export class TagController {
     @Get()
     @SerializeOptions({})
     async list(
-        @Query(new ValidationPipe(DEFAULT_VALIDATION_CONFIG))
+        @Query()
         options: QueryTagDto,
     ) {
         return this.service.paginate(options);
@@ -42,7 +40,7 @@ export class TagController {
     @Post()
     @SerializeOptions({})
     async store(
-        @Body(new ValidationPipe({ ...DEFAULT_VALIDATION_CONFIG, groups: ['create'] }))
+        @Body()
         data: CreateTagDto,
     ) {
         return this.service.create(data);
@@ -51,7 +49,7 @@ export class TagController {
     @Patch()
     @SerializeOptions({})
     async update(
-        @Body(new ValidationPipe({ ...DEFAULT_VALIDATION_CONFIG, groups: ['update'] }))
+        @Body()
         date: UpdateTagDto,
     ) {
         return this.service.update(date);

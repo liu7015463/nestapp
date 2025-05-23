@@ -12,8 +12,10 @@ import {
 } from 'class-validator';
 import { toNumber } from 'lodash';
 
+import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
 import { PaginateOptions } from '@/modules/database/types';
 
+@DtoValidation({ type: 'query' })
 export class QueryCommentDto implements PaginateOptions {
     @Transform(({ value }) => toNumber(value))
     @Min(1, { message: 'The current page must be greater than 1.' })
@@ -32,8 +34,10 @@ export class QueryCommentDto implements PaginateOptions {
     post?: string;
 }
 
+@DtoValidation({ type: 'query' })
 export class QueryCommentTreeDto extends PickType(QueryCommentDto, ['post']) {}
 
+@DtoValidation()
 export class CreateCommentDto {
     @MaxLength(1000, { message: '' })
     @IsNotEmpty({ message: '' })
