@@ -8,16 +8,12 @@ import {
     Post,
     Query,
     SerializeOptions,
-    UseInterceptors,
 } from '@nestjs/common';
-
-import { AppInterceptor } from '@/modules/core/providers/app.interceptor';
 
 import { CreateCommentDto, QueryCommentDto, QueryCommentTreeDto } from '../dtos/comment.dto';
 import { CommentService } from '../services';
 
 @Controller('comment')
-@UseInterceptors(AppInterceptor)
 export class CommentController {
     constructor(protected service: CommentService) {}
 

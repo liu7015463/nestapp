@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 
-import { APP_PIPE } from '@nestjs/core';
+import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+
+import { AppInterceptor } from '@/modules/core/providers/app.interceptor';
 
 import { database } from './config';
 
@@ -16,6 +18,10 @@ import { DatabaseModule } from './modules/database/database.module';
         {
             provide: APP_PIPE,
             useValue: new AppPipe(DEFAULT_VALIDATION_CONFIG),
+        },
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: AppInterceptor,
         },
     ],
 })
