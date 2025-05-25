@@ -3,21 +3,26 @@ import { describe } from 'node:test';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { pick } from 'lodash';
+import { omit, pick } from 'lodash';
 import { DataSource } from 'typeorm';
 
 import { database } from '@/config';
 import { ContentModule } from '@/modules/content/content.module';
-import { CategoryEntity } from '@/modules/content/entities';
-import { CategoryRepository } from '@/modules/content/repositories';
+import { CategoryEntity, CommentEntity, PostEntity, TagEntity } from '@/modules/content/entities';
+import { CategoryRepository, PostRepository, TagRepository } from '@/modules/content/repositories';
 import { DatabaseModule } from '@/modules/database/database.module';
 
-import { initialCategories } from './test-data';
+import { CommentRepository } from '../src/modules/content/repositories/comment.repository';
+
+import { commentData, INIT_DATA, initialCategories, postData, tagData } from './test-data';
 
 describe('category test', () => {
     let datasource: DataSource;
     let app: NestFastifyApplication;
     let categoryRepository: CategoryRepository;
+    let tagRepository: TagRepository;
+    let postRepository: PostRepository;
+    let commentRepository: CommentRepository;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -26,17 +31,34 @@ describe('category test', () => {
         app = module.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
         await app.init();
         await app.getHttpAdapter().getInstance().ready();
+
         categoryRepository = module.get<CategoryRepository>(CategoryRepository);
+        tagRepository = module.get<TagRepository>(TagRepository);
+        postRepository = module.get<PostRepository>(PostRepository);
+        commentRepository = module.get<CommentRepository>(CommentRepository);
         datasource = module.get<DataSource>(DataSource);
-        await categoryRepository.clear();
-        // init category data
-        const categories = await addCategory(app, initialCategories);
-        console.log(categories);
-        // init tag data
-        addTag(app, []);
-        // init post data
-        addPost(app, []);
-        // init comment data
+        if (INIT_DATA) {
+            await categoryRepository.deleteAll();
+            await postRepository.deleteAll();
+            await tagRepository.deleteAll();
+            await commentRepository.deleteAll();
+
+            // init category data
+            const categories = await addCategory(app, initialCategories);
+            console.log(categories);
+            // init tag data
+            const tags = await addTag(app, tagData);
+            console.log(tags);
+            // init post data
+            addPost(
+                app,
+                postData,
+                tags.map((tag) => tag.id),
+                categories.map((category) => category.id),
+            );
+            // init comment data
+            addComment(app, commentData);
+        }
     });
 
     it('check init', async () => {
@@ -71,6 +93,62 @@ async function addCategory(
     return categories;
 }
 
-function addTag(app: NestFastifyApplication, data: RecordAny[]) {}
+async function addTag(app: NestFastifyApplication, data: RecordAny[]): Promise<TagEntity[]> {
+    const tags: TagEntity[] = [];
+    if (app && data && data.length > 0) {
+        for (let index = 0; index < data.length; index++) {
+            const item = data[index];
+            const result = await app.inject({
+                method: 'POST',
+                url: '/tag',
+                body: item,
+            });
+            const addedItem: TagEntity = result.json();
+            tags.push(addedItem);
+        }
+    }
+    return tags;
+}
 
-function addPost(app: NestFastifyApplication, data: RecordAny[]) {}
+async function addPost(
+    app: NestFastifyApplication,
+    data: RecordAny[],
+    tags: string[] = [],
+    categories: string[] = [],
+) {
+    const posts: PostEntity[] = [];
+    if (app && data && data.length > 0) {
+        for (let index = 0; index < data.length; index++) {
+            const item = data[index];
+            // TODO add tag and category
+            const result = await app.inject({
+                method: 'POST',
+                url: '/post',
+                body: omit(item, ['tags', 'category']),
+            });
+            const addedItem: PostEntity = result.json();
+            posts.push(addedItem);
+        }
+    }
+    return posts;
+}
+
+async function addComment(
+    app: NestFastifyApplication,
+    data: RecordAny[],
+): Promise<CommentEntity[]> {
+    const comments: CommentEntity[] = [];
+    if (app && data && data.length > 0) {
+        for (let index = 0; index < data.length; index++) {
+            const item = data[index];
+            const result = await app.inject({
+                method: 'POST',
+                url: '/comment',
+                body: item,
+            });
+            const addedItem: CommentEntity = result.json();
+            comments.push(addedItem);
+        }
+    }
+    return comments;
+}

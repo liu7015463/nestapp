@@ -1,3 +1,5 @@
+export const INIT_DATA = true;
+
 export const initialCategories = [
     {
         name: '全栈',
