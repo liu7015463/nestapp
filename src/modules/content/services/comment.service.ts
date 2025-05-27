@@ -57,7 +57,10 @@ export class CommentService {
             parent,
             post: await this.getPost(data.post),
         });
-        return this.repository.findOneOrFail({ where: { id: item.id } });
+        return this.repository.findOneOrFail({
+            where: { id: item.id },
+            relations: ['parent', 'children', 'post'],
+        });
     }
 
     async delete(id: string) {

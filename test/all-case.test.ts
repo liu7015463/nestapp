@@ -9,14 +9,29 @@ import { DataSource } from 'typeorm';
 import { database } from '@/config';
 import { ContentModule } from '@/modules/content/content.module';
 import { CategoryEntity, CommentEntity, PostEntity, TagEntity } from '@/modules/content/entities';
+import {
+    CategoryRepository,
+    CommentRepository,
+    PostRepository,
+    TagRepository,
+} from '@/modules/content/repositories';
 import { DatabaseModule } from '@/modules/database/database.module';
 
 import { generateRandomNumber, generateUniqueRandomNumbers } from './generate-mock-data';
-import { commentData, INIT_DATA, initialCategories, postData, tagData } from './test-data';
+import { categoriesData, commentData, INIT_DATA, postData, tagData } from './test-data';
 
 describe('category test', () => {
     let datasource: DataSource;
     let app: NestFastifyApplication;
+    let categoryRepository: CategoryRepository;
+    let tagRepository: TagRepository;
+    let postRepository: PostRepository;
+    let commentRepository: CommentRepository;
+
+    let posts: PostEntity[];
+    let categories: CategoryEntity[];
+    let tags: TagEntity[];
+    let comments: CommentEntity[];
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -26,13 +41,14 @@ describe('category test', () => {
         await app.init();
         await app.getHttpAdapter().getInstance().ready();
 
+        categoryRepository = module.get<CategoryRepository>(CategoryRepository);
+        tagRepository = module.get<TagRepository>(TagRepository);
+        postRepository = module.get<PostRepository>(PostRepository);
+        commentRepository = module.get<CommentRepository>(CommentRepository);
         datasource = module.get<DataSource>(DataSource);
         if (!datasource.isInitialized) {
             await datasource.initialize();
         }
-    });
-
-    beforeEach(async () => {
         if (INIT_DATA) {
             const queryRunner = datasource.createQueryRunner();
             try {
@@ -46,39 +62,67 @@ describe('category test', () => {
                     await queryRunner.query(`TRUNCATE TABLE ${table}`);
                     return table;
                 });
-                // await queryRunner.query(`TRUNCATE TABLE ${tables}`);
             } finally {
                 await queryRunner.query('SET FOREIGN_KEY_CHECKS = 1');
                 await queryRunner.release();
             }
 
             // init category data
-            const categories = await addCategory(app, initialCategories);
-            console.log(categories);
+            categories = await addCategory(app, categoriesData);
+
             // init tag data
-            const tags = await addTag(app, tagData);
-            console.log(tags);
+            tags = await addTag(app, tagData);
             // init post data
-            const posts = await addPost(
+            posts = await addPost(
                 app,
                 postData,
                 tags.map((tag) => tag.id),
                 categories.map((category) => category.id),
             );
-            console.log(posts);
-            console.log('='.repeat(100));
             // init comment data
-            const comments = await addComment(
+            comments = await addComment(
                 app,
                 commentData,
                 posts.map((post) => post.id),
             );
-            console.log(comments);
         }
     });
 
     it('check init', async () => {
         expect(app).toBeDefined();
+    });
+
+    describe('category test', () => {
+        it('repository init', () => {
+            expect(categoryRepository).toBeDefined();
+        });
+    });
+
+    describe('tag test', () => {
+        it('tag init', () => {
+            expect(tagRepository).toBeDefined();
+        });
+        it('tag test data check', () => {
+            expect(tags.length).toEqual(tagData.length);
+        });
+    });
+
+    describe('posts test', () => {
+        it('posts init', () => {
+            expect(postRepository).toBeDefined();
+        });
+        it('posts test data check', () => {
+            expect(posts.length).toEqual(postData.length);
+        });
+    });
+
+    describe('comment test', () => {
+        it('comment init', () => {
+            expect(commentRepository).toBeDefined();
+        });
+        it('comment test data check', () => {
+            expect(comments.length).toEqual(commentData.length);
+        });
     });
 
     afterAll(async () => {
@@ -92,7 +136,7 @@ async function addCategory(
     data: RecordAny[],
     parentId?: string,
 ): Promise<CategoryEntity[]> {
-    const categories: CategoryEntity[] = [];
+    const results: CategoryEntity[] = [];
     if (app && data && data.length > 0) {
         for (let index = 0; index < data.length; index++) {
             const item = data[index];
@@ -102,15 +146,15 @@ async function addCategory(
                 body: { ...pick(item, ['name', 'customOrder']), parent: parentId },
             });
             const addedItem: CategoryEntity = result.json();
-            categories.push(addedItem);
-            categories.push(...(await addCategory(app, item.children, addedItem.id)));
+            results.push(addedItem);
+            results.push(...(await addCategory(app, item.children, addedItem.id)));
         }
     }
-    return categories;
+    return results;
 }
 
 async function addTag(app: NestFastifyApplication, data: RecordAny[]): Promise<TagEntity[]> {
-    const tags: TagEntity[] = [];
+    const results: TagEntity[] = [];
     if (app && data && data.length > 0) {
         for (let index = 0; index < data.length; index++) {
             const item = data[index];
@@ -120,10 +164,10 @@ async function addTag(app: NestFastifyApplication, data: RecordAny[]): Promise<T
                 body: item,
             });
             const addedItem: TagEntity = result.json();
-            tags.push(addedItem);
+            results.push(addedItem);
         }
     }
-    return tags;
+    return results;
 }
 
 async function addPost(
@@ -132,23 +176,22 @@ async function addPost(
     tags: string[] = [],
     categories: string[] = [],
 ) {
-    const posts: PostEntity[] = [];
+    const results: PostEntity[] = [];
     if (app && data && data.length > 0) {
         for (let index = 0; index < data.length; index++) {
             const item = data[index];
             item.category = categories[generateRandomNumber(1, categories.length - 1)[0]];
             item.tags = generateUniqueRandomNumbers(0, tags.length - 1, 3).map((idx) => tags[idx]);
-            // console.log(JSON.stringify(item));
             const result = await app.inject({
                 method: 'POST',
                 url: '/posts',
                 body: item,
             });
             const addedItem: PostEntity = result.json();
-            posts.push(addedItem);
+            results.push(addedItem);
         }
     }
-    return posts;
+    return results;
 }
 
 async function addComment(
@@ -156,32 +199,27 @@ async function addComment(
     data: RecordAny[],
     posts: string[],
 ): Promise<CommentEntity[]> {
-    const comments: CommentEntity[] = [];
+    const results: CommentEntity[] = [];
     if (app && data && data.length > 0) {
         for (let index = 0; index < data.length; index++) {
             const item = data[index];
             item.post = posts[generateRandomNumber(0, posts.length - 1)[0]];
 
-            const commentsFilter = comments
+            const commentsFilter = results
                 .filter((comment) => comment.post === item.post)
                 .map((comment) => comment.id);
-            console.log('A'.repeat(100));
-            console.log(commentsFilter);
             item.parent =
                 commentsFilter.length > 0
                     ? commentsFilter[generateRandomNumber(0, commentsFilter.length - 1)[0]]
                     : undefined;
-            console.log(JSON.stringify(item));
             const result = await app.inject({
                 method: 'POST',
                 url: '/comment',
                 body: item,
             });
             const addedItem = result.json();
-            console.log(addedItem);
-            addedItem.post = item.post;
-            comments.push(addedItem);
+            results.push(addedItem);
         }
     }
-    return comments;
+    return results;
 }

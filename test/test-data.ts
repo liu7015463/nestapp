@@ -1,6 +1,6 @@
 export const INIT_DATA = true;
 
-export const initialCategories = [
+export const categoriesData = [
     {
         name: '全栈',
         customOrder: 100,
