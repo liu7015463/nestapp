@@ -60,12 +60,6 @@ importers:
       '@faker-js/faker':
         specifier: ^9.8.0
         version: 9.8.0
-      '@jest/test-result':
-        specifier: ^29.7.0
-        version: 29.7.0
-      '@jest/test-sequencer':
-        specifier: ^29.7.0
-        version: 29.7.0
       '@nestjs/cli':
         specifier: ^10.0.3
         version: 10.4.9(@swc/cli@0.1.65(@swc/core@1.11.24)(chokidar@3.6.0))(@swc/core@1.11.24)
