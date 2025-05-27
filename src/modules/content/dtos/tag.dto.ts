@@ -11,8 +11,11 @@ import {
 } from 'class-validator';
 import { toNumber } from 'lodash';
 
+import { IsUnique } from '@/modules/core/constraints/unique.constraint';
 import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
 import { PaginateOptions } from '@/modules/database/types';
+
+import { TagEntity } from '../entities';
 
 @DtoValidation({ type: 'query' })
 export class QueryTagDto implements PaginateOptions {
@@ -31,6 +34,7 @@ export class QueryTagDto implements PaginateOptions {
 
 @DtoValidation({ groups: ['create'] })
 export class CreateTagDto {
+    @IsUnique(TagEntity, { groups: ['create'], message: 'The label names are repeated' })
     @MaxLength(255, {
         always: true,
         message: 'The maximum length of the label name is $constraint1',
