@@ -6,7 +6,10 @@ import { DataSource, ObjectType } from 'typeorm';
 import { CUSTOM_REPOSITORY_METADATA } from '@/modules/database/constants';
 
 import { DataExistConstraint } from '../core/constraints/data.exist.constraint';
+import { TreeUniqueConstraint } from '../core/constraints/tree.unique.constraint';
+import { TreeUniqueExistContraint } from '../core/constraints/tree.unique.exist.constraint';
 import { UniqueConstraint } from '../core/constraints/unique.constraint';
+import { UniqueExistConstraint } from '../core/constraints/unique.exist.constraint';
 
 @Module({})
 export class DatabaseModule {
@@ -15,7 +18,13 @@ export class DatabaseModule {
             global: true,
             module: DatabaseModule,
             imports: [TypeOrmModule.forRoot(configRegister())],
-            providers: [DataExistConstraint, UniqueConstraint],
+            providers: [
+                DataExistConstraint,
+                UniqueConstraint,
+                UniqueExistConstraint,
+                TreeUniqueConstraint,
+                TreeUniqueExistContraint,
+            ],
         };
     }
     static forRepository<T extends Type<any>>(

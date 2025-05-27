@@ -18,37 +18,49 @@ type Condition = {
 
     property?: string;
 };
-@Injectable()
-@ValidatorConstraint({ name: 'dataUniqueExist', async: true })
-export class UniqueExistConstraint implements ValidatorConstraintInterface {
-    constructor(protected dataSource: DataSource) {}
 
-    async validate(value: any, args?: ValidationArguments): Promise<boolean> {
+@ValidatorConstraint({ name: 'treeDataUniqueExist', async: true })
+@Injectable()
+export class TreeUniqueExistContraint implements ValidatorConstraintInterface {
+    constructor(private dataSource: DataSource) {}
+
+    async validate(value: any, args: ValidationArguments) {
         const config: Omit<Condition, 'entity'> = {
             ignore: 'id',
             property: args.property,
         };
         const condition = ('entity' in args.constraints[0]
             ? merge(config, args.constraints[0])
-            : { ...config, entity: args.constraints[0] }) as unknown as Required<Condition>;
+            : {
+                  ...config,
+                  entity: args.constraints[0],
+              }) as unknown as Required<Condition>;
         if (!condition.entity) {
             return false;
         }
+        // 在传入的dto数据中获取需要忽略的字段的值
         const ignoreValue = (args.object as any)[
             isNil(condition.ignoreKey) ? condition.ignore : condition.ignoreKey
         ];
+        // 如果忽略字段不存在则验证失败
         if (ignoreValue === undefined) {
             return false;
         }
+        // 通过entity获取repository
         const repo = this.dataSource.getRepository(condition.entity);
+        // 查询忽略字段之外的数据是否对queryProperty的值唯一
         return isNil(
             await repo.findOne({
-                where: { [condition.property]: value, [condition.ignore]: Not(ignoreValue) },
+                where: {
+                    [condition.property]: value,
+                    [condition.ignore]: Not(ignoreValue),
+                },
                 withDeleted: true,
             }),
         );
     }
-    defaultMessage?(args?: ValidationArguments): string {
+
+    defaultMessage(args: ValidationArguments) {
         const { entity, property } = args.constraints[0];
         const queryProperty = property ?? args.property;
         if (!(args.object as any).getManager) {
@@ -61,14 +73,17 @@ export class UniqueExistConstraint implements ValidatorConstraintInterface {
     }
 }
 
-export function IsUniqueExist(params: ObjectType<any> | Condition, options?: ValidationOptions) {
-    return (object: RecordAny, propertyName: string) => {
+export function IsUniqueExist(
+    params: ObjectType<any> | Condition,
+    validationOptions?: ValidationOptions,
+) {
+    return (object: Record<string, any>, propertyName: string) => {
         registerDecorator({
             target: object.constructor,
             propertyName,
-            options,
+            options: validationOptions,
             constraints: [params],
-            validator: UniqueExistConstraint,
+            validator: TreeUniqueExistContraint,
         });
     };
 }
