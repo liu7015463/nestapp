@@ -26,7 +26,7 @@ export class CategoryService {
     }
 
     async detail(id: string) {
-        return this.repository.findOneOrFail({ where: { id }, relations: ['parent'] });
+        return this.repository.findOneOrFail({ where: { id }, relations: ['parent', 'children'] });
     }
 
     async create(data: CreateCategoryDto) {
