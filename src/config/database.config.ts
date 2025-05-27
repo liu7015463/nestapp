@@ -11,4 +11,5 @@ export const database = (): TypeOrmModuleOptions => ({
     database: '3r',
     synchronize: true,
     autoLoadEntities: true,
+    timezone: '+08:00',
 });

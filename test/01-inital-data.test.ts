@@ -3,26 +3,20 @@ import { describe } from 'node:test';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { omit, pick } from 'lodash';
+import { pick } from 'lodash';
 import { DataSource } from 'typeorm';
 
 import { database } from '@/config';
 import { ContentModule } from '@/modules/content/content.module';
 import { CategoryEntity, CommentEntity, PostEntity, TagEntity } from '@/modules/content/entities';
-import { CategoryRepository, PostRepository, TagRepository } from '@/modules/content/repositories';
 import { DatabaseModule } from '@/modules/database/database.module';
 
-import { CommentRepository } from '../src/modules/content/repositories/comment.repository';
-
+import { generateRandomNumber, generateUniqueRandomNumbers } from './generate-mock-data';
 import { commentData, INIT_DATA, initialCategories, postData, tagData } from './test-data';
 
 describe('category test', () => {
     let datasource: DataSource;
     let app: NestFastifyApplication;
-    let categoryRepository: CategoryRepository;
-    let tagRepository: TagRepository;
-    let postRepository: PostRepository;
-    let commentRepository: CommentRepository;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -32,16 +26,31 @@ describe('category test', () => {
         await app.init();
         await app.getHttpAdapter().getInstance().ready();
 
-        categoryRepository = module.get<CategoryRepository>(CategoryRepository);
-        tagRepository = module.get<TagRepository>(TagRepository);
-        postRepository = module.get<PostRepository>(PostRepository);
-        commentRepository = module.get<CommentRepository>(CommentRepository);
         datasource = module.get<DataSource>(DataSource);
+        if (!datasource.isInitialized) {
+            await datasource.initialize();
+        }
+    });
+
+    beforeEach(async () => {
         if (INIT_DATA) {
-            await categoryRepository.deleteAll();
-            await postRepository.deleteAll();
-            await tagRepository.deleteAll();
-            await commentRepository.deleteAll();
+            const queryRunner = datasource.createQueryRunner();
+            try {
+                await queryRunner.query('SET FOREIGN_KEY_CHECKS = 0');
+
+                datasource.entityMetadatas.map(async (entity) => {
+                    const table = entity.schema
+                        ? `${entity.schema}.${entity.tableName}`
+                        : `${entity.tableName}`;
+                    console.log(`TRUNCATE TABLE ${table}`);
+                    await queryRunner.query(`TRUNCATE TABLE ${table}`);
+                    return table;
+                });
+                // await queryRunner.query(`TRUNCATE TABLE ${tables}`);
+            } finally {
+                await queryRunner.query('SET FOREIGN_KEY_CHECKS = 1');
+                await queryRunner.release();
+            }
 
             // init category data
             const categories = await addCategory(app, initialCategories);
@@ -50,14 +59,21 @@ describe('category test', () => {
             const tags = await addTag(app, tagData);
             console.log(tags);
             // init post data
-            addPost(
+            const posts = await addPost(
                 app,
                 postData,
                 tags.map((tag) => tag.id),
                 categories.map((category) => category.id),
             );
+            console.log(posts);
+            console.log('='.repeat(100));
             // init comment data
-            addComment(app, commentData);
+            const comments = await addComment(
+                app,
+                commentData,
+                posts.map((post) => post.id),
+            );
+            console.log(comments);
         }
     });
 
@@ -120,11 +136,13 @@ async function addPost(
     if (app && data && data.length > 0) {
         for (let index = 0; index < data.length; index++) {
             const item = data[index];
-            // TODO add tag and category
+            item.category = categories[generateRandomNumber(1, categories.length - 1)[0]];
+            item.tags = generateUniqueRandomNumbers(0, tags.length - 1, 3).map((idx) => tags[idx]);
+            // console.log(JSON.stringify(item));
             const result = await app.inject({
                 method: 'POST',
-                url: '/post',
-                body: omit(item, ['tags', 'category']),
+                url: '/posts',
+                body: item,
             });
             const addedItem: PostEntity = result.json();
             posts.push(addedItem);
@@ -136,17 +154,32 @@ async function addPost(
 async function addComment(
     app: NestFastifyApplication,
     data: RecordAny[],
+    posts: string[],
 ): Promise<CommentEntity[]> {
     const comments: CommentEntity[] = [];
     if (app && data && data.length > 0) {
         for (let index = 0; index < data.length; index++) {
             const item = data[index];
+            item.post = posts[generateRandomNumber(0, posts.length - 1)[0]];
+
+            const commentsFilter = comments
+                .filter((comment) => comment.post === item.post)
+                .map((comment) => comment.id);
+            console.log('A'.repeat(100));
+            console.log(commentsFilter);
+            item.parent =
+                commentsFilter.length > 0
+                    ? commentsFilter[generateRandomNumber(0, commentsFilter.length - 1)[0]]
+                    : undefined;
+            console.log(JSON.stringify(item));
             const result = await app.inject({
                 method: 'POST',
                 url: '/comment',
                 body: item,
             });
-            const addedItem: CommentEntity = result.json();
+            const addedItem = result.json();
+            console.log(addedItem);
+            addedItem.post = item.post;
             comments.push(addedItem);
         }
     }

@@ -6,6 +6,7 @@ import {
     Entity,
     JoinTable,
     ManyToMany,
+    ManyToOne,
     OneToMany,
     PrimaryColumn,
     Relation,
@@ -67,7 +68,7 @@ export class PostEntity extends BaseEntity {
     commentCount: number;
 
     @Expose()
-    @OneToMany(() => CategoryEntity, (category) => category.posts, {
+    @ManyToOne(() => CategoryEntity, (category) => category.posts, {
         nullable: true,
         onDelete: 'SET NULL',
     })

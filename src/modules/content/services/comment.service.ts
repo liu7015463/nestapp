@@ -10,10 +10,8 @@ import {
     QueryCommentTreeDto,
 } from '@/modules/content/dtos/comment.dto';
 import { CommentEntity } from '@/modules/content/entities/comment.entity';
+import { CommentRepository, PostRepository } from '@/modules/content/repositories';
 import { treePaginate } from '@/modules/database/utils';
-
-import { CommentRepository } from '../repositories/comment.repository';
-import { PostRepository } from '../repositories/post.repository';
 
 @Injectable()
 export class CommentService {
@@ -82,7 +80,7 @@ export class CommentService {
             }
             parent = await this.repository.findOne({
                 where: { id },
-                relations: ['parent', 'children'],
+                relations: ['parent', 'children', 'post'],
             });
             if (!parent) {
                 throw new EntityNotFoundError(CommentEntity, `Parent Comment ${id} not found`);
