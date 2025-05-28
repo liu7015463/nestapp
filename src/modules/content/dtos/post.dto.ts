@@ -17,9 +17,12 @@ import {
 import { isNil, toNumber } from 'lodash';
 
 import { PostOrder } from '@/modules/content/constants';
+import { IsDataExist } from '@/modules/core/constraints/data.exist.constraint';
 import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
 import { toBoolean } from '@/modules/core/helpers';
 import { PaginateOptions } from '@/modules/database/types';
+
+import { CategoryEntity, TagEntity } from '../entities';
 
 @DtoValidation({ type: 'query' })
 export class QueryPostDto implements PaginateOptions {
@@ -46,6 +49,7 @@ export class QueryPostDto implements PaginateOptions {
     @IsOptional()
     limit = 10;
 
+    @IsDataExist(CategoryEntity, { always: true, message: 'The category does not exist' })
     @IsUUID(undefined, { message: 'The ID format is incorrect' })
     @IsOptional()
     category?: string;
@@ -96,6 +100,7 @@ export class CreatePostDto {
     @IsOptional({ always: true })
     customOrder?: number;
 
+    @IsDataExist(CategoryEntity, { always: true, message: 'The category does not exist' })
     @IsUUID(undefined, {
         always: true,
         message: 'The ID format is incorrect',
@@ -103,6 +108,11 @@ export class CreatePostDto {
     @IsOptional({ always: true })
     category?: string;
 
+    @IsDataExist(TagEntity, {
+        always: true,
+        each: true,
+        message: 'The tag does not exist',
+    })
     @IsUUID(undefined, {
         always: true,
         each: true,

@@ -6,8 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { pick } from 'lodash';
 import { DataSource } from 'typeorm';
 
-import { database } from '@/config';
-import { ContentModule } from '@/modules/content/content.module';
+import { AppModule } from '@/app.module';
 import { CategoryEntity, CommentEntity, PostEntity, TagEntity } from '@/modules/content/entities';
 import {
     CategoryRepository,
@@ -15,7 +14,6 @@ import {
     PostRepository,
     TagRepository,
 } from '@/modules/content/repositories';
-import { DatabaseModule } from '@/modules/database/database.module';
 
 import { generateRandomNumber, generateUniqueRandomNumbers } from './generate-mock-data';
 import { categoriesData, commentData, INIT_DATA, postData, tagData } from './test-data';
@@ -35,7 +33,7 @@ describe('category test', () => {
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            imports: [ContentModule, DatabaseModule.forRoot(database)],
+            imports: [AppModule],
         }).compile();
         app = module.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
         await app.init();
@@ -95,6 +93,49 @@ describe('category test', () => {
     describe('category test', () => {
         it('repository init', () => {
             expect(categoryRepository).toBeDefined();
+        });
+
+        // const category1: CreateCategoryDto = {};
+        it('create category without name', async () => {
+            const result = await app.inject({
+                method: 'POST',
+                url: '/category',
+                body: {},
+            });
+            expect(result.json()).toEqual({
+                message: [
+                    'The classification name cannot be empty',
+                    'The length of the category name shall not exceed 25',
+                ],
+                error: 'Bad Request',
+                statusCode: 400,
+            });
+        });
+
+        it('create category with long name', async () => {
+            const result = await app.inject({
+                method: 'POST',
+                url: '/category',
+                body: { name: 'A'.repeat(30) },
+            });
+            expect(result.json()).toEqual({
+                message: ['The length of the category name shall not exceed 25'],
+                error: 'Bad Request',
+                statusCode: 400,
+            });
+        });
+
+        it('create category with same name', async () => {
+            const result = await app.inject({
+                method: 'POST',
+                url: '/category',
+                body: { name: 'A'.repeat(30) },
+            });
+            expect(result.json()).toEqual({
+                message: ['The length of the category name shall not exceed 25'],
+                error: 'Bad Request',
+                statusCode: 400,
+            });
         });
     });
 

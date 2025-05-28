@@ -35,8 +35,6 @@ export class AppPipe extends ValidationPipe {
                   }),
               )
             : value;
-        console.log(value);
-        console.log(toValidate);
         try {
             let result = await super.transform(toValidate, metadata);
             if (typeof result.transform === 'function') {

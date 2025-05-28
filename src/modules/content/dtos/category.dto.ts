@@ -12,8 +12,13 @@ import {
 } from 'class-validator';
 import { toNumber } from 'lodash';
 
+import { IsDataExist } from '@/modules/core/constraints/data.exist.constraint';
+import { IsTreeUnique } from '@/modules/core/constraints/tree.unique.constraint';
+import { IsTreeUniqueExist } from '@/modules/core/constraints/tree.unique.exist.constraint';
 import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
 import { PaginateOptions } from '@/modules/database/types';
+
+import { CategoryEntity } from '../entities';
 
 @DtoValidation({ type: 'query' })
 export class QueryCategoryDto implements PaginateOptions {
@@ -32,6 +37,14 @@ export class QueryCategoryDto implements PaginateOptions {
 
 @DtoValidation({ groups: ['create'] })
 export class CreateCategoryDto {
+    @IsTreeUnique(CategoryEntity, {
+        groups: ['create'],
+        message: 'The Category names are duplicated',
+    })
+    @IsTreeUniqueExist(CategoryEntity, {
+        groups: ['update'],
+        message: 'The Category names are duplicated',
+    })
     @MaxLength(25, {
         always: true,
         message: 'The length of the category name shall not exceed $constraint1',
@@ -40,6 +53,7 @@ export class CreateCategoryDto {
     @IsOptional({ groups: ['update'] })
     name: string;
 
+    @IsDataExist(CategoryEntity, { always: true, message: 'The parent category does not exist' })
     @IsUUID(undefined, {
         always: true,
         message: 'The format of the parent category ID is incorrect.',

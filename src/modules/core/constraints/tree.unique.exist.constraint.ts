@@ -73,7 +73,7 @@ export class TreeUniqueExistContraint implements ValidatorConstraintInterface {
     }
 }
 
-export function IsUniqueExist(
+export function IsTreeUniqueExist(
     params: ObjectType<any> | Condition,
     validationOptions?: ValidationOptions,
 ) {

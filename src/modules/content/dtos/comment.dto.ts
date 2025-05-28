@@ -12,8 +12,11 @@ import {
 } from 'class-validator';
 import { toNumber } from 'lodash';
 
+import { IsDataExist } from '@/modules/core/constraints/data.exist.constraint';
 import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
 import { PaginateOptions } from '@/modules/database/types';
+
+import { CommentEntity, PostEntity } from '../entities';
 
 @DtoValidation({ type: 'query' })
 export class QueryCommentDto implements PaginateOptions {
@@ -29,6 +32,7 @@ export class QueryCommentDto implements PaginateOptions {
     @IsOptional()
     limit = 10;
 
+    @IsDataExist(PostEntity, { message: 'The post does not exist' })
     @IsUUID(undefined, { message: 'The ID format is incorrect' })
     @IsOptional()
     post?: string;
@@ -43,10 +47,12 @@ export class CreateCommentDto {
     @IsNotEmpty({ message: '' })
     body: string;
 
+    @IsDataExist(PostEntity, { message: 'The post does not exist' })
     @IsUUID(undefined, { message: 'The ID format is incorrect' })
     @IsDefined({ message: 'The ID must be specified' })
     post: string;
 
+    @IsDataExist(CommentEntity, { message: 'The parent comment does not exist' })
     @IsUUID(undefined, { message: 'The ID format is incorrect', always: true })
     @ValidateIf((value) => value.parent !== null && value.parent)
     @IsOptional({ always: true })
