@@ -11,8 +11,8 @@ import {
 } from 'class-validator';
 import { toNumber } from 'lodash';
 
-import { IsUnique } from '@/modules/core/constraints/unique.constraint';
-import { IsUniqueExist } from '@/modules/core/constraints/unique.exist.constraint';
+import { IsUnique } from '@/modules/database/constraints/unique.constraint';
+import { IsUniqueExist } from '@/modules/database/constraints/unique.exist.constraint';
 import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
 import { PaginateOptions } from '@/modules/database/types';
 

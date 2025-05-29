@@ -12,8 +12,8 @@ import {
 } from 'class-validator';
 import { toNumber } from 'lodash';
 
-import { IsDataExist } from '@/modules/core/constraints/data.exist.constraint';
 import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
+import { IsDataExist } from '@/modules/database/constraints/data.exist.constraint';
 import { PaginateOptions } from '@/modules/database/types';
 
 import { CommentEntity, PostEntity } from '../entities';

@@ -12,10 +12,10 @@ import {
 } from 'class-validator';
 import { toNumber } from 'lodash';
 
-import { IsDataExist } from '@/modules/core/constraints/data.exist.constraint';
-import { IsTreeUnique } from '@/modules/core/constraints/tree.unique.constraint';
-import { IsTreeUniqueExist } from '@/modules/core/constraints/tree.unique.exist.constraint';
 import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
+import { IsDataExist } from '@/modules/database/constraints/data.exist.constraint';
+import { IsTreeUnique } from '@/modules/database/constraints/tree.unique.constraint';
+import { IsTreeUniqueExist } from '@/modules/database/constraints/tree.unique.exist.constraint';
 import { PaginateOptions } from '@/modules/database/types';
 
 import { CategoryEntity } from '../entities';

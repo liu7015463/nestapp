@@ -17,9 +17,9 @@ import {
 import { isNil, toNumber } from 'lodash';
 
 import { PostOrder } from '@/modules/content/constants';
-import { IsDataExist } from '@/modules/core/constraints/data.exist.constraint';
 import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
 import { toBoolean } from '@/modules/core/helpers';
+import { IsDataExist } from '@/modules/database/constraints/data.exist.constraint';
 import { PaginateOptions } from '@/modules/database/types';
 
 import { CategoryEntity, TagEntity } from '../entities';

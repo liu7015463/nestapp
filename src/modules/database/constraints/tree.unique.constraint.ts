@@ -1,32 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import {
-    registerDecorator,
-    ValidationArguments,
-    ValidationOptions,
     ValidatorConstraint,
     ValidatorConstraintInterface,
+    ValidationArguments,
+    registerDecorator,
+    ValidationOptions,
 } from 'class-validator';
-import { isNil, merge } from 'lodash';
-import { DataSource, Not, ObjectType } from 'typeorm';
+import { merge, isNil } from 'lodash';
+import { DataSource, ObjectType } from 'typeorm';
 
 type Condition = {
     entity: ObjectType<any>;
 
-    ignore?: string;
-
-    ignoreKey?: string;
+    parentKey?: string;
 
     property?: string;
 };
 
-@ValidatorConstraint({ name: 'treeDataUniqueExist', async: true })
+@ValidatorConstraint({ name: 'treeDataUnique', async: true })
 @Injectable()
-export class TreeUniqueExistContraint implements ValidatorConstraintInterface {
+export class TreeUniqueConstraint implements ValidatorConstraintInterface {
     constructor(private dataSource: DataSource) {}
 
     async validate(value: any, args: ValidationArguments) {
+        // 获取要验证的模型和字段
         const config: Omit<Condition, 'entity'> = {
-            ignore: 'id',
+            parentKey: 'parent',
             property: args.property,
         };
         const condition = ('entity' in args.constraints[0]
@@ -38,26 +37,25 @@ export class TreeUniqueExistContraint implements ValidatorConstraintInterface {
         if (!condition.entity) {
             return false;
         }
-        // 在传入的dto数据中获取需要忽略的字段的值
-        const ignoreValue = (args.object as any)[
-            isNil(condition.ignoreKey) ? condition.ignore : condition.ignoreKey
-        ];
-        // 如果忽略字段不存在则验证失败
-        if (ignoreValue === undefined) {
+        if (isNil(value)) {
+            return true;
+        }
+        const argsObj = args.object as any;
+        try {
+            // 查询是否存在数据,如果已经存在则验证失败
+            const repo = this.dataSource.getTreeRepository(condition.entity);
+            const collections = await repo.find({
+                where: {
+                    parent: !argsObj[condition.parentKey]
+                        ? null
+                        : { id: argsObj[condition.parentKey] },
+                },
+            });
+            return collections.every((item) => item[condition.property] !== value);
+        } catch (err) {
+            // 如果数据库操作异常则验证失败
             return false;
         }
-        // 通过entity获取repository
-        const repo = this.dataSource.getRepository(condition.entity);
-        // 查询忽略字段之外的数据是否对queryProperty的值唯一
-        return isNil(
-            await repo.findOne({
-                where: {
-                    [condition.property]: value,
-                    [condition.ignore]: Not(ignoreValue),
-                },
-                withDeleted: true,
-            }),
-        );
     }
 
     defaultMessage(args: ValidationArguments) {
@@ -73,7 +71,7 @@ export class TreeUniqueExistContraint implements ValidatorConstraintInterface {
     }
 }
 
-export function IsTreeUniqueExist(
+export function IsTreeUnique(
     params: ObjectType<any> | Condition,
     validationOptions?: ValidationOptions,
 ) {
@@ -83,7 +81,7 @@ export function IsTreeUniqueExist(
             propertyName,
             options: validationOptions,
             constraints: [params],
-            validator: TreeUniqueExistContraint,
+            validator: TreeUniqueConstraint,
         });
     };
 }
