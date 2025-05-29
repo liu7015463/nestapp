@@ -22,7 +22,7 @@ import { toBoolean } from '@/modules/core/helpers';
 import { IsDataExist } from '@/modules/database/constraints/data.exist.constraint';
 import { PaginateOptions } from '@/modules/database/types';
 
-import { CategoryEntity, TagEntity } from '../entities';
+import { CategoryEntity, PostEntity, TagEntity } from '../entities';
 
 @DtoValidation({ type: 'query' })
 export class QueryPostDto implements PaginateOptions {
@@ -129,5 +129,6 @@ export class UpdatePostDto extends PartialType(CreatePostDto) {
         message: 'The format of the article ID is incorrect.',
     })
     @IsDefined({ groups: ['update'], message: 'The article ID must be specified' })
+    @IsDataExist(PostEntity, { groups: ['update'], message: 'post id not exist when update' })
     id: string;
 }

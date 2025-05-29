@@ -11,9 +11,10 @@ import {
 } from 'class-validator';
 import { toNumber } from 'lodash';
 
+import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
+import { IsDataExist } from '@/modules/database/constraints';
 import { IsUnique } from '@/modules/database/constraints/unique.constraint';
 import { IsUniqueExist } from '@/modules/database/constraints/unique.exist.constraint';
-import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
 import { PaginateOptions } from '@/modules/database/types';
 
 import { TagEntity } from '../entities';
@@ -55,6 +56,7 @@ export class CreateTagDto {
 
 @DtoValidation({ groups: ['update'] })
 export class UpdateTagDto extends PartialType(CreateTagDto) {
+    @IsDataExist(TagEntity, { groups: ['update'], message: 'tag id not exist when update' })
     @IsUUID(undefined, { message: 'The ID format is incorrect', groups: ['update'] })
     @IsDefined({ groups: ['update'], message: 'The ID must be specified' })
     id: string;

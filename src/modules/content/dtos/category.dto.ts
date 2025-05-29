@@ -72,6 +72,10 @@ export class CreateCategoryDto {
 
 @DtoValidation({ groups: ['update'] })
 export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {
+    @IsDataExist(CategoryEntity, {
+        groups: ['update'],
+        message: 'category id not exist when update',
+    })
     @IsUUID(undefined, { message: 'The ID format is incorrect', groups: ['update'] })
     @IsDefined({ groups: ['update'], message: 'The ID must be specified' })
     id: string;
