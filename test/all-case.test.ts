@@ -3,7 +3,8 @@ import { describe } from 'node:test';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { pick } from 'lodash';
+import { useContainer } from 'class-validator';
+import { isNil, pick } from 'lodash';
 import { DataSource } from 'typeorm';
 
 import { AppModule } from '@/app.module';
@@ -18,7 +19,7 @@ import {
 import { generateRandomNumber, generateUniqueRandomNumbers } from './generate-mock-data';
 import { categoriesData, commentData, INIT_DATA, postData, tagData } from './test-data';
 
-describe('category test', () => {
+describe('nest app test', () => {
     let datasource: DataSource;
     let app: NestFastifyApplication;
     let categoryRepository: CategoryRepository;
@@ -36,6 +37,7 @@ describe('category test', () => {
             imports: [AppModule],
         }).compile();
         app = module.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
+        useContainer(app.select(AppModule), { fallbackOnErrors: true });
         await app.init();
         await app.getHttpAdapter().getInstance().ready();
 
@@ -94,6 +96,9 @@ describe('category test', () => {
         it('repository init', () => {
             expect(categoryRepository).toBeDefined();
         });
+        it('repository check data', () => {
+            expect(categories.length).toEqual(13);
+        });
 
         // const category1: CreateCategoryDto = {};
         it('create category without name', async () => {
@@ -129,10 +134,64 @@ describe('category test', () => {
             const result = await app.inject({
                 method: 'POST',
                 url: '/category',
-                body: { name: 'A'.repeat(30) },
+                body: {
+                    name: '全栈',
+                },
             });
             expect(result.json()).toEqual({
-                message: ['The length of the category name shall not exceed 25'],
+                message: ['The Category names are duplicated'],
+                error: 'Bad Request',
+                statusCode: 400,
+            });
+        });
+
+        it('create category with same name 2', async () => {
+            const testData = categories.find((item) => !isNil(item.parent));
+            const result = await app.inject({
+                method: 'POST',
+                url: '/category',
+                body: {
+                    name: testData.name,
+                    parent: testData.parent.id,
+                },
+            });
+            expect(result.json()).toEqual({
+                message: ['The Category names are duplicated'],
+                error: 'Bad Request',
+                statusCode: 400,
+            });
+        });
+
+        it('create category with error parent id', async () => {
+            const result = await app.inject({
+                method: 'POST',
+                url: '/category',
+                body: {
+                    name: '全栈',
+                    parent: '666',
+                },
+            });
+            expect(result.json()).toEqual({
+                message: [
+                    'The format of the parent category ID is incorrect.',
+                    'The parent category does not exist',
+                ],
+                error: 'Bad Request',
+                statusCode: 400,
+            });
+        });
+
+        it('create category with not exist parent id', async () => {
+            const result = await app.inject({
+                method: 'POST',
+                url: '/category',
+                body: {
+                    name: '全栈',
+                    parent: '74e6c7b3-b69a-42ae-a101-41c224386e74',
+                },
+            });
+            expect(result.json()).toEqual({
+                message: ['The parent category does not exist'],
                 error: 'Bad Request',
                 statusCode: 400,
             });
