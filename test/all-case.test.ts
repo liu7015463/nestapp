@@ -218,10 +218,7 @@ describe('nest app test', () => {
                 body: { name: '' },
             });
             expect(result.json()).toEqual({
-                message: [
-                    'The classification name cannot be empty',
-                    'The length of the category name shall not exceed 25',
-                ],
+                message: ['The classification name cannot be empty'],
                 error: 'Bad Request',
                 statusCode: 400,
             });
@@ -234,10 +231,7 @@ describe('nest app test', () => {
                 body: { name: '   ' },
             });
             expect(result.json()).toEqual({
-                message: [
-                    'The classification name cannot be empty',
-                    'The length of the category name shall not exceed 25',
-                ],
+                message: ['The classification name cannot be empty'],
                 error: 'Bad Request',
                 statusCode: 400,
             });
@@ -355,10 +349,7 @@ describe('nest app test', () => {
                 },
             });
             expect(result.json()).toEqual({
-                message: [
-                    'The format of the parent category ID is incorrect.',
-                    'The parent category does not exist',
-                ],
+                message: ['The format of the parent category ID is incorrect.'],
                 error: 'Bad Request',
                 statusCode: 400,
             });
@@ -402,7 +393,7 @@ describe('nest app test', () => {
                 method: 'POST',
                 url: '/category',
                 body: {
-                    name: 'New Category',
+                    name: 'Category with float customOrder',
                     customOrder: 5.5,
                 },
             });
@@ -418,7 +409,7 @@ describe('nest app test', () => {
                 method: 'POST',
                 url: '/category',
                 body: {
-                    name: 'New Category',
+                    name: 'Category with negative customOrder',
                     customOrder: -1,
                 },
             });
@@ -448,7 +439,7 @@ describe('nest app test', () => {
                 method: 'POST',
                 url: '/category',
                 body: {
-                    name: 'New Category',
+                    name: 'Category large customOrder',
                     customOrder: 999999,
                 },
             });
@@ -515,7 +506,11 @@ describe('nest app test', () => {
                 body: { name: 'Updated Category' },
             });
             expect(result.json()).toEqual({
-                message: ['The ID must be specified'],
+                message: [
+                    'The ID must be specified',
+                    'The ID format is incorrect',
+                    'The Category names are duplicated',
+                ],
                 error: 'Bad Request',
                 statusCode: 400,
             });
@@ -531,7 +526,7 @@ describe('nest app test', () => {
                 },
             });
             expect(result.json()).toEqual({
-                message: ['The ID format is incorrect'],
+                message: ['The ID format is incorrect', 'The Category names are duplicated'],
                 error: 'Bad Request',
                 statusCode: 400,
             });

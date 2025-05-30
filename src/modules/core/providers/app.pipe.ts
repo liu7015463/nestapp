@@ -1,6 +1,6 @@
 import { ArgumentMetadata, BadRequestException, Paramtype, ValidationPipe } from '@nestjs/common';
 
-import { isObject, omit } from 'lodash';
+import { isNil, isObject, isString, omit } from 'lodash';
 
 import { DTO_VALIDATION_OPTIONS } from '../contants';
 import { deepMerge } from '../helpers';
@@ -30,6 +30,9 @@ export class AppPipe extends ValidationPipe {
                   Object.entries(value as RecordAny).map(([key, val]) => {
                       if (isObject(val) && 'mimetype' in val) {
                           return [key, omit(val, ['fields'])];
+                      }
+                      if (key === 'name' && isString(val)) {
+                          return [key, isNil(val) ? val : val.trim()];
                       }
                       return [key, val];
                   }),
