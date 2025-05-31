@@ -95,7 +95,7 @@ export class PostService {
             .where('post.id IN (:...ids)', { ids })
             .withDeleted()
             .getMany();
-        let result: PostEntity[] = [];
+        let result: PostEntity[];
         if (trash) {
             const directs = items.filter((item) => !isNil(item.deleteAt));
             const softs = items.filter((item) => isNil(item.deleteAt));

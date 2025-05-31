@@ -11,6 +11,8 @@ import {
     SerializeOptions,
 } from '@nestjs/common';
 
+import { DeleteDto } from '@/modules/content/dtos/delete.dto';
+
 import { CreateTagDto, QueryTagDto, UpdateTagDto } from '../dtos/tag.dto';
 import { TagService } from '../services';
 
@@ -51,9 +53,9 @@ export class TagController {
         return this.service.update(date);
     }
 
-    @Delete(':id')
+    @Delete()
     @SerializeOptions({})
-    async delete(@Param('id', new ParseUUIDPipe()) id: string) {
-        return this.service.delete(id);
+    async delete(@Body() data: DeleteDto) {
+        return this.service.delete(data.ids);
     }
 }
