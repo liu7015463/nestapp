@@ -22,7 +22,7 @@ export class CategoryEntity extends BaseEntity {
     id: string;
 
     @Expose()
-    @Column({ comment: '分类名称', unique: true })
+    @Column({ comment: '分类名称' })
     name: string;
 
     @Expose({ groups: ['category-tree', 'category-list', 'category-detail'] })

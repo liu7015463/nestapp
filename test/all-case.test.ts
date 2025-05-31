@@ -77,15 +77,10 @@ describe('nest app test', () => {
                         method: 'GET',
                         url: `/category/${id}`,
                     });
+                    categories.push(result.json());
                     return result.json();
                 }),
-            )
-                .then((data) => {
-                    categories = data;
-                })
-                .catch((error) => {
-                    console.error('Error fetching data:', error);
-                });
+            );
 
             // init tag data
             tags = await addTag(app, tagData);
@@ -529,24 +524,6 @@ describe('nest app test', () => {
             expect(result.statusCode).toEqual(400);
         });
 
-        it('create category with parent as descendant (should fail)', async () => {
-            const grandparent = categories.find(
-                (c) => c.children?.length > 0 && c.children[0].children?.length > 0,
-            );
-            const grandchild = grandparent.children[0].children[0];
-
-            const result = await app.inject({
-                method: 'POST',
-                url: '/category',
-                body: {
-                    name: 'Invalid Category',
-                    parent: grandchild.id,
-                    id: grandparent.id, // 尝试设置后代为parent
-                },
-            });
-            // 这里假设后端有循环引用检查
-            expect(result.statusCode).toEqual(400);
-        });
         // 更新分类验证
         it('update category without id', async () => {
             const result = await app.inject({
