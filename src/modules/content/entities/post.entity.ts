@@ -3,6 +3,7 @@ import {
     BaseEntity,
     Column,
     CreateDateColumn,
+    DeleteDateColumn,
     Entity,
     JoinTable,
     ManyToMany,
@@ -65,6 +66,11 @@ export class PostEntity extends BaseEntity {
     updatedAt?: Date;
 
     @Expose()
+    @Type(() => Date)
+    @DeleteDateColumn({ comment: '删除时间' })
+    deleteAt: Date;
+
+    @Expose()
     commentCount: number;
 
     @Expose()
@@ -76,7 +82,7 @@ export class PostEntity extends BaseEntity {
 
     @Expose()
     @Type(() => TagEntity)
-    @ManyToMany(() => TagEntity, (tag) => tag.posts, { cascade: true })
+    @ManyToMany(() => TagEntity, (tag) => tag.posts, { cascade: ['insert', 'update', 'remove'] })
     @JoinTable()
     tags: Relation<TagEntity>[];
 

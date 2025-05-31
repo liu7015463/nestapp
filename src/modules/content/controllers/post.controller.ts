@@ -14,6 +14,8 @@ import {
 import { CreatePostDto, QueryPostDto, UpdatePostDto } from '@/modules/content/dtos/post.dto';
 import { PostService } from '@/modules/content/services/post.service';
 
+import { DeleteWithTrashDto, RestoreDto } from '../dtos/delete.with.trash.dto';
+
 @Controller('posts')
 export class PostController {
     constructor(private postService: PostService) {}
@@ -51,9 +53,18 @@ export class PostController {
         return this.postService.update(data);
     }
 
-    @Delete(':id')
+    @Delete()
     @SerializeOptions({ groups: ['post-detail'] })
-    async delete(@Param('id', new ParseUUIDPipe()) id: string) {
-        return this.postService.delete(id);
+    async delete(@Body() data: DeleteWithTrashDto) {
+        return this.postService.delete(data.ids, data.trash);
+    }
+
+    @Patch('restore')
+    @SerializeOptions({ groups: ['post-detail'] })
+    async restore(
+        @Body()
+        data: RestoreDto,
+    ) {
+        return this.postService.restore(data.ids);
     }
 }

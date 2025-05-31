@@ -9,6 +9,7 @@ import { CreatePostDto, QueryPostDto, UpdatePostDto } from '@/modules/content/dt
 import { PostEntity } from '@/modules/content/entities/post.entity';
 import { CategoryRepository } from '@/modules/content/repositories';
 import { PostRepository } from '@/modules/content/repositories/post.repository';
+import { SelectTrashMode } from '@/modules/database/constants';
 import { QueryHook } from '@/modules/database/types';
 import { paginate } from '@/modules/database/utils';
 
@@ -88,9 +89,42 @@ export class PostService {
         return this.detail(data.id);
     }
 
-    async delete(id: string) {
-        const item = await this.repository.findOneByOrFail({ id });
-        return this.repository.remove(item);
+    async delete(ids: string[], trash?: boolean) {
+        const items = await this.repository
+            .buildBaseQB()
+            .where('post.id IN (:...ids)', { ids })
+            .withDeleted()
+            .getMany();
+        let result: PostEntity[] = [];
+        if (trash) {
+            const directs = items.filter((item) => !isNil(item.deleteAt));
+            const softs = items.filter((item) => isNil(item.deleteAt));
+            result = [
+                ...(await this.repository.remove(directs)),
+                ...(await this.repository.softRemove(softs)),
+            ];
+        } else {
+            result = await this.repository.remove(items);
+        }
+        return result;
+    }
+
+    async restore(ids: string[]) {
+        const items = await this.repository
+            .buildBaseQB()
+            .where('post.id IN (:...ids)', { ids })
+            .withDeleted()
+            .getMany();
+        const trasheds = items.filter((item) => !isNil(item.deleteAt));
+        const trashedIds = trasheds.map((item) => item.id);
+        if (trashedIds.length < 1) {
+            return [];
+        }
+        await this.repository.restore(trashedIds);
+        const qb = await this.buildListQuery(this.repository.buildBaseQB(), {}, async (qbuilder) =>
+            qbuilder.andWhereInIds(trashedIds),
+        );
+        return qb.getMany();
     }
 
     protected async buildListQuery(
@@ -98,11 +132,17 @@ export class PostService {
         options: FindParams,
         callback?: QueryHook<PostEntity>,
     ) {
-        const { orderBy, isPublished, category, tag } = options;
+        const { orderBy, isPublished, category, tag, trashed } = options;
         if (typeof isPublished === 'boolean') {
             isPublished
                 ? qb.where({ publishedAt: Not(IsNull()) })
                 : qb.where({ publishedAt: IsNull() });
+        }
+        if (trashed === SelectTrashMode.ALL || trashed === SelectTrashMode.ONLY) {
+            qb.withDeleted();
+            if (trashed === SelectTrashMode.ONLY) {
+                qb.where('post.deletedAt is not null');
+            }
         }
         this.queryOrderBy(qb, orderBy);
         if (category) {

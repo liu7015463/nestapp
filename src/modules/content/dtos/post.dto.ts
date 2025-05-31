@@ -19,6 +19,7 @@ import { isNil, toNumber } from 'lodash';
 import { PostOrder } from '@/modules/content/constants';
 import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
 import { toBoolean } from '@/modules/core/helpers';
+import { SelectTrashMode } from '@/modules/database/constants';
 import { IsDataExist } from '@/modules/database/constraints/data.exist.constraint';
 import { PaginateOptions } from '@/modules/database/types';
 
@@ -35,7 +36,7 @@ export class QueryPostDto implements PaginateOptions {
         message: `The sorting rule must be one of ${Object.values(PostOrder).join(',')}`,
     })
     @IsOptional()
-    orderBy: PostOrder;
+    orderBy?: PostOrder;
 
     @Transform(({ value }) => toNumber(value))
     @Min(1, { always: true, message: 'The current page must be greater than 1.' })
@@ -51,6 +52,10 @@ export class QueryPostDto implements PaginateOptions {
     @IsInt()
     @IsOptional()
     limit = 10;
+
+    @IsEnum(SelectTrashMode)
+    @IsOptional()
+    trashed?: SelectTrashMode;
 
     @IsDataExist(CategoryEntity, { always: true, message: 'The category does not exist' })
     @IsUUID(undefined, { message: 'The ID format is incorrect' })
