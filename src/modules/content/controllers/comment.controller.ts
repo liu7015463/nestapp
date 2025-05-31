@@ -1,16 +1,11 @@
-import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    ParseUUIDPipe,
-    Post,
-    Query,
-    SerializeOptions,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Query, SerializeOptions } from '@nestjs/common';
 
-import { CreateCommentDto, QueryCommentDto, QueryCommentTreeDto } from '../dtos/comment.dto';
+import {
+    CreateCommentDto,
+    DeleteCommentDto,
+    QueryCommentDto,
+    QueryCommentTreeDto,
+} from '../dtos/comment.dto';
 import { CommentService } from '../services';
 
 @Controller('comment')
@@ -38,9 +33,9 @@ export class CommentController {
         return this.service.create(data);
     }
 
-    @Delete(':id')
+    @Delete()
     @SerializeOptions({ groups: ['comment-detail'] })
-    async delete(@Param('id', new ParseUUIDPipe()) id: string) {
-        return this.service.delete(id);
+    async delete(@Body() data: DeleteCommentDto) {
+        return this.service.delete(data.ids);
     }
 }

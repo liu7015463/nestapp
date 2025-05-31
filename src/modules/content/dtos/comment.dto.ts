@@ -46,13 +46,13 @@ export class QueryCommentTreeDto extends PickType(QueryCommentDto, ['post']) {}
 
 @DtoValidation()
 export class CreateCommentDto {
-    @MaxLength(1000, { message: '' })
-    @IsNotEmpty({ message: '' })
+    @MaxLength(1000, { message: 'The length of the comment content cannot exceed $constraint1' })
+    @IsNotEmpty({ message: 'Comment content cannot be empty' })
     body: string;
 
     @IsDataExist(PostEntity, { message: 'The post does not exist' })
     @IsUUID(undefined, { message: 'The ID format is incorrect' })
-    @IsDefined({ message: 'The ID must be specified' })
+    @IsDefined({ message: 'The post ID must be specified' })
     post: string;
 
     @IsDataExist(CommentEntity, { message: 'The parent comment does not exist' })
@@ -61,4 +61,12 @@ export class CreateCommentDto {
     @IsOptional({ always: true })
     @Transform(({ value }) => (value === 'null' ? null : value))
     parent?: string;
+}
+
+@DtoValidation()
+export class DeleteCommentDto {
+    @IsDataExist(CommentEntity)
+    @IsUUID(undefined, { each: true, always: true, message: 'The ID format is incorrect' })
+    @IsDefined({ each: true, message: 'The ID must be specified' })
+    ids: string[];
 }
