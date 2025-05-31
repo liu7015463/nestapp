@@ -2,8 +2,8 @@ import { PickType } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
     IsDefined,
+    IsInt,
     IsNotEmpty,
-    IsNumber,
     IsOptional,
     IsUUID,
     MaxLength,
@@ -21,14 +21,17 @@ import { CommentEntity, PostEntity } from '../entities';
 @DtoValidation({ type: 'query' })
 export class QueryCommentDto implements PaginateOptions {
     @Transform(({ value }) => toNumber(value))
-    @Min(1, { message: 'The current page must be greater than 1.' })
-    @IsNumber()
+    @Min(1, { always: true, message: 'The current page must be greater than 1.' })
+    @IsInt()
     @IsOptional()
     page = 1;
 
     @Transform(({ value }) => toNumber(value))
-    @Min(1, { message: 'The number of data displayed per page must be greater than 1.' })
-    @IsNumber()
+    @Min(1, {
+        always: true,
+        message: 'The number of data displayed per page must be greater than 1.',
+    })
+    @IsInt()
     @IsOptional()
     limit = 10;
 

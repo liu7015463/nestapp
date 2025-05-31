@@ -1,14 +1,6 @@
 import { PartialType } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import {
-    IsDefined,
-    IsNotEmpty,
-    IsNumber,
-    IsOptional,
-    IsUUID,
-    MaxLength,
-    Min,
-} from 'class-validator';
+import { IsDefined, IsInt, IsNotEmpty, IsOptional, IsUUID, MaxLength, Min } from 'class-validator';
 import { toNumber } from 'lodash';
 
 import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
@@ -22,14 +14,17 @@ import { TagEntity } from '../entities';
 @DtoValidation({ type: 'query' })
 export class QueryTagDto implements PaginateOptions {
     @Transform(({ value }) => toNumber(value))
-    @Min(1, { message: 'The current page must be greater than 1.' })
-    @IsNumber()
+    @Min(1, { always: true, message: 'The current page must be greater than 1.' })
+    @IsInt()
     @IsOptional()
     page = 1;
 
     @Transform(({ value }) => toNumber(value))
-    @Min(1, { message: 'The number of data displayed per page must be greater than 1.' })
-    @IsNumber()
+    @Min(1, {
+        always: true,
+        message: 'The number of data displayed per page must be greater than 1.',
+    })
+    @IsInt()
     @IsOptional()
     limit = 10;
 }

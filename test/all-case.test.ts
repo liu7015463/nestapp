@@ -69,6 +69,23 @@ describe('nest app test', () => {
 
             // init category data
             categories = await addCategory(app, categoriesData);
+            const ids = categories.map((item) => item.id);
+            categories = [];
+            Promise.all(
+                ids.map(async (id) => {
+                    const result = await app.inject({
+                        method: 'GET',
+                        url: `/category/${id}`,
+                    });
+                    return result.json();
+                }),
+            )
+                .then((data) => {
+                    categories = data;
+                })
+                .catch((error) => {
+                    console.error('Error fetching data:', error);
+                });
 
             // init tag data
             tags = await addTag(app, tagData);
@@ -247,6 +264,10 @@ describe('nest app test', () => {
             expect(result.statusCode).toEqual(201);
             const category: CategoryEntity = result.json();
             expect(category.name).toBe(name);
+            await app.inject({
+                method: 'DELETE',
+                url: `/category/${result.json().id}`,
+            });
         });
 
         it('create category with name one char over limit (26 chars)', async () => {
@@ -309,6 +330,10 @@ describe('nest app test', () => {
                 },
             });
             expect(result.statusCode).toEqual(201);
+            await app.inject({
+                method: 'DELETE',
+                url: `/category/${result.json().id}`,
+            });
         });
 
         it('create category with parent set to null string', async () => {
@@ -323,6 +348,10 @@ describe('nest app test', () => {
             expect(result.statusCode).toEqual(201);
             const category: CategoryEntity = result.json();
             expect(category.parent).toBeNull();
+            await app.inject({
+                method: 'DELETE',
+                url: `/category/${result.json().id}`,
+            });
         });
 
         it('create category with parent set to null value', async () => {
@@ -337,6 +366,10 @@ describe('nest app test', () => {
             expect(result.statusCode).toEqual(201);
             const category: CategoryEntity = result.json();
             expect(category.parent).toBeNull();
+            await app.inject({
+                method: 'DELETE',
+                url: `/category/${result.json().id}`,
+            });
         });
 
         it('create category with empty parent id', async () => {
@@ -386,6 +419,10 @@ describe('nest app test', () => {
             expect(result.statusCode).toEqual(201);
             const category: CategoryEntity = result.json();
             expect(category.customOrder).toBe(10);
+            await app.inject({
+                method: 'DELETE',
+                url: `/category/${result.json().id}`,
+            });
         });
 
         it('create category with customOrder as float', async () => {
@@ -393,7 +430,7 @@ describe('nest app test', () => {
                 method: 'POST',
                 url: '/category',
                 body: {
-                    name: 'Category with float customOrder',
+                    name: 'New Category',
                     customOrder: 5.5,
                 },
             });
@@ -409,7 +446,7 @@ describe('nest app test', () => {
                 method: 'POST',
                 url: '/category',
                 body: {
-                    name: 'Category with negative customOrder',
+                    name: 'New Category',
                     customOrder: -1,
                 },
             });
@@ -432,6 +469,10 @@ describe('nest app test', () => {
             expect(result.statusCode).toEqual(201);
             const category: CategoryEntity = result.json();
             expect(category.customOrder).toBe(0);
+            await app.inject({
+                method: 'DELETE',
+                url: `/category/${result.json().id}`,
+            });
         });
 
         it('create category with customOrder as large number', async () => {
@@ -439,11 +480,15 @@ describe('nest app test', () => {
                 method: 'POST',
                 url: '/category',
                 body: {
-                    name: 'Category large customOrder',
+                    name: 'New Category',
                     customOrder: 999999,
                 },
             });
             expect(result.statusCode).toEqual(201);
+            await app.inject({
+                method: 'DELETE',
+                url: `/category/${result.json().id}`,
+            });
         });
 
         it('create category with all valid data', async () => {
@@ -462,6 +507,10 @@ describe('nest app test', () => {
             expect(category.name).toBe('Valid New Category');
             expect(category.parent.id).toBe(parent.id);
             expect(category.customOrder).toBe(5);
+            await app.inject({
+                method: 'DELETE',
+                url: `/category/${result.json().id}`,
+            });
         });
 
         // 树形结构特殊场景测试
@@ -526,7 +575,11 @@ describe('nest app test', () => {
                 },
             });
             expect(result.json()).toEqual({
-                message: ['The ID format is incorrect', 'The Category names are duplicated'],
+                message: [
+                    'The ID format is incorrect',
+                    'category id not exist when update',
+                    'The Category names are duplicated',
+                ],
                 error: 'Bad Request',
                 statusCode: 400,
             });
@@ -755,7 +808,7 @@ describe('nest app test', () => {
                 },
             });
             expect(result.json()).toEqual({
-                message: ['The ID format is incorrect'],
+                message: ['The ID format is incorrect', 'tag id not exist when update'],
                 error: 'Bad Request',
                 statusCode: 400,
             });
@@ -770,7 +823,11 @@ describe('nest app test', () => {
                     name: 'Updated Tag',
                 },
             });
-            expect(result.statusCode).toEqual(404);
+            expect(result.json()).toEqual({
+                message: ['tag id not exist when update'],
+                error: 'Bad Request',
+                statusCode: 400,
+            });
         });
 
         it('update tag with long name', async () => {
@@ -1025,7 +1082,10 @@ describe('nest app test', () => {
                 },
             });
             expect(result.json()).toEqual({
-                message: ['The format of the article ID is incorrect.'],
+                message: [
+                    'The format of the article ID is incorrect.',
+                    'post id not exist when update',
+                ],
                 error: 'Bad Request',
                 statusCode: 400,
             });
@@ -1037,10 +1097,14 @@ describe('nest app test', () => {
                 url: '/posts',
                 body: {
                     id: '74e655b3-b69a-42ae-a101-41c224386e74',
-                    title: 'Updated Post',
+                    title: 'Updated Post non-existent id',
                 },
             });
-            expect(result.statusCode).toEqual(404);
+            expect(result.json()).toEqual({
+                message: ['post id not exist when update'],
+                error: 'Bad Request',
+                statusCode: 400,
+            });
         });
 
         it('update post with long title', async () => {

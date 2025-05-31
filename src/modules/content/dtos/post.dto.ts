@@ -5,8 +5,8 @@ import {
     IsBoolean,
     IsDefined,
     IsEnum,
+    IsInt,
     IsNotEmpty,
-    IsNumber,
     IsOptional,
     IsUUID,
     MaxLength,
@@ -38,14 +38,17 @@ export class QueryPostDto implements PaginateOptions {
     orderBy: PostOrder;
 
     @Transform(({ value }) => toNumber(value))
-    @Min(1, { message: 'The current page must be greater than 1.' })
-    @IsNumber()
+    @Min(1, { always: true, message: 'The current page must be greater than 1.' })
+    @IsInt()
     @IsOptional()
     page = 1;
 
     @Transform(({ value }) => toNumber(value))
-    @Min(1, { message: 'The number of data displayed per page must be greater than 1.' })
-    @IsNumber()
+    @Min(1, {
+        always: true,
+        message: 'The number of data displayed per page must be greater than 1.',
+    })
+    @IsInt()
     @IsOptional()
     limit = 10;
 
@@ -95,8 +98,8 @@ export class CreatePostDto {
     keywords?: string[];
 
     @Transform(({ value }) => toNumber(value))
-    @Min(0, { message: 'The sorted value must be greater than 0.' })
-    @IsNumber(undefined, { always: true })
+    @Min(0, { message: 'The sorted value must be greater than 0.', always: true })
+    @IsInt({ always: true })
     @IsOptional({ always: true })
     customOrder?: number;
 
