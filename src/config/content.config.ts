@@ -1,5 +1,5 @@
 import { ContentConfig } from '@/modules/content/types';
 
 export const content = (): ContentConfig => ({
-    SearchType: 'mysql',
+    SearchType: 'meili',
 });

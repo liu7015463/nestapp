@@ -158,11 +158,14 @@ export class PostService {
         options: FindParams,
         callback?: QueryHook<PostEntity>,
     ) {
-        const { orderBy, isPublished, category, tag, trashed } = options;
+        const { orderBy, isPublished, category, tag, trashed, search } = options;
         if (typeof isPublished === 'boolean') {
             isPublished
                 ? qb.where({ publishedAt: Not(IsNull()) })
                 : qb.where({ publishedAt: IsNull() });
+        }
+        if (!isNil(search)) {
+            this.buildSearchQuery(qb, search);
         }
         if (trashed === SelectTrashMode.ALL || trashed === SelectTrashMode.ONLY) {
             qb.withDeleted();

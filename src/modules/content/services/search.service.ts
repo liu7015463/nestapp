@@ -1,4 +1,4 @@
-import { ForbiddenException, OnModuleInit } from '@nestjs/common';
+import { ForbiddenException, Injectable, OnModuleInit } from '@nestjs/common';
 import { isNil, omit } from 'lodash';
 import { MeiliSearch } from 'meilisearch';
 
@@ -13,6 +13,7 @@ import { getSearchData, getSearchItem } from '@/modules/content/utils';
 import { SelectTrashMode } from '@/modules/database/constants';
 import { MeiliService } from '@/modules/meilisearch/meili.service';
 
+@Injectable()
 export class SearchService implements OnModuleInit {
     private index = 'content';
 
@@ -29,7 +30,7 @@ export class SearchService implements OnModuleInit {
 
     async onModuleInit(): Promise<any> {
         await this.client.deleteIndex(this.index);
-        this.client.index(this.index).updateFilterableAttributes(['deleteAt', 'publishedAt']);
+        this.client.index(this.index).updateFilterableAttributes(['deletedAt', 'publishedAt']);
         this.client.index(this.index).updateSortableAttributes(['updatedAt', 'commentCount']);
         const posts = await this.postRepository.buildBaseQB().withDeleted().getMany();
         await this.client
@@ -47,7 +48,7 @@ export class SearchService implements OnModuleInit {
     }
 
     async search(text: string, param: SearchOption = {}) {
-        const option = { page: 1, limit: 10, trashed: SelectTrashMode.NONE, ...param };
+        const option = { page: 1, limit: 10, trashed: SelectTrashMode.ONLY, ...param };
         const limit = isNil(option.limit) || option.limit < 1 ? 1 : option.limit;
         const page = isNil(option.page) || option.page < 1 ? 1 : option.page;
         let filter = ['deletedAt IS NULL'];
