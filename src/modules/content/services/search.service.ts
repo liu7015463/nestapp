@@ -14,7 +14,7 @@ import { SelectTrashMode } from '@/modules/database/constants';
 import { MeiliService } from '@/modules/meilisearch/meili.service';
 
 export class SearchService implements OnModuleInit {
-    index = 'content';
+    private index = 'content';
 
     protected client: MeiliSearch;
 

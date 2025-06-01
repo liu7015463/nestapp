@@ -32,6 +32,9 @@ export class QueryPostDto implements PaginateOptions {
     @IsOptional()
     isPublished?: boolean;
 
+    @IsOptional()
+    search?: string;
+
     @IsEnum(PostOrder, {
         message: `The sorting rule must be one of ${Object.values(PostOrder).join(',')}`,
     })
