@@ -4,6 +4,9 @@ import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 
 import { AppInterceptor } from '@/modules/core/providers/app.interceptor';
 
+import { MEILI_CONFIG } from '@/modules/meilisearch/meili.config';
+import { MeiliModule } from '@/modules/meilisearch/meili.module';
+
 import { content, database } from './config';
 
 import { DEFAULT_VALIDATION_CONFIG } from './modules/content/constants';
@@ -18,6 +21,7 @@ import { DatabaseModule } from './modules/database/database.module';
         ContentModule.forRoot(content),
         CoreModule.forRoot(),
         DatabaseModule.forRoot(database),
+        MeiliModule.forRoot(MEILI_CONFIG),
     ],
     providers: [
         {
