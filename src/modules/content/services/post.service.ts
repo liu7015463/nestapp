@@ -9,6 +9,7 @@ import { CreatePostDto, QueryPostDto, UpdatePostDto } from '@/modules/content/dt
 import { PostEntity } from '@/modules/content/entities/post.entity';
 import { CategoryRepository } from '@/modules/content/repositories';
 import { PostRepository } from '@/modules/content/repositories/post.repository';
+import { SearchType } from '@/modules/content/types';
 import { SelectTrashMode } from '@/modules/database/constants';
 import { QueryHook } from '@/modules/database/types';
 import { paginate } from '@/modules/database/utils';
@@ -28,6 +29,7 @@ export class PostService {
         protected categoryRepository: CategoryRepository,
         protected categoryService: CategoryService,
         protected tagRepository: TagRepository,
+        protected searchType: SearchType = 'mysql',
     ) {}
 
     async paginate(options: QueryPostDto, callback?: QueryHook<PostEntity>) {
@@ -115,8 +117,8 @@ export class PostService {
             .where('post.id IN (:...ids)', { ids })
             .withDeleted()
             .getMany();
-        const trasheds = items.filter((item) => !isNil(item.deleteAt));
-        const trashedIds = trasheds.map((item) => item.id);
+        const trashes = items.filter((item) => !isNil(item.deleteAt));
+        const trashedIds = trashes.map((item) => item.id);
         if (trashedIds.length < 1) {
             return [];
         }
@@ -154,6 +156,15 @@ export class PostService {
         if (callback) {
             return callback(qb);
         }
+        return qb;
+    }
+
+    protected buildSearchQuery(qb: SelectQueryBuilder<PostEntity>, search: string) {
+        qb.orWhere('title LIKE :search', { search: `%${search}%` })
+            .orWhere('summary LIKE :search', { search: `%${search}%` })
+            .orWhere('body LIKE :search', { search: `%${search}%` })
+            .orWhere('category.name LIKE :search', { search: `%${search}%` })
+            .orWhere('tags.name LIKE :search', { search: `%${search}%` });
         return qb;
     }
 

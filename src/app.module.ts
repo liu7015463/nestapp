@@ -4,7 +4,7 @@ import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 
 import { AppInterceptor } from '@/modules/core/providers/app.interceptor';
 
-import { database } from './config';
+import { content, database } from './config';
 
 import { DEFAULT_VALIDATION_CONFIG } from './modules/content/constants';
 import { ContentModule } from './modules/content/content.module';
@@ -14,7 +14,11 @@ import { AppPipe } from './modules/core/providers/app.pipe';
 import { DatabaseModule } from './modules/database/database.module';
 
 @Module({
-    imports: [ContentModule, CoreModule.forRoot(), DatabaseModule.forRoot(database)],
+    imports: [
+        ContentModule.forRoot(content),
+        CoreModule.forRoot(),
+        DatabaseModule.forRoot(database),
+    ],
     providers: [
         {
             provide: APP_PIPE,
