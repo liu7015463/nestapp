@@ -1,7 +1,7 @@
 import { isArray, isNil } from 'lodash';
 import { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 
-import { PaginateOptions, PaginateReturn } from '@/modules/database/types';
+import { OrderQueryType, PaginateOptions, PaginateReturn } from '@/modules/database/types';
 
 export const paginate = async <T extends ObjectLiteral>(
     qb: SelectQueryBuilder<T>,

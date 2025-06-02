@@ -1,21 +1,22 @@
-import { Repository } from 'typeorm';
-
 import { CommentEntity } from '@/modules/content/entities/comment.entity';
 import { PostEntity } from '@/modules/content/entities/post.entity';
+import { BaseRepository } from '@/modules/database/base/repository';
 import { CustomRepository } from '@/modules/database/decorators/repository.decorator';
 
 @CustomRepository(PostEntity)
-export class PostRepository extends Repository<PostEntity> {
+export class PostRepository extends BaseRepository<PostEntity> {
+    protected _qbName = 'post';
+
     buildBaseQB() {
-        return this.createQueryBuilder('post')
-            .leftJoinAndSelect('post.category', 'category')
-            .leftJoinAndSelect('post.tags', 'tags')
+        return this.createQueryBuilder(this.qbName)
+            .leftJoinAndSelect(`${this.qbName}.category`, 'category')
+            .leftJoinAndSelect(`${this.qbName}.tags`, 'tags')
             .addSelect((query) => {
                 return query
                     .select('COUNT(c.id)', 'count')
                     .from(CommentEntity, 'c')
-                    .where('c.post.id = post.id');
+                    .where(`c.post.id = ${this.qbName}.id`);
             }, 'commentCount')
-            .loadRelationCountAndMap('post.commentCOunt', 'post.comments');
+            .loadRelationCountAndMap(`${this.qbName}.commentCOunt`, `${this.qbName}.comments`);
     }
 }
