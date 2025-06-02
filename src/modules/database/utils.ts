@@ -1,4 +1,4 @@
-import { isNil } from 'lodash';
+import { isArray, isNil } from 'lodash';
 import { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 
 import { PaginateOptions, PaginateReturn } from '@/modules/database/types';
@@ -58,3 +58,25 @@ export function treePaginate<T extends ObjectLiteral>(
         items,
     };
 }
+
+export const getOrderByQuery = <T extends ObjectLiteral>(
+    qb: SelectQueryBuilder<T>,
+    alias: string,
+    orderBy?: OrderQueryType,
+) => {
+    if (isNil(orderBy)) {
+        return qb;
+    }
+    if (typeof orderBy === 'string') {
+        return qb.orderBy(`${alias}.${orderBy}`, 'DESC');
+    }
+    if (isArray(orderBy)) {
+        for (const item of orderBy) {
+            typeof item === 'string'
+                ? qb.addOrderBy(`${alias}.${item}`, 'DESC')
+                : qb.addOrderBy(`${alias}.${item.name}`, item.order);
+        }
+        return qb;
+    }
+    return qb.orderBy(`${alias}.${(orderBy as any).name}`, (orderBy as any).order);
+};

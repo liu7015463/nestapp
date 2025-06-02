@@ -8,3 +8,8 @@ export enum SelectTrashMode {
     // NONE: 只包含未软删除的数据 （只查询正常数据）
     NONE = 'none',
 }
+
+export enum OrderType {
+    ASC = 'ASC',
+    DESC = 'DESC',
+}
