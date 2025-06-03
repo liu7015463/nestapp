@@ -22,7 +22,7 @@ export class CommentService {
 
     async findTrees(options: QueryCommentTreeDto = {}) {
         return this.repository.findTrees({
-            addQuery: (qb) => {
+            addQuery: async (qb) => {
                 return isNil(options.post) ? qb : qb.where('post.id = :id', { id: options.post });
             },
         });
@@ -30,7 +30,7 @@ export class CommentService {
 
     async paginate(options: QueryCommentDto) {
         const { post, ...query } = options;
-        const addQuery = (qb: SelectQueryBuilder<CommentEntity>) => {
+        const addQuery = async (qb: SelectQueryBuilder<CommentEntity>) => {
             const condition: RecordString = {};
             if (!isNil(post)) {
                 condition.post = post;

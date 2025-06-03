@@ -1,19 +1,21 @@
-import { isNil, pick, unset } from 'lodash';
-import { FindOptionsUtils, FindTreeOptions, TreeRepository, TreeRepositoryUtils } from 'typeorm';
+import { isNil, unset } from 'lodash';
+import { FindOptionsUtils, FindTreeOptions, TreeRepositoryUtils } from 'typeorm';
 
 import { CategoryEntity } from '@/modules/content/entities/category.entity';
+import { BaseTreeRepository } from '@/modules/database/base/tree.repository';
+import { OrderType, TreeChildrenResolve } from '@/modules/database/constants';
 import { CustomRepository } from '@/modules/database/decorators/repository.decorator';
 
 @CustomRepository(CategoryEntity)
-export class CategoryRepository extends TreeRepository<CategoryEntity> {
+export class CategoryRepository extends BaseTreeRepository<CategoryEntity> {
+    protected _qbName = 'category';
+
+    protected orderBy = { name: 'customOrder', order: OrderType.ASC };
+
+    protected _childrenResolve = TreeChildrenResolve.UP;
+
     buildBaseQB() {
         return this.createQueryBuilder('category').leftJoinAndSelect('category.parent', 'parent');
-    }
-
-    async findTrees(options?: FindTreeOptions) {
-        const roots = await this.findRoots(options);
-        await Promise.all(roots.map((root) => this.findDescendantsTree(root, options)));
-        return roots;
     }
 
     findRoots(options?: FindTreeOptions): Promise<CategoryEntity[]> {
@@ -37,28 +39,6 @@ export class CategoryRepository extends TreeRepository<CategoryEntity> {
         FindOptionsUtils.applyOptionsToTreeQueryBuilder(qb, options);
         qb.orderBy('category.customOrder', 'ASC');
         return qb.getMany();
-    }
-
-    async findDescendantsTree(entity: CategoryEntity, options?: FindTreeOptions) {
-        const qb = this.createDescendantsQueryBuilder('category', 'treeClosure', entity)
-            .leftJoinAndSelect('category.parent', 'parent')
-            .orderBy('category.customOrder', 'ASC');
-        FindOptionsUtils.applyOptionsToTreeQueryBuilder(qb, pick(options, ['relations', 'depth']));
-        const entities = await qb.getRawAndEntities();
-        const relationMaps = TreeRepositoryUtils.createRelationMaps(
-            this.manager,
-            this.metadata,
-            'category',
-            entities.raw,
-        );
-        TreeRepositoryUtils.buildChildrenEntityTree(
-            this.metadata,
-            entity,
-            entities.entities,
-            relationMaps,
-            { depth: -1, ...pick(options, ['relations']) },
-        );
-        return entity;
     }
 
     async findAncestorsTree(
@@ -93,23 +73,6 @@ export class CategoryRepository extends TreeRepository<CategoryEntity> {
     async countAncestors(entity: CategoryEntity) {
         const qb = this.createAncestorsQueryBuilder('category', 'treeClosure', entity);
         return qb.getCount();
-    }
-
-    async toFlatTrees(
-        trees: CategoryEntity[],
-        depth = 0,
-        parent: CategoryEntity | null = null,
-    ): Promise<CategoryEntity[]> {
-        const data: Omit<CategoryEntity, 'children'>[] = [];
-        for (const item of trees) {
-            item.depth = depth;
-            item.parent = parent;
-            const { children } = item;
-            unset(item, 'children');
-            data.push(item);
-            data.push(...(await this.toFlatTrees(children, depth + 1, item)));
-        }
-        return data as CategoryEntity[];
     }
 
     async flatAncestorsTree(item: CategoryEntity) {
