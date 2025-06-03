@@ -1,6 +1,6 @@
-import { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
+import { FindTreeOptions, ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 
-import { OrderType } from '@/modules/database/constants';
+import { OrderType, SelectTrashMode } from '@/modules/database/constants';
 
 export type QueryHook<Entity> = (
     qb: SelectQueryBuilder<Entity>,
@@ -38,3 +38,17 @@ export interface QueryParams<T extends ObjectLiteral> {
 
     onlyTrashed?: boolean;
 }
+
+export type ServiceListQueryOptionWithTrashed<T extends ObjectLiteral> = Omit<
+    FindTreeOptions & QueryParams<T>,
+    'withTrashed'
+> & { trashed?: `${SelectTrashMode}` } & RecordAny;
+
+export type ServiceListQueryOptionNotWithTrashed<T extends ObjectLiteral> = Omit<
+    ServiceListQueryOptionWithTrashed<T>,
+    'trashed'
+>;
+
+export type ServiceListQueryOption<T extends ObjectLiteral> =
+    | ServiceListQueryOptionNotWithTrashed<T>
+    | ServiceListQueryOptionWithTrashed<T>;
