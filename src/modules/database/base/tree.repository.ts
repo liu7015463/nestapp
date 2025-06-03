@@ -47,7 +47,7 @@ export abstract class BaseTreeRepository<T extends ObjectLiteral> extends TreeRe
 
     async findTrees(options?: FindTreeOptions & QueryParams<T>) {
         const roots = await this.findRoots(options);
-        await Promise.all(root.map((root) => this.findDescendantsTree(root, options)));
+        await Promise.all(roots.map((root) => this.findDescendantsTree(root, options)));
         return roots;
     }
 
