@@ -28,3 +28,13 @@ export type OrderQueryType =
     | string
     | { name: string; order: `${OrderType}` }
     | Array<string | { name: string; order: `${OrderType}` }>;
+
+export interface QueryParams<T extends ObjectLiteral> {
+    addQuery?: QueryHook<T>;
+
+    orderBy?: OrderQueryType;
+
+    withTrashed?: boolean;
+
+    onlyTrashed?: boolean;
+}

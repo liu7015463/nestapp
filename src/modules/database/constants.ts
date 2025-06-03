@@ -13,3 +13,9 @@ export enum OrderType {
     ASC = 'ASC',
     DESC = 'DESC',
 }
+
+export enum TreeChildrenResolve {
+    DELETE = 'delete',
+    UP = 'up',
+    ROOT = 'root',
+}
