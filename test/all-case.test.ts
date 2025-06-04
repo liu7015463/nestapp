@@ -16,6 +16,8 @@ import {
     TagRepository,
 } from '@/modules/content/repositories';
 
+import { MeiliService } from '@/modules/meilisearch/meili.service';
+
 import { generateRandomNumber, generateUniqueRandomNumbers } from './generate-mock-data';
 import { categoriesData, commentData, INIT_DATA, postData, tagData } from './test-data';
 
@@ -31,6 +33,7 @@ describe('nest app test', () => {
     let categories: CategoryEntity[];
     let tags: TagEntity[];
     let comments: CommentEntity[];
+    let searchService: MeiliService;
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -45,11 +48,15 @@ describe('nest app test', () => {
         tagRepository = module.get<TagRepository>(TagRepository);
         postRepository = module.get<PostRepository>(PostRepository);
         commentRepository = module.get<CommentRepository>(CommentRepository);
+        searchService = module.get<MeiliService>(MeiliService);
         datasource = module.get<DataSource>(DataSource);
         if (!datasource.isInitialized) {
             await datasource.initialize();
         }
         if (INIT_DATA) {
+            const client = searchService.getClient();
+            client.deleteIndex('content');
+
             const queryRunner = datasource.createQueryRunner();
             try {
                 await queryRunner.query('SET FOREIGN_KEY_CHECKS = 0');
@@ -377,7 +384,10 @@ describe('nest app test', () => {
                 },
             });
             expect(result.json()).toEqual({
-                message: ['The format of the parent category ID is incorrect.'],
+                message: [
+                    'The format of the parent category ID is incorrect.',
+                    'The parent category does not exist',
+                ],
                 error: 'Bad Request',
                 statusCode: 400,
             });
@@ -592,7 +602,7 @@ describe('nest app test', () => {
         });
 
         it('update category with duplicate name in same parent', async () => {
-            const parentCategory = categories.find((c) => c.children && c.children.length > 1);
+            const parentCategory = categories.find((c) => c.children?.length > 1);
             const [child1, child2] = parentCategory.children;
 
             const result = await app.inject({
@@ -1120,8 +1130,8 @@ describe('nest app test', () => {
             });
             expect(result.json()).toEqual({
                 message: [
-                    'body should not be empty',
-                    'body must be shorter than or equal to 1000 characters',
+                    'Comment content cannot be empty',
+                    'The length of the comment content cannot exceed 1000',
                 ],
                 error: 'Bad Request',
                 statusCode: 400,
@@ -1135,7 +1145,7 @@ describe('nest app test', () => {
                 body: { body: 'Test comment' },
             });
             expect(result.json()).toEqual({
-                message: ['The ID must be specified', 'The ID format is incorrect'],
+                message: ['The post ID must be specified', 'The ID format is incorrect'],
                 error: 'Bad Request',
                 statusCode: 400,
             });
@@ -1152,7 +1162,7 @@ describe('nest app test', () => {
                 },
             });
             expect(result.json()).toEqual({
-                message: ['body must be shorter than or equal to 1000 characters'],
+                message: ['The length of the comment content cannot exceed 1000'],
                 error: 'Bad Request',
                 statusCode: 400,
             });

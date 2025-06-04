@@ -19,6 +19,10 @@ export class CategoryService extends BaseService<CategoryEntity, CategoryReposit
         return this.repository.findTrees();
     }
 
+    async detail(id: string) {
+        return this.repository.findOneOrFail({ where: { id }, relations: ['parent', 'children'] });
+    }
+
     async create(data: CreateCategoryDto) {
         const item = await this.repository.save({
             ...data,

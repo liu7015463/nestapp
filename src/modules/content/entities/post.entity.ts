@@ -48,7 +48,7 @@ export class PostEntity extends BaseEntity {
     type: PostBodyType;
 
     @Expose()
-    @Column({ comment: '发布时间', type: 'varchar', nullable: true })
+    @Column({ comment: '发布时间', type: 'timestamp', nullable: true })
     publishedAt?: Date | null;
 
     @Expose()

@@ -32,7 +32,7 @@ type SubscriberEvent<T extends ObjectLiteral> =
 
 @EventSubscriber()
 export abstract class BaseSubscriber<T extends ObjectLiteral>
-    implements EntitySubscriberInterface<T> 
+    implements EntitySubscriberInterface<T>
 {
     protected abstract entity: ObjectType<T>;
 
