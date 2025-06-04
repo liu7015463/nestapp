@@ -60,6 +60,6 @@ export class CategoryController {
     @Delete(':id')
     @SerializeOptions({ groups: ['category-detail'] })
     async delete(@Param('id', new ParseUUIDPipe()) id: string) {
-        return this.service.delete(id);
+        return this.service.delete([id]);
     }
 }

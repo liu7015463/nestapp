@@ -11,6 +11,7 @@ import { CategoryRepository } from '@/modules/content/repositories';
 import { PostRepository } from '@/modules/content/repositories/post.repository';
 import { SearchService } from '@/modules/content/services/search.service';
 import { SearchType } from '@/modules/content/types';
+import { BaseService } from '@/modules/database/base/service';
 import { SelectTrashMode } from '@/modules/database/constants';
 import { QueryHook } from '@/modules/database/types';
 import { paginate } from '@/modules/database/utils';
@@ -24,7 +25,9 @@ type FindParams = {
 };
 
 @Injectable()
-export class PostService {
+export class PostService extends BaseService<PostEntity, PostRepository, FindParams> {
+    protected enableTrash = true;
+
     constructor(
         protected repository: PostRepository,
         protected categoryRepository: CategoryRepository,
@@ -32,13 +35,15 @@ export class PostService {
         protected tagRepository: TagRepository,
         protected searchService?: SearchService,
         protected searchType: SearchType = 'mysql',
-    ) {}
+    ) {
+        super(repository);
+    }
 
     async paginate(options: QueryPostDto, callback?: QueryHook<PostEntity>) {
         if (!isNil(this.searchService) && !isNil(options.search) && this.searchType === 'meili') {
             return this.searchService.search(
                 options.search,
-                pick(options, ['trashed', 'page', 'limit']),
+                pick(options, ['trashed', 'page', 'limit', 'isPublished']),
             );
         }
         const qb = await this.buildListQuery(this.repository.buildBaseQB(), options, callback);

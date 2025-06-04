@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { isNil } from 'lodash';
 import { In, ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 
@@ -127,4 +127,29 @@ export abstract class BaseService<
         }
         return this.repository.remove(items);
     }
+
+    async restore(ids: string[]) {
+        if (!this.enableTrash) {
+            throw new ForbiddenException(
+                `Can not to retore ${this.repository.qbName},because trash not enabled!`,
+            );
+        }
+        const items = await this.repository.find({
+            where: { id: In(ids) as any },
+            withDeleted: true,
+        });
+        const trashIds = items.filter((o) => !isNil(o.deletedAt)).map((o) => o.id);
+        if (trashIds.length < 1) {
+            return [];
+        }
+        await this.repository.restore(trashIds);
+        const qb = await this.buildListQB(this.repository.buildBaseQB(), undefined, async (_) =>
+            _.andWhereInIds(trashIds),
+        );
+        return qb.getMany();
+    }
+
+    abstract create(data: any, ...others: any[]): Promise<T>;
+
+    abstract update(data: any, ...others: any[]): Promise<T>;
 }

@@ -47,7 +47,7 @@ export class SearchService implements OnModuleInit {
         return this.client;
     }
 
-    async search(text: string, param: SearchOption = {}) {
+    async search(text: string, param: SearchOption = {}): Promise<any> {
         const option = { page: 1, limit: 10, trashed: SelectTrashMode.ONLY, ...param };
         const limit = isNil(option.limit) || option.limit < 1 ? 1 : option.limit;
         const page = isNil(option.page) || option.page < 1 ? 1 : option.page;

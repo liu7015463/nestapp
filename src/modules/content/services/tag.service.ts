@@ -1,19 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { omit } from 'lodash';
 
-import { In } from 'typeorm';
-
-import { CreateTagDto, QueryTagDto, UpdateTagDto } from '@/modules/content/dtos/tag.dto';
+import { CreateTagDto, UpdateTagDto } from '@/modules/content/dtos/tag.dto';
 import { TagRepository } from '@/modules/content/repositories/tag.repository';
-import { paginate } from '@/modules/database/utils';
+import { BaseService } from '@/modules/database/base/service';
+
+import { TagEntity } from '../entities';
 
 @Injectable()
-export class TagService {
-    constructor(protected repository: TagRepository) {}
+export class TagService extends BaseService<TagEntity, TagRepository> {
+    protected enableTrash = true;
 
-    async paginate(options: QueryTagDto) {
-        const qb = this.repository.buildBaseQB();
-        return paginate(qb, options);
+    constructor(protected repository: TagRepository) {
+        super(repository);
     }
 
     async detail(id: string) {
@@ -30,12 +29,5 @@ export class TagService {
     async update(data: UpdateTagDto) {
         await this.repository.update(data.id, omit(data, ['id']));
         return this.detail(data.id);
-    }
-
-    async delete(ids: string[]) {
-        const items = await this.repository.find({
-            where: { id: In(ids) },
-        });
-        return this.repository.remove(items);
     }
 }

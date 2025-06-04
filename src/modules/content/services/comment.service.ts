@@ -11,14 +11,14 @@ import {
 } from '@/modules/content/dtos/comment.dto';
 import { CommentEntity } from '@/modules/content/entities/comment.entity';
 import { CommentRepository, PostRepository } from '@/modules/content/repositories';
+import { BaseService } from '@/modules/database/base/service';
 import { treePaginate } from '@/modules/database/utils';
 
 @Injectable()
-export class CommentService {
-    constructor(
-        protected repository: CommentRepository,
-        protected postRepository: PostRepository,
-    ) {}
+export class CommentService extends BaseService<CommentEntity, CommentRepository> {
+    constructor(protected repository: CommentRepository, protected postRepository: PostRepository) {
+        super(repository);
+    }
 
     async findTrees(options: QueryCommentTreeDto = {}) {
         return this.repository.findTrees({
@@ -90,5 +90,9 @@ export class CommentService {
             }
         }
         return parent;
+    }
+
+    update(data: any, ...others: any[]): Promise<CommentEntity> {
+        throw new Error('Method not implemented.');
     }
 }
