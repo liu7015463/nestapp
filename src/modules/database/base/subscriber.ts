@@ -32,7 +32,7 @@ type SubscriberEvent<T extends ObjectLiteral> =
 
 @EventSubscriber()
 export abstract class BaseSubscriber<T extends ObjectLiteral>
-    implements EntitySubscriberInterface<T>
+    implements EntitySubscriberInterface<T> 
 {
     protected abstract entity: ObjectType<T>;
 
@@ -64,13 +64,13 @@ export abstract class BaseSubscriber<T extends ObjectLiteral>
         C extends ClassType<P>,
         P extends RepositoryType<T>,
         R extends EntityTarget<ObjectLiteral>,
-    >(event: SubscriberEvent<T>, respository?: C, entity?: R) {
-        return isNil(respository)
+    >(event: SubscriberEvent<T>, repository?: C, entity?: R) {
+        return isNil(repository)
             ? this.getDataSource(event).getRepository(entity ?? this.entity)
-            : getCustomRepository<P, T>(this.getDataSource(event), respository);
+            : getCustomRepository<P, T>(this.getDataSource(event), repository);
     }
 
-    protected isUpdated(cloumn: keyof T, event: UpdateEvent<T>) {
-        return !!event.updatedColumns.find((o) => o.propertyName === cloumn);
+    protected isUpdated(column: keyof T, event: UpdateEvent<T>) {
+        return !!event.updatedColumns.find((o) => o.propertyName === column);
     }
 }
