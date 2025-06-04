@@ -1,7 +1,9 @@
 import { isArray, isNil } from 'lodash';
-import { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
+import { DataSource, ObjectLiteral, ObjectType, Repository, SelectQueryBuilder } from 'typeorm';
 
 import { OrderQueryType, PaginateOptions, PaginateReturn } from '@/modules/database/types';
+
+import { CUSTOM_REPOSITORY_METADATA } from './constants';
 
 export const paginate = async <T extends ObjectLiteral>(
     qb: SelectQueryBuilder<T>,
@@ -79,4 +81,19 @@ export const getOrderByQuery = <T extends ObjectLiteral>(
         return qb;
     }
     return qb.orderBy(`${alias}.${(orderBy as any).name}`, (orderBy as any).order);
+};
+
+export const getCustomRepository = <P extends Repository<T>, T extends ObjectLiteral>(
+    dataSource: DataSource,
+    Repo: ClassType<P>,
+): P => {
+    if (isNil(Repo)) {
+        return null;
+    }
+    const entity = Reflect.getMetadata(CUSTOM_REPOSITORY_METADATA, Repo);
+    if (!entity) {
+        return null;
+    }
+    const base = dataSource.getRepository<ObjectType<any>>(entity);
+    return new Repo(base.target, base.manager, base.queryRunner) as P;
 };

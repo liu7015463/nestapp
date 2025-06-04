@@ -1,6 +1,15 @@
-import { FindTreeOptions, ObjectLiteral, SelectQueryBuilder } from 'typeorm';
+import {
+    FindTreeOptions,
+    ObjectLiteral,
+    SelectQueryBuilder,
+    Repository,
+    TreeRepository,
+} from 'typeorm';
 
 import { OrderType, SelectTrashMode } from '@/modules/database/constants';
+
+import { BaseRepository } from './base/repository';
+import { BaseTreeRepository } from './base/tree.repository';
 
 export type QueryHook<Entity> = (
     qb: SelectQueryBuilder<Entity>,
@@ -52,3 +61,9 @@ export type ServiceListQueryOptionNotWithTrashed<T extends ObjectLiteral> = Omit
 export type ServiceListQueryOption<T extends ObjectLiteral> =
     | ServiceListQueryOptionNotWithTrashed<T>
     | ServiceListQueryOptionWithTrashed<T>;
+
+export type RepositoryType<T extends ObjectLiteral> =
+    | Repository<T>
+    | TreeRepository<T>
+    | BaseRepository<T>
+    | BaseTreeRepository<T>;
