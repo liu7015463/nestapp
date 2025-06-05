@@ -32,3 +32,10 @@ export const deepMerge = <T, P>(
     }
     return deepmerge(x, y, options) as P extends T ? T : T & P;
 };
+
+export function isAsyncFunction<T, P extends Array<any>>(
+    callback: (...args: P) => T | Promise<T>,
+): callback is (...args: P) => Promise<T> {
+    const AsyncFunction = (async () => {}).constructor;
+    return callback instanceof AsyncFunction === true;
+}
