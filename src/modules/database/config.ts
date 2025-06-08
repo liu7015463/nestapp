@@ -1,0 +1,37 @@
+import { ConfigureFactory, ConfigureRegister } from '../config/types';
+import { createConnectionOptions } from '../config/utils';
+import { deepMerge } from '../core/helpers';
+
+import { DBConfig, DBOptions, TypeormOption } from './types';
+
+export const createDBConfig: (
+    register: ConfigureRegister<RePartial<DBConfig>>,
+) => ConfigureFactory<DBConfig, DBOptions> = (register) => ({
+    register,
+    hook: (configure, value) => createDBOptions(value),
+    defaultRegister: () => ({
+        common: { charset: 'utf8mb4', logging: ['error'] },
+        connections: [],
+    }),
+});
+
+export const createDBOptions = (options: DBConfig) => {
+    const newOptions: DBOptions = {
+        common: deepMerge(
+            { charset: 'utf8mb4', logging: ['error'] },
+            options.common ?? {},
+            'replace',
+        ),
+        connections: createConnectionOptions(options.connections ?? []),
+    };
+    newOptions.connections = newOptions.connections.map((connection) => {
+        const entities = connection.entities ?? [];
+        const newOption = { ...connection, entities };
+        return deepMerge(
+            newOptions.common,
+            { ...newOption, autoLoadEntities: true } as any,
+            'replace',
+        ) as TypeormOption;
+    });
+    return newOptions;
+};

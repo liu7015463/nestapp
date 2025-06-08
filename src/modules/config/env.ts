@@ -46,6 +46,16 @@ export class Env {
         return this.run() === EnvironmentType.DEVELOPMENT || this.run() === EnvironmentType.DEV;
     }
 
+    get(): { [key: string]: string };
+
+    get<T extends BaseType = string>(key: string): T;
+
+    get<T extends BaseType = string>(key: string, parseTo?: ParseType<T>): T;
+
+    get<T extends BaseType = string>(key: string, defaultValue?: T): T;
+
+    get<T extends BaseType = string>(key: string, parseTo?: ParseType<T>, defaultValue?: T): T;
+
     get<T extends BaseType = string>(key?: string, parseTo?: ParseType<T> | T, defaultValue?: T) {
         if (!key) {
             return process.env;

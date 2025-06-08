@@ -7,7 +7,6 @@ import { useContainer } from 'class-validator';
 import { isNil, pick } from 'lodash';
 import { DataSource } from 'typeorm';
 
-import { AppModule } from '@/app.module';
 import { CategoryEntity, CommentEntity, PostEntity, TagEntity } from '@/modules/content/entities';
 import {
     CategoryRepository,
@@ -16,6 +15,7 @@ import {
     TagRepository,
 } from '@/modules/content/repositories';
 
+import { CoreModule } from '@/modules/core/core.module';
 import { MeiliService } from '@/modules/meilisearch/meili.service';
 
 import { generateRandomNumber, generateUniqueRandomNumbers } from './generate-mock-data';
@@ -37,10 +37,10 @@ describe('nest app test', () => {
 
     beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            imports: [AppModule],
+            imports: [CoreModule],
         }).compile();
         app = module.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
-        useContainer(app.select(AppModule), { fallbackOnErrors: true });
+        useContainer(app.select(CoreModule), { fallbackOnErrors: true });
         await app.init();
         await app.getHttpAdapter().getInstance().ready();
 

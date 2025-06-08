@@ -1,6 +1,9 @@
 import { Module, ModuleMetadata, Type } from '@nestjs/common';
+import chalk from 'chalk';
 import deepmerge from 'deepmerge';
 import { isNil } from 'lodash';
+
+import { PanicOption } from '../types';
 
 export function toBoolean(value?: string | boolean): boolean {
     if (isNil(value)) {
@@ -54,4 +57,28 @@ export function CreateModule(
     }
     Module(metaSetter())(ModuleClass);
     return ModuleClass;
+}
+
+export const getRandomString = (length = 10) => {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    const totalLength = characters.length;
+
+    for (let index = 0; index < length; index++) {
+        result += characters.charAt(Math.floor(Math.random() * totalLength));
+    }
+    return result;
+};
+
+export async function panic(option: PanicOption | string) {
+    console.log();
+    if (typeof option === 'string') {
+        console.log(chalk.red(`\n❌ ${option}`));
+        process.exit(1);
+    }
+    const { error, message, exit = true } = option;
+    isNil(error) ? console.log(chalk.red(`\n❌ ${message}`)) : console.log(chalk.red(error));
+    if (exit) {
+        process.exit(1);
+    }
 }

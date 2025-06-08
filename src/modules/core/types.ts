@@ -35,3 +35,29 @@ export interface CreateOptions {
 export interface ContainerBuilder {
     (params: { configure: Configure; BootModule: Type<any> }): Promise<NestFastifyApplication>;
 }
+
+export interface AppConfig {
+    name: string;
+
+    host: string;
+
+    port: number;
+
+    https: boolean;
+
+    locale: string;
+
+    fallbackLocale: string;
+
+    url?: string;
+
+    prefix?: string;
+}
+
+export interface PanicOption {
+    message: string;
+
+    error?: any;
+
+    exit?: boolean;
+}

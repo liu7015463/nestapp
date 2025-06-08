@@ -3,7 +3,8 @@ import { SelectTrashMode } from '@/modules/database/constants';
 export type SearchType = 'mysql' | 'meili';
 
 export interface ContentConfig {
-    SearchType?: SearchType;
+    searchType: SearchType;
+    htmlEnabled: boolean;
 }
 
 export interface SearchOption {

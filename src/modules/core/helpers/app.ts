@@ -1,9 +1,11 @@
 import { BadGatewayException, Global, Module, ModuleMetadata, Type } from '@nestjs/common';
 
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { NestFastifyApplication } from '@nestjs/platform-fastify';
+import chalk from 'chalk';
 import { useContainer } from 'class-validator';
 
-import { omit } from 'lodash';
+import { isNil, omit } from 'lodash';
 
 import { ConfigModule } from '@/modules/config/config.module';
 import { Configure } from '@/modules/config/configure';
@@ -14,7 +16,7 @@ import { CoreModule } from '../core.module';
 import { AppFilter } from '../providers/app.filter';
 import { AppInterceptor } from '../providers/app.interceptor';
 import { AppPipe } from '../providers/app.pipe';
-import { App, CreateOptions } from '../types';
+import { App, AppConfig, CreateOptions } from '../types';
 
 import { CreateModule } from './utils';
 
@@ -90,3 +92,32 @@ export async function createBootModule(
         providers,
     }));
 }
+
+export async function startApp(
+    creater: () => Promise<App>,
+    listened: (app: App, startTime: Date) => () => Promise<void>,
+) {
+    const startTime = new Date();
+    const { container, configure } = await creater();
+    app.container = container;
+    app.configure = configure;
+    const { port, host } = await configure.get<AppConfig>('app');
+    await container.listen(port, host, listened(app, startTime));
+}
+
+export async function echoApi(configure: Configure, container: NestFastifyApplication) {
+    const appUrl = await configure.get<string>('app.url');
+    const urlPrefix = await configure.get<string>('api.prefix', undefined);
+    const apiUrl = isNil(urlPrefix)
+        ? appUrl
+        : `${appUrl}${urlPrefix.length > 0 ? `/${urlPrefix}` : urlPrefix}`;
+    console.log(`- RestAPI: ${chalk.green.underline(apiUrl)}`);
+}
+
+export const listened: (app: App, startyTime: Date) => () => Promise<void> =
+    ({ configure, container }, startTime) =>
+    async () => {
+        console.log();
+        await echoApi(configure, container);
+        console.log('used time: ', chalk.cyan(`${new Date().getTime() - startTime.getTime()}`));
+    };

@@ -11,19 +11,19 @@ import { SanitizeService } from '@/modules/content/services/SanitizeService';
 
 import { PostService } from '@/modules/content/services/post.service';
 import { PostSubscriber } from '@/modules/content/subscribers/post.subscriber';
-import { ContentConfig } from '@/modules/content/types';
 import { DatabaseModule } from '@/modules/database/database.module';
+
+import { Configure } from '../config/configure';
+
+import { defauleContentConfig } from './config';
+import { ContentConfig } from './types';
 
 @Module({})
 export class ContentModule {
-    static forRoot(configRegister?: () => ContentConfig): DynamicModule {
-        const config: Required<ContentConfig> = {
-            SearchType: 'mysql',
-            ...(configRegister ? configRegister() : {}),
-        };
+    static async forRoot(configure: Configure): Promise<DynamicModule> {
+        const config = await configure.get<ContentConfig>('content', defauleContentConfig);
         const providers: ModuleMetadata['providers'] = [
             ...Object.values(services),
-            SanitizeService,
             PostSubscriber,
             {
                 provide: PostService,
@@ -47,13 +47,23 @@ export class ContentModule {
                         categoryService,
                         tagRepository,
                         searchService,
-                        config.SearchType,
+                        config.searchType,
                     );
                 },
             },
         ];
-        if (config.SearchType === 'meili') {
+        const exports: ModuleMetadata['exports'] = [
+            ...Object.values(services),
+            PostService,
+            DatabaseModule.forRepository(Object.values(repositories)),
+        ];
+        if (config.searchType === 'meili') {
             providers.push(services.SearchService);
+            exports.push(SearchService);
+        }
+        if (config.htmlEnabled) {
+            providers.push(SanitizeService);
+            exports.push(SanitizeService);
         }
         return {
             module: ContentModule,
@@ -63,11 +73,7 @@ export class ContentModule {
             ],
             controllers: Object.values(controllers),
             providers,
-            exports: [
-                ...Object.values(services),
-                PostService,
-                DatabaseModule.forRepository(Object.values(repositories)),
-            ],
+            exports,
         };
     }
 }
