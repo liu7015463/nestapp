@@ -12,7 +12,7 @@ declare type ClassToPlain<T> = { [key in keyof T]: T[key] };
 declare type ClassType<T> = { new (...args: any[]): T };
 
 declare type RePartial<T> = {
-    [P in keyof T]: T[P] extends (infer U)[] | undefined
+    [P in keyof T]?: T[P] extends (infer U)[] | undefined
         ? RePartial<U>[]
         : T[P] extends object | undefined
         ? T[P] extends ((...args: any[]) => any) | ClassType<T[P]> | undefined
