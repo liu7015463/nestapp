@@ -18,7 +18,7 @@ export interface CreateOptions {
     globals?: {
         pipe?: (configure: Configure) => PipeTransform<any> | null;
 
-        intercepter?: Type<any> | null;
+        interceptor?: Type<any> | null;
 
         filter?: Type<any> | null;
     };

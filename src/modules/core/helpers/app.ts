@@ -73,10 +73,10 @@ export async function createBootModule(
         providers.push({ provide: APP_PIPE, useValue: pipe });
     }
 
-    if (globals.intercepter !== null) {
+    if (globals.interceptor !== null) {
         providers.push({
             provide: APP_INTERCEPTOR,
-            useClass: globals.intercepter ?? AppInterceptor,
+            useClass: globals.interceptor ?? AppInterceptor,
         });
     }
 
