@@ -15,7 +15,7 @@ export class Env {
             envs.push(
                 findUpSync([`.env.${EnvironmentType.DEVELOPMENT}`, `.env.${EnvironmentType.DEV}`]),
             );
-        } else if (this.isProd) {
+        } else if (this.isProd()) {
             envs.push(
                 findUpSync([`.env.${EnvironmentType.PRODUCTION}`, `.env.${EnvironmentType.PROD}`]),
             );
