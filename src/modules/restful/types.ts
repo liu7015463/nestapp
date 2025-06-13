@@ -17,7 +17,7 @@ export interface ApiDocSource {
 export interface ApiConfig extends ApiDocSource {
     docuri?: string;
     default: string;
-    enable: string;
+    enabled: string[];
     versions: Record<string, VersionOption>;
 }
 
@@ -31,4 +31,15 @@ export interface RouteOption {
     controllers: Type<any>[];
     children?: RouteOption[];
     doc?: ApiDocSource;
+}
+
+export interface SwaggerOption extends ApiDocSource {
+    version: string;
+    path: string;
+    include: Type<any>[];
+}
+
+export interface ApiDocOption {
+    default?: SwaggerOption;
+    routes?: { [key: string]: SwaggerOption };
 }
