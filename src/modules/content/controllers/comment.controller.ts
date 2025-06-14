@@ -1,5 +1,8 @@
 import { Body, Controller, Delete, Get, Post, Query, SerializeOptions } from '@nestjs/common';
 
+import { Depends } from '@/modules/restful/decorators/depend.decorator';
+
+import { ContentModule } from '../content.module';
 import {
     CreateCommentDto,
     DeleteCommentDto,
@@ -8,6 +11,7 @@ import {
 } from '../dtos/comment.dto';
 import { CommentService } from '../services';
 
+@Depends(ContentModule)
 @Controller('comment')
 export class CommentController {
     constructor(protected service: CommentService) {}

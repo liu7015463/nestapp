@@ -33,9 +33,6 @@ export const createApp = (options: CreateOptions) => async (): Promise<App> => {
 
     app.container = await builder({ configure: app.configure, BootModule });
 
-    if (app.configure.has('app.prefix')) {
-        app.container.setGlobalPrefix(await app.configure.get<string>('app.prefix'));
-    }
     useContainer(app.container.select(BootModule), { fallbackOnErrors: true });
     return app;
 };

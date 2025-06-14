@@ -11,9 +11,13 @@ import {
     SerializeOptions,
 } from '@nestjs/common';
 
+import { Depends } from '@/modules/restful/decorators/depend.decorator';
+
+import { ContentModule } from '../content.module';
 import { CreateCategoryDto, QueryCategoryDto, UpdateCategoryDto } from '../dtos/category.dto';
 import { CategoryService } from '../services';
 
+@Depends(ContentModule)
 @Controller('category')
 export class CategoryController {
     constructor(protected service: CategoryService) {}

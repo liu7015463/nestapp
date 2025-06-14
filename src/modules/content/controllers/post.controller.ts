@@ -14,8 +14,12 @@ import {
 import { CreatePostDto, QueryPostDto, UpdatePostDto } from '@/modules/content/dtos/post.dto';
 import { PostService } from '@/modules/content/services/post.service';
 
+import { Depends } from '@/modules/restful/decorators/depend.decorator';
+
+import { ContentModule } from '../content.module';
 import { DeleteWithTrashDto, RestoreDto } from '../dtos/delete.with.trash.dto';
 
+@Depends(ContentModule)
 @Controller('posts')
 export class PostController {
     constructor(private postService: PostService) {}

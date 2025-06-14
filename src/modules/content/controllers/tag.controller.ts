@@ -13,9 +13,13 @@ import {
 
 import { DeleteDto } from '@/modules/content/dtos/delete.dto';
 
+import { Depends } from '@/modules/restful/decorators/depend.decorator';
+
+import { ContentModule } from '../content.module';
 import { CreateTagDto, QueryTagDto, UpdateTagDto } from '../dtos/tag.dto';
 import { TagService } from '../services';
 
+@Depends(ContentModule)
 @Controller('tag')
 export class TagController {
     constructor(protected service: TagService) {}

@@ -1,4 +1,4 @@
-import { INestApplication, Type } from '@nestjs/common';
+import { INestApplication, Injectable, Type } from '@nestjs/common';
 import { RouterModule } from '@nestjs/core';
 
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -15,6 +15,7 @@ import {
 } from './types';
 import { trimPath } from './utils';
 
+@Injectable()
 export class Restful extends BaseRestful {
     protected _docs!: { [version: string]: ApiDocOption };
 

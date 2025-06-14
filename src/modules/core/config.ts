@@ -23,7 +23,7 @@ export const createAppConfig: (
     defaultRegister: (configure) => getDefaultAppConfig(configure),
     hook: (configure: Configure, value) => {
         if (isNil(value.url)) {
-            value.url = `${value.https ? 'https' : 'http'}//${value.host}:${value.port}`;
+            value.url = `${value.https ? 'https:' : 'http:'}//${value.host}:${value.port}`;
         }
         return value;
     },

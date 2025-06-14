@@ -2,7 +2,6 @@ import { DynamicModule, Module, ModuleMetadata } from '@nestjs/common';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import * as controllers from '@/modules/content/controllers';
 import * as entities from '@/modules/content/entities';
 import * as repositories from '@/modules/content/repositories';
 import * as services from '@/modules/content/services';
@@ -71,7 +70,6 @@ export class ContentModule {
                 TypeOrmModule.forFeature(Object.values(entities)),
                 DatabaseModule.forRepository(Object.values(repositories)),
             ],
-            controllers: Object.values(controllers),
             providers,
             exports,
         };
