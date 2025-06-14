@@ -2,7 +2,7 @@ import { INestApplication, Injectable, Type } from '@nestjs/common';
 import { RouterModule } from '@nestjs/core';
 
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { omit, trim } from 'lodash';
+import { isNil, omit, trim } from 'lodash';
 
 import { BaseRestful } from './base';
 import {
@@ -119,7 +119,10 @@ export class Restful extends BaseRestful {
         this._docs.default = this.getDocOption(this._default, defaultVersion, true);
     }
 
-    async factoryDocs<T extends INestApplication>(container: T) {
+    async factoryDocs<T extends INestApplication>(
+        container: T,
+        metadata?: () => Promise<RecordAny>,
+    ) {
         const docs = Object.values(this._docs)
             .map((doc) => [doc.default, ...Object.values(doc.routes ?? [])])
             .reduce((o, n) => [...o, ...n], [])
@@ -145,6 +148,10 @@ export class Restful extends BaseRestful {
                 );
             }
             builder.setVersion(version);
+
+            if (!isNil(metadata)) {
+                await SwaggerModule.loadPluginMetadata(metadata);
+            }
 
             const document = SwaggerModule.createDocument(container, builder.build(), {
                 include: include.length > 0 ? include : [() => undefined as any],
