@@ -103,11 +103,11 @@ export async function echoApi(configure: Configure, container: NestFastifyApplic
     await echoApiDocs('default', defaultDoc, appUrl);
     for (const [name, doc] of Object.entries(docs)) {
         console.log();
-        echoApiDocs(name, doc, appUrl);
+        await echoApiDocs(name, doc, appUrl);
     }
 }
 
-export const listened: (app: App, startyTime: Date) => () => Promise<void> =
+export const listened: (app: App, startTime: Date) => () => Promise<void> =
     ({ configure, container }, startTime) =>
     async () => {
         console.log();
@@ -130,7 +130,7 @@ async function echoApiDocs(name: string, doc: ApiDocOption, appUrl: string) {
         console.log(`default:${chalk.green.underline(getDocPath(doc.default.path))}`);
     }
     if (doc.routes) {
-        Object.entries(doc.routes).forEach(([routeName, docs]) => {
+        Object.entries(doc.routes).forEach(([, docs]) => {
             console.log(
                 `<${chalk.yellowBright.bold(docs.title)}>: ${chalk.green.underline(
                     getDocPath(docs.path),
