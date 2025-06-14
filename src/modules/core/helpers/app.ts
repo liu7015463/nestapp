@@ -1,11 +1,9 @@
 import { BadGatewayException, Global, Module, ModuleMetadata, Type } from '@nestjs/common';
 
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
-import { NestFastifyApplication } from '@nestjs/platform-fastify';
-import chalk from 'chalk';
 import { useContainer } from 'class-validator';
 
-import { isNil, omit } from 'lodash';
+import { omit } from 'lodash';
 
 import { ConfigModule } from '@/modules/config/config.module';
 import { Configure } from '@/modules/config/configure';
@@ -104,20 +102,3 @@ export async function startApp(
     const { port, host } = await configure.get<AppConfig>('app');
     await container.listen(port, host, listened(app, startTime));
 }
-
-export async function echoApi(configure: Configure, container: NestFastifyApplication) {
-    const appUrl = await configure.get<string>('app.url');
-    const urlPrefix = await configure.get<string>('api.prefix', undefined);
-    const apiUrl = isNil(urlPrefix)
-        ? appUrl
-        : `${appUrl}${urlPrefix.length > 0 ? `/${urlPrefix}` : urlPrefix}`;
-    console.log(`- RestAPI: ${chalk.green.underline(apiUrl)}`);
-}
-
-export const listened: (app: App, startyTime: Date) => () => Promise<void> =
-    ({ configure, container }, startTime) =>
-    async () => {
-        console.log();
-        await echoApi(configure, container);
-        console.log('used time: ', chalk.cyan(`${new Date().getTime() - startTime.getTime()}`));
-    };

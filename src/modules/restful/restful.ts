@@ -1,10 +1,18 @@
-import { Type } from '@nestjs/common';
+import { INestApplication, Type } from '@nestjs/common';
 import { RouterModule } from '@nestjs/core';
 
-import { omit } from 'lodash';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { omit, trim } from 'lodash';
 
 import { BaseRestful } from './base';
-import { ApiConfig, ApiDocOption, ApiDocSource, RouteOption, SwaggerOption } from './types';
+import {
+    ApiConfig,
+    ApiDocOption,
+    ApiDocSource,
+    RouteOption,
+    SwaggerOption,
+    VersionOption,
+} from './types';
 import { trimPath } from './utils';
 
 export class Restful extends BaseRestful {
@@ -70,6 +78,80 @@ export class Restful extends BaseRestful {
         return routeModules.filter(
             (module) => !excludeModules.find((emodule) => emodule === module),
         );
+    }
+
+    protected getDocOption(name: string, voption: VersionOption, isDefault = false) {
+        const docConfig: ApiDocOption = {};
+        const defaultDoc = {
+            title: voption.title!,
+            description: voption.description!,
+            tags: voption.tags ?? [],
+            auth: voption.auth ?? false,
+            version: name,
+            path: trim(`${this.config.docuri}${isDefault ? '' : `/${name}`}`, '/'),
+        };
+
+        const routesDoc = isDefault
+            ? this.getRouteDocs(defaultDoc, voption.routes ?? [])
+            : this.getRouteDocs(defaultDoc, voption.routes ?? [], name);
+        if (Object.keys(routesDoc).length > 0) {
+            docConfig.routes = routesDoc;
+        }
+        const routeModules = isDefault
+            ? this.getRouteModules(voption.routes ?? [])
+            : this.getRouteModules(voption.routes ?? [], name);
+        const include = this.filterExcludeModules(routeModules);
+        if (include.length > 0 || !docConfig.routes) {
+            docConfig.default = { ...defaultDoc, include };
+        }
+        return docConfig;
+    }
+
+    protected createDocs() {
+        const versionMaps = Object.entries(this.config.versions);
+        const vDocs = versionMaps.map(([name, version]) => [
+            name,
+            this.getDocOption(name, version),
+        ]);
+        this._docs = Object.fromEntries(vDocs);
+        const defaultVersion = this.config.versions[this._default];
+        this._docs.default = this.getDocOption(this._default, defaultVersion, true);
+    }
+
+    async factoryDocs<T extends INestApplication>(container: T) {
+        const docs = Object.values(this._docs)
+            .map((doc) => [doc.default, ...Object.values(doc.routes ?? [])])
+            .reduce((o, n) => [...o, ...n], [])
+            .filter((i) => !!i);
+
+        for (const voption of docs) {
+            const { title, description, version, auth, include, tags } = voption!;
+            const builder = new DocumentBuilder();
+            if (title) {
+                builder.setTitle(title);
+            }
+            if (description) {
+                builder.setDescription(description);
+            }
+            if (auth) {
+                builder.addBearerAuth();
+            }
+            if (tags) {
+                tags.forEach((tag) =>
+                    typeof tag === 'string'
+                        ? builder.addTag(tag)
+                        : builder.addTag(tag.name, tag.description, tag.externalDocs),
+                );
+            }
+            builder.setVersion(version);
+
+            const document = SwaggerModule.createDocument(container, builder.build(), {
+                include: include.length > 0 ? include : [() => undefined as any],
+                ignoreGlobalPrefix: true,
+                deepScanRoutes: true,
+            });
+            SwaggerModule.setup(voption!.path, container, document);
+        }
     }
 }
 
