@@ -3,7 +3,6 @@ import { describe } from 'node:test';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { useContainer } from 'class-validator';
 import { isNil, pick } from 'lodash';
 import { DataSource } from 'typeorm';
 
@@ -82,7 +81,7 @@ describe('nest app test', () => {
             categories = await addCategory(app, categoriesData);
             const ids = categories.map((item) => item.id);
             categories = [];
-            Promise.all(
+            await Promise.all(
                 ids.map(async (id) => {
                     const result = await app.inject({
                         method: 'GET',
