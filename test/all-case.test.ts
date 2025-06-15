@@ -1,7 +1,6 @@
 import { describe } from 'node:test';
 
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
-import { Test, TestingModule } from '@nestjs/testing';
 
 import { isNil, pick } from 'lodash';
 import { DataSource } from 'typeorm';
@@ -13,8 +12,6 @@ import {
     PostRepository,
     TagRepository,
 } from '@/modules/content/repositories';
-
-import { CoreModule } from '@/modules/core/core.module';
 import { createApp } from '@/modules/core/helpers/app';
 import { App } from '@/modules/core/types';
 import { MeiliService } from '@/modules/meilisearch/meili.service';
@@ -39,9 +36,6 @@ describe('nest app test', () => {
     let searchService: MeiliService;
 
     beforeAll(async () => {
-        const module: TestingModule = await Test.createTestingModule({
-            imports: [CoreModule],
-        }).compile();
         const appConfig: App = await createApp(createOptions)();
         app = appConfig.container;
         await app.init();
@@ -52,7 +46,7 @@ describe('nest app test', () => {
         postRepository = app.get<PostRepository>(PostRepository);
         commentRepository = app.get<CommentRepository>(CommentRepository);
         searchService = app.get<MeiliService>(MeiliService);
-        datasource = module.get<DataSource>(DataSource);
+        datasource = app.get<DataSource>(DataSource);
         if (!datasource.isInitialized) {
             await datasource.initialize();
         }
