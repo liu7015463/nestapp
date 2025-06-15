@@ -16,7 +16,10 @@ import { treePaginate } from '@/modules/database/utils';
 
 @Injectable()
 export class CommentService extends BaseService<CommentEntity, CommentRepository> {
-    constructor(protected repository: CommentRepository, protected postRepository: PostRepository) {
+    constructor(
+        protected repository: CommentRepository,
+        protected postRepository: PostRepository,
+    ) {
         super(repository);
     }
 

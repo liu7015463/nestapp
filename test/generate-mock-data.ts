@@ -1,4 +1,4 @@
-import { fakerEN } from '@faker-js/faker/.';
+import { fakerEN } from '@faker-js/faker';
 
 import { CreateCommentDto } from '@/modules/content/dtos/comment.dto';
 import { CreatePostDto } from '@/modules/content/dtos/post.dto';

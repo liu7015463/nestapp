@@ -1,3 +1,5 @@
+import { join } from 'path';
+
 import { NestFactory } from '@nestjs/core';
 
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
@@ -13,7 +15,6 @@ import { MeiliModule } from './modules/meilisearch/meili.module';
 import { Restful } from './modules/restful/restful';
 import { RestfulModule } from './modules/restful/restful.module';
 import { ApiConfig } from './modules/restful/types';
-import { join } from 'path';
 
 export const createOptions: CreateOptions = {
     config: { factories: configs as any, storage: { enable: true } },

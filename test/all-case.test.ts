@@ -1,6 +1,6 @@
 import { describe } from 'node:test';
 
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { useContainer } from 'class-validator';
@@ -16,7 +16,11 @@ import {
 } from '@/modules/content/repositories';
 
 import { CoreModule } from '@/modules/core/core.module';
+import { createApp } from '@/modules/core/helpers/app';
+import { App } from '@/modules/core/types';
 import { MeiliService } from '@/modules/meilisearch/meili.service';
+
+import { createOptions } from '@/options';
 
 import { generateRandomNumber, generateUniqueRandomNumbers } from './generate-mock-data';
 import { categoriesData, commentData, INIT_DATA, postData, tagData } from './test-data';
@@ -39,16 +43,16 @@ describe('nest app test', () => {
         const module: TestingModule = await Test.createTestingModule({
             imports: [CoreModule],
         }).compile();
-        app = module.createNestApplication<NestFastifyApplication>(new FastifyAdapter());
-        useContainer(app.select(CoreModule), { fallbackOnErrors: true });
+        const appConfig: App = await createApp(createOptions)();
+        app = appConfig.container;
         await app.init();
         await app.getHttpAdapter().getInstance().ready();
 
-        categoryRepository = module.get<CategoryRepository>(CategoryRepository);
-        tagRepository = module.get<TagRepository>(TagRepository);
-        postRepository = module.get<PostRepository>(PostRepository);
-        commentRepository = module.get<CommentRepository>(CommentRepository);
-        searchService = module.get<MeiliService>(MeiliService);
+        categoryRepository = app.get<CategoryRepository>(CategoryRepository);
+        tagRepository = app.get<TagRepository>(TagRepository);
+        postRepository = app.get<PostRepository>(PostRepository);
+        commentRepository = app.get<CommentRepository>(CommentRepository);
+        searchService = app.get<MeiliService>(MeiliService);
         datasource = module.get<DataSource>(DataSource);
         if (!datasource.isInitialized) {
             await datasource.initialize();

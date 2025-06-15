@@ -1,5 +1,4 @@
 import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { isMobilePhone, IsMobilePhoneOptions, MobilePhoneLocale } from 'validator';
 
 export function isMatchPhone(
