@@ -17,12 +17,27 @@ export enum SelectTrashMode {
 }
 
 export enum OrderType {
+    /**
+     * 升序排序
+     */
     ASC = 'ASC',
+    /**
+     * 降序排序
+     */
     DESC = 'DESC',
 }
 
 export enum TreeChildrenResolve {
+    /**
+     * 子信息删除
+     */
     DELETE = 'delete',
+    /**
+     * 子信息上升层级
+     */
     UP = 'up',
+    /**
+     * 子信息上升到顶层
+     */
     ROOT = 'root',
 }

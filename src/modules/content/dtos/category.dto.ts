@@ -16,27 +16,8 @@ import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator
 import { IsDataExist } from '@/modules/database/constraints/data.exist.constraint';
 import { IsTreeUnique } from '@/modules/database/constraints/tree.unique.constraint';
 import { IsTreeUniqueExist } from '@/modules/database/constraints/tree.unique.exist.constraint';
-import { PaginateOptions } from '@/modules/database/types';
 
 import { CategoryEntity } from '../entities';
-
-@DtoValidation({ type: 'query' })
-export class QueryCategoryDto implements PaginateOptions {
-    @Transform(({ value }) => toNumber(value))
-    @Min(1, { always: true, message: 'The current page must be greater than 1.' })
-    @IsInt()
-    @IsOptional()
-    page = 1;
-
-    @Transform(({ value }) => toNumber(value))
-    @Min(1, {
-        always: true,
-        message: 'The number of data displayed per page must be greater than 1.',
-    })
-    @IsInt()
-    @IsOptional()
-    limit = 10;
-}
 
 @DtoValidation({ groups: ['create'] })
 export class CreateCategoryDto {

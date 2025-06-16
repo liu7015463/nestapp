@@ -15,8 +15,10 @@ import { DeleteDto } from '@/modules/content/dtos/delete.dto';
 
 import { Depends } from '@/modules/restful/decorators/depend.decorator';
 
+import { PaginateDto } from '@/modules/restful/dtos/paginate.dto';
+
 import { ContentModule } from '../content.module';
-import { CreateTagDto, QueryTagDto, UpdateTagDto } from '../dtos/tag.dto';
+import { CreateTagDto, UpdateTagDto } from '../dtos/tag.dto';
 import { TagService } from '../services';
 
 @Depends(ContentModule)
@@ -28,7 +30,7 @@ export class TagController {
     @SerializeOptions({})
     async list(
         @Query()
-        options: QueryTagDto,
+        options: PaginateDto,
     ) {
         return this.service.paginate(options);
     }

@@ -15,8 +15,10 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { Depends } from '@/modules/restful/decorators/depend.decorator';
 
+import { PaginateDto } from '@/modules/restful/dtos/paginate.dto';
+
 import { ContentModule } from '../content.module';
-import { CreateCategoryDto, QueryCategoryDto, UpdateCategoryDto } from '../dtos/category.dto';
+import { CreateCategoryDto, UpdateCategoryDto } from '../dtos/category.dto';
 import { CategoryService } from '../services';
 
 @ApiTags('Category Operate')
@@ -42,7 +44,7 @@ export class CategoryController {
     @SerializeOptions({ groups: ['category-list'] })
     async list(
         @Query()
-        options: QueryCategoryDto,
+        options: PaginateDto,
     ) {
         return this.service.paginate(options);
     }

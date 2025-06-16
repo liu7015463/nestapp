@@ -1,33 +1,12 @@
 import { PartialType } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import { IsDefined, IsInt, IsNotEmpty, IsOptional, IsUUID, MaxLength, Min } from 'class-validator';
-import { toNumber } from 'lodash';
+import { IsDefined, IsNotEmpty, IsOptional, IsUUID, MaxLength } from 'class-validator';
 
 import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
 import { IsDataExist } from '@/modules/database/constraints';
 import { IsUnique } from '@/modules/database/constraints/unique.constraint';
 import { IsUniqueExist } from '@/modules/database/constraints/unique.exist.constraint';
-import { PaginateOptions } from '@/modules/database/types';
 
 import { TagEntity } from '../entities';
-
-@DtoValidation({ type: 'query' })
-export class QueryTagDto implements PaginateOptions {
-    @Transform(({ value }) => toNumber(value))
-    @Min(1, { always: true, message: 'The current page must be greater than 1.' })
-    @IsInt()
-    @IsOptional()
-    page = 1;
-
-    @Transform(({ value }) => toNumber(value))
-    @Min(1, {
-        always: true,
-        message: 'The number of data displayed per page must be greater than 1.',
-    })
-    @IsInt()
-    @IsOptional()
-    limit = 10;
-}
 
 @DtoValidation({ groups: ['create'] })
 export class CreateTagDto {
