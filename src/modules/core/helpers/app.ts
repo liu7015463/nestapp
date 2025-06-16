@@ -18,7 +18,7 @@ import { App, AppConfig, CreateOptions } from '../types';
 
 import { CreateModule } from './utils';
 
-export const app: App = { configure: new Configure() };
+export const app: App = { configure: new Configure(), commands: [] };
 
 export const createApp = (options: CreateOptions) => async (): Promise<App> => {
     const { config, builder } = options;

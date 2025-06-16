@@ -1,6 +1,8 @@
 import { ModuleMetadata, PipeTransform, Type } from '@nestjs/common';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 
+import { CommandModule } from 'yargs';
+
 import { Configure } from '../config/configure';
 import { ConfigStorageOption, ConfigureFactory } from '../config/types';
 
@@ -8,6 +10,8 @@ export type App = {
     container?: NestFastifyApplication;
 
     configure: Configure;
+
+    commands: CommandModule<RecordAny, RecordAny>[];
 };
 
 export interface CreateOptions {
@@ -60,4 +64,18 @@ export interface PanicOption {
     error?: any;
 
     exit?: boolean;
+}
+
+export interface CommandOption<T = RecordAny, P = RecordAny> extends CommandModule<T, P> {
+    instant?: boolean;
+}
+
+export type CommandItem<T = RecordAny, P = RecordAny> = (
+    app: Required<App>,
+) => Promise<CommandOption<T, P>>;
+
+export type CommandCollection = Array<CommandItem<any, any>>;
+
+export interface CreateOption {
+    commands: () => CommandCollection;
 }
