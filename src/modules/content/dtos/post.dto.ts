@@ -25,16 +25,32 @@ import { PaginateOptions } from '@/modules/database/types';
 
 import { CategoryEntity, PostEntity, TagEntity } from '../entities';
 
+/**
+ * 文章分页查询验证
+ */
 @DtoValidation({ type: 'query' })
 export class QueryPostDto implements PaginateOptions {
+    /**
+     * 是否查询已发布(全部文章:不填、只查询已发布的:true、只查询未发布的:false)
+     */
     @Transform(({ value }) => toBoolean(value))
     @IsBoolean()
     @IsOptional()
     isPublished?: boolean;
 
+    /**
+     * 全文搜索
+     */
+    @MaxLength(100, {
+        always: true,
+        message: '搜索字符串长度不得超过$constraint1',
+    })
     @IsOptional()
     search?: string;
 
+    /**
+     * 查询结果排序,不填则综合排序
+     */
     @IsEnum(PostOrder, {
         message: `The sorting rule must be one of ${Object.values(PostOrder).join(',')}`,
     })
@@ -60,11 +76,17 @@ export class QueryPostDto implements PaginateOptions {
     @IsOptional()
     trashed?: SelectTrashMode;
 
+    /**
+     * 根据分类ID查询此分类及其后代分类下的文章
+     */
     @IsDataExist(CategoryEntity, { always: true, message: 'The category does not exist' })
     @IsUUID(undefined, { message: 'The ID format is incorrect' })
     @IsOptional()
     category?: string;
 
+    /**
+     * 根据标签ID查询
+     */
     @IsUUID(undefined, { message: 'The ID format is incorrect' })
     @IsOptional()
     tag?: string;
