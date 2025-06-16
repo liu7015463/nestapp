@@ -17,6 +17,7 @@ import { RestfulModule } from './modules/restful/restful.module';
 import { ApiConfig } from './modules/restful/types';
 
 export const createOptions: CreateOptions = {
+    commands: () => [],
     config: { factories: configs as any, storage: { enable: true } },
     modules: async (configure) => [
         DatabaseModule.forRoot(configure),

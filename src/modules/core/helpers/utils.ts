@@ -3,7 +3,9 @@ import chalk from 'chalk';
 import deepmerge from 'deepmerge';
 import { isNil } from 'lodash';
 
-import { PanicOption } from '../types';
+import { Arguments, CommandModule } from 'yargs';
+
+import { App, CommandCollection, PanicOption } from '../types';
 
 export function toBoolean(value?: string | boolean): boolean {
     if (isNil(value)) {
@@ -14,7 +16,7 @@ export function toBoolean(value?: string | boolean): boolean {
     }
     try {
         return JSON.parse(value.toLowerCase());
-    } catch (error) {
+    } catch {
         return value as unknown as boolean;
     }
 }
@@ -41,7 +43,7 @@ export function isAsyncFunction<T, P extends Array<any>>(
     callback: (...args: P) => T | Promise<T>,
 ): callback is (...args: P) => Promise<T> {
     const AsyncFunction = (async () => {}).constructor;
-    return callback instanceof AsyncFunction === true;
+    return callback instanceof AsyncFunction;
 }
 
 export function CreateModule(
@@ -81,4 +83,22 @@ export async function panic(option: PanicOption | string) {
     if (exit) {
         process.exit(1);
     }
+}
+
+export async function createCommands(
+    factory: () => CommandCollection,
+    app: Required<App>,
+): Promise<CommandModule<any, any>[]> {
+    const collection: CommandCollection = [...factory()];
+    const commands = await Promise.all(collection.map(async (command) => command(app)));
+    return commands.map((command) => ({
+        ...command,
+        handler: async (args: Arguments<RecordAny>) => {
+            await app.container.close();
+            await command.handler(args);
+            if (command.instant) {
+                process.exit();
+            }
+        },
+    }));
 }

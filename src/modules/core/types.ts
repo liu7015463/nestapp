@@ -34,6 +34,8 @@ export interface CreateOptions {
 
         storage: ConfigStorageOption;
     };
+
+    commands: () => CommandCollection;
 }
 
 export interface ContainerBuilder {

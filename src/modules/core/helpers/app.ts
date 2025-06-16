@@ -16,7 +16,7 @@ import { AppInterceptor } from '../providers/app.interceptor';
 import { AppPipe } from '../providers/app.pipe';
 import { App, AppConfig, CreateOptions } from '../types';
 
-import { CreateModule } from './utils';
+import { createCommands, CreateModule } from './utils';
 
 export const app: App = { configure: new Configure(), commands: [] };
 
@@ -34,6 +34,7 @@ export const createApp = (options: CreateOptions) => async (): Promise<App> => {
     app.container = await builder({ configure: app.configure, BootModule });
 
     useContainer(app.container.select(BootModule), { fallbackOnErrors: true });
+    app.commands = await createCommands(options.commands, app as Required<App>);
     return app;
 };
 
