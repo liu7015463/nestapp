@@ -10,13 +10,15 @@ import { Configure } from '@/modules/config/configure';
 
 import { DEFAULT_VALIDATION_CONFIG } from '@/modules/content/constants';
 
+import { createCommands } from '@/modules/core/helpers/command';
+
 import { CoreModule } from '../core.module';
 import { AppFilter } from '../providers/app.filter';
 import { AppInterceptor } from '../providers/app.interceptor';
 import { AppPipe } from '../providers/app.pipe';
 import { App, AppConfig, CreateOptions } from '../types';
 
-import { createCommands, CreateModule } from './utils';
+import { CreateModule } from './utils';
 
 export const app: App = { configure: new Configure(), commands: [] };
 
@@ -90,11 +92,11 @@ export async function createBootModule(
 }
 
 export async function startApp(
-    creater: () => Promise<App>,
+    creator: () => Promise<App>,
     listened: (app: App, startTime: Date) => () => Promise<void>,
 ) {
     const startTime = new Date();
-    const { container, configure } = await creater();
+    const { container, configure } = await creator();
     app.container = container;
     app.configure = configure;
     const { port, host } = await configure.get<AppConfig>('app');

@@ -1,6 +1,8 @@
 import { ModuleMetadata, PipeTransform, Type } from '@nestjs/common';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 
+import { Ora } from 'ora';
+import { StartOptions } from 'pm2';
 import { CommandModule } from 'yargs';
 
 import { Configure } from '../config/configure';
@@ -58,6 +60,8 @@ export interface AppConfig {
     url?: string;
 
     prefix?: string;
+
+    pm2?: Omit<StartOptions, 'name' | 'cwd' | 'script' | 'args' | 'interpreter' | 'watch'>;
 }
 
 export interface PanicOption {
@@ -66,6 +70,8 @@ export interface PanicOption {
     error?: any;
 
     exit?: boolean;
+
+    spinner?: Ora;
 }
 
 export interface CommandOption<T = RecordAny, P = RecordAny> extends CommandModule<T, P> {

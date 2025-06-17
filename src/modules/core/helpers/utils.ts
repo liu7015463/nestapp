@@ -3,9 +3,7 @@ import chalk from 'chalk';
 import deepmerge from 'deepmerge';
 import { isNil } from 'lodash';
 
-import { Arguments, CommandModule } from 'yargs';
-
-import { App, CommandCollection, PanicOption } from '../types';
+import { PanicOption } from '../types';
 
 export function toBoolean(value?: string | boolean): boolean {
     if (isNil(value)) {
@@ -83,22 +81,4 @@ export async function panic(option: PanicOption | string) {
     if (exit) {
         process.exit(1);
     }
-}
-
-export async function createCommands(
-    factory: () => CommandCollection,
-    app: Required<App>,
-): Promise<CommandModule<any, any>[]> {
-    const collection: CommandCollection = [...factory()];
-    const commands = await Promise.all(collection.map(async (command) => command(app)));
-    return commands.map((command) => ({
-        ...command,
-        handler: async (args: Arguments<RecordAny>) => {
-            await app.container.close();
-            await command.handler(args);
-            if (command.instant) {
-                process.exit();
-            }
-        },
-    }));
 }

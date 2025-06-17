@@ -31,6 +31,7 @@
     "lib": ["esnext", "DOM", "ScriptHost", "WebWorker"],
     "baseUrl": ".",
     "outDir": "./dist",
+    "types": ["bun-types", "@types/jest"],
     "paths": {
       "@/*": ["./src/*"]
     }
