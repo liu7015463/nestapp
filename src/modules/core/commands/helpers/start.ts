@@ -2,16 +2,14 @@ import { isNil } from '@nestjs/common/utils/shared.utils';
 import { Subprocess } from 'bun';
 import chalk from 'chalk';
 import { pick } from 'lodash';
-import {
-    connect as pm2Connect,
-    disconnect as pm2Disconnect,
-    restart as pm2Restart,
-    start as pm2Start,
-} from 'pm2';
+import pm2 from 'pm2';
+
 import { Arguments } from 'yargs';
 
 import { Configure } from '@/modules/config/configure';
+import { Asset } from '@/modules/core/commands/helpers/asset';
 import { getPm2Config } from '@/modules/core/commands/helpers/config';
+import { generateSwaggerMetadata } from '@/modules/core/commands/helpers/swagger';
 import { CLIConfig, StartCommandArguments } from '@/modules/core/commands/types';
 import { AppConfig } from '@/modules/core/types';
 
@@ -19,6 +17,9 @@ export async function start(
     args: Arguments<StartCommandArguments>,
     config: CLIConfig,
 ): Promise<void> {
+    console.log('command start...');
+    console.log(args);
+    console.log(config);
     const script = args.typescript ? config.paths.ts : config.paths.js;
     const params = [config.paths.bun, 'run'];
     if (args.watch) {
@@ -29,9 +30,13 @@ export async function start(
             typeof args.debug === 'string' ? `--inspect=${args.debug}` : '--inspect';
         params.push(inspectFlag);
     }
+    if (args.typescript) {
+        generateSwaggerMetadata(args, config, false);
+    }
     params.push(script);
     let child: Subprocess;
     if (args.watch) {
+        const asset = new Asset();
         const restart = () => {
             if (!isNil(child)) {
                 child.kill();
@@ -39,6 +44,12 @@ export async function start(
             child = Bun.spawn(params, config.subprocess.bun);
         };
         restart();
+        asset.watchAssets(config, config.paths.cwd, restart);
+        process.on('exit', () => {
+            child.kill();
+            asset.closeWatchers();
+            process.exit(0);
+        });
     } else {
         Bun.spawn(params, {
             ...config.subprocess.bun,
@@ -94,21 +105,22 @@ export async function startPM2(
             console.error(error);
             process.exit(1);
         }
-        pm2Disconnect();
+        pm2.disconnect();
     };
 
     const restartCallback = (error?: any) => {
         if (isNil(error)) {
-            pm2Disconnect();
+            pm2.disconnect();
         } else {
-            pm2Start(pm2config, (err) => startCallback(err));
+            pm2.start(pm2config, (err) => startCallback(err));
         }
     };
 
-    pm2Connect((err: any) => {
+    pm2.connect((err: any) => {
         connectCallback(err);
+        generateSwaggerMetadata(args, config, false);
         args.restart
-            ? pm2Restart(name, restartCallback)
-            : pm2Start(pm2config, (e) => startCallback(e));
+            ? pm2.restart(name, restartCallback)
+            : pm2.start(pm2config, (e) => startCallback(e));
     });
 }

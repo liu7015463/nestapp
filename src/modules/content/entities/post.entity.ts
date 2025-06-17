@@ -10,9 +10,10 @@ import {
     ManyToOne,
     OneToMany,
     PrimaryColumn,
-    Relation,
     UpdateDateColumn,
 } from 'typeorm';
+
+import type { Relation } from 'typeorm';
 
 import { PostBodyType } from '@/modules/content/constants';
 import { CategoryEntity } from '@/modules/content/entities/category.entity';

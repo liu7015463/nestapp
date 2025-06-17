@@ -5,11 +5,12 @@ import {
     Entity,
     OneToMany,
     PrimaryColumn,
-    Relation,
     Tree,
     TreeChildren,
     TreeParent,
 } from 'typeorm';
+
+import type { Relation } from 'typeorm';
 
 import { PostEntity } from '@/modules/content/entities/post.entity';
 

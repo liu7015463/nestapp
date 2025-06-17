@@ -57,3 +57,8 @@ export type StartCommandArguments = {
 };
 
 export type Pm2Option = Pick<StartCommandArguments, 'typescript' | 'watch'> & { command: string };
+
+export type BuildCommandArguments = Pick<StartCommandArguments, 'tsConfig' | 'nestConfig'> & {
+    watch?: string;
+    preserveWatchOutput?: boolean;
+};

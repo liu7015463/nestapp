@@ -10,7 +10,7 @@ import { PostEntity } from '@/modules/content/entities/post.entity';
 import { CategoryRepository } from '@/modules/content/repositories';
 import { PostRepository } from '@/modules/content/repositories/post.repository';
 import { SearchService } from '@/modules/content/services/search.service';
-import { SearchType } from '@/modules/content/types';
+import type { SearchType } from '@/modules/content/types';
 import { BaseService } from '@/modules/database/base/service';
 import { SelectTrashMode } from '@/modules/database/constants';
 import { QueryHook } from '@/modules/database/types';

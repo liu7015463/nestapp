@@ -60,8 +60,11 @@ export const createStartCommand: CommandItem<any, StartCommandArguments> = async
         },
     },
     handler: async (args: Arguments<StartCommandArguments>) => {
+        console.log('createStartCommand handler start');
+        console.log(app);
         const { configure } = app;
         const config = getCLIConfig(args.tsConfig, args.nestConfig, args.entry);
+        console.log(config);
         if (args.prod || args.restart) {
             await startPM2(configure, args, config);
         } else {

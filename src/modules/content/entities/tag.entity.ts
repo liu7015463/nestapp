@@ -1,5 +1,6 @@
 import { Exclude, Expose } from 'class-transformer';
-import { Column, Entity, ManyToMany, PrimaryColumn, Relation } from 'typeorm';
+import { Column, Entity, ManyToMany, PrimaryColumn } from 'typeorm';
+import type { Relation } from 'typeorm';
 
 import { PostEntity } from '@/modules/content/entities/post.entity';
 

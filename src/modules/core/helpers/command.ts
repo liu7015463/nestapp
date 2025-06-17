@@ -7,6 +7,7 @@ import * as coreCommands from '../commands';
 import { App, CommandCollection } from '../types';
 
 export async function buildCli(creator: () => Promise<App>) {
+    console.log('buildCli start');
     const app = await creator();
     const bin = yargs(hideBin(process.argv));
     app.commands.forEach((cmd) => {

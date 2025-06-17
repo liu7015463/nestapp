@@ -1,7 +1,7 @@
 import { ConfigureFactory, ConfigureRegister } from '../config/types';
 import { createConnectionOptions } from '../config/utils';
 
-import { MeiliConfig } from './types';
+import type { MeiliConfig } from './types';
 
 export const createMeiliConfig: (
     registre: ConfigureRegister<RePartial<MeiliConfig>>,

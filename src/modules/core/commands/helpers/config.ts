@@ -20,7 +20,7 @@ const cwdPath = resolve(__dirname, '../../../../..');
 export function getCLIConfig(
     tsConfigFile: string,
     nestConfigFile: string,
-    tsEntryFile: string,
+    tsEntryFile?: string,
 ): CLIConfig {
     let tsConfig: ts.CompilerOptions = {};
     const tsConfigPath = join(cwdPath, tsConfigFile);
@@ -57,7 +57,7 @@ export function getCLIConfig(
         js: join(dist, nestConfig.entryFile ?? 'main.js'),
         ts: join(src, tsEntryFile ?? 'main.ts'),
         bun: './node_modules/bun/bin/bun',
-        nest: './node_modules/@nestjs//cli/bin/nest.js',
+        nest: './node_modules/@nestjs/cli/bin/nest.js',
     };
 
     return {

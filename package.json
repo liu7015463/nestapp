@@ -6,7 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "cli": "./node_modules/bun/bin/bun --bun ./console/bin.ts",
+    "cli": "bun --bun src/console/bin.ts",
+    "dev": "cross-env NODE_ENV=development pnpm cli start -w",
     "prebuild": "rimraf dist",
     "build": "cross-env NODE_ENV=production nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
