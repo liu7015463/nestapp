@@ -26,9 +26,6 @@ importers:
       '@nestjs/typeorm':
         specifier: ^11.0.0
         version: 11.0.0(@nestjs/common@11.1.3(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.3(@nestjs/common@11.1.3(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.24(mysql2@3.14.1)(reflect-metadata@0.2.2)(ts-node@10.9.2(@swc/core@1.12.3)(@types/node@24.0.3)(typescript@5.8.3)))
-      bun:
-        specifier: ^1.2.16
-        version: 1.2.16
       chalk:
         specifier: ^5.4.1
         version: 5.4.1
@@ -1057,61 +1054,6 @@ packages:
     engines: {node: ^14.18.0 || >=16.10.0, npm: '>=5.10.0'}
     hasBin: true
 
-  '@oven/bun-darwin-aarch64@1.2.16':
-    resolution: {integrity: sha512-NLVU9YDORq/3WuJOE5TQv5of3R99n56gYZPfdqP4U0/5nllbC8yzRxA2BWwAS2RxxD0Y3bxqEVUsIGiTNN2jxg==}
-    cpu: [arm64]
-    os: [darwin]
-
-  '@oven/bun-darwin-x64-baseline@1.2.16':
-    resolution: {integrity: sha512-FtKr6FwLN+QfrF0/vJtOwBMU72krmrHlxhRSElbKEOWox2n2vWSZ/sNNkHePEsrxGfqaHC5GhEZk2lnaZTavBQ==}
-    cpu: [x64]
-    os: [darwin]
-
-  '@oven/bun-darwin-x64@1.2.16':
-    resolution: {integrity: sha512-HpcSVCTH9n+9bG2zu3OUJ9h22m6HzNgZpqib9r4NEVZg7Z2U86bOUMKlTCA0ZANaWsK9czl2VIhMWbLF4fgvLA==}
-    cpu: [x64]
-    os: [darwin]
-
-  '@oven/bun-linux-aarch64-musl@1.2.16':
-    resolution: {integrity: sha512-MhvQ0hecunZnbac9cEOqA1CGk/ISDhhnF35i9l90Jgc/osfgGndViLkMp3wk1EO5UG4/Kbil1OlfLmyOHKq0SQ==}
-    cpu: [aarch64]
-    os: [linux]
-
-  '@oven/bun-linux-aarch64@1.2.16':
-    resolution: {integrity: sha512-nd0eZhihfgrDtfI/NdEqOAQ8KY87SWNQLZKjRB8WoYkqcY1BGwtZqvJOc2bEn2oERJ8K2etJRynXz+MKngiYxw==}
-    cpu: [arm64]
-    os: [linux]
-
-  '@oven/bun-linux-x64-baseline@1.2.16':
-    resolution: {integrity: sha512-ZysDeqDfUAqKrQu2R+ddRgSCY30qSnn0LQLr6fAm7Pw9lU2yhWVNa8R3DavddmZQc1vUw6j3ITIAE+DDT9OBCg==}
-    cpu: [x64]
-    os: [linux]
-
-  '@oven/bun-linux-x64-musl-baseline@1.2.16':
-    resolution: {integrity: sha512-cWwny3cxYkvV9fYnSDb2brXodWV7IcG+Bwd3q3b8OUYbeC3ekHN3zm+TYdSxIVhMm7z46CkiDz5QnnQWVVfZ5A==}
-    cpu: [x64]
-    os: [linux]
-
-  '@oven/bun-linux-x64-musl@1.2.16':
-    resolution: {integrity: sha512-6o5Oi5ARKYErF6nIBrewxtl20PGhM97faPemJ+v26D47dRNAlUWN5lMVuOqZOhYjqzOe4V+NpxIFBHtXWEmoNQ==}
-    cpu: [x64]
-    os: [linux]
-
-  '@oven/bun-linux-x64@1.2.16':
-    resolution: {integrity: sha512-qYUXPXbT4S+MImv51+dLBHKFYy40QIowwCRtzUFGf3TG+9MQQUXHNXryMNSdHveHqecd9rO1EIQ8hroAPBl+Sg==}
-    cpu: [x64]
-    os: [linux]
-
-  '@oven/bun-windows-x64-baseline@1.2.16':
-    resolution: {integrity: sha512-tHdtHqH6c5ScNusLWOzZCTeuV2rSc3mvlLQQ+DYefTy+XwtjXmY47MbBSgNuBWVYePIob9BqDFOtTHYIWRZTww==}
-    cpu: [x64]
-    os: [win32]
-
-  '@oven/bun-windows-x64@1.2.16':
-    resolution: {integrity: sha512-1xUlHHbMZ3DMZlEcppBAQ5vQDgNHDMIGB/AXO+dxQJl/3GiO/Ek4pMDzcqMnlbGDaDcTmTXyZ6cEXEF4C2qygQ==}
-    cpu: [x64]
-    os: [win32]
-
   '@paralleldrive/cuid2@2.2.2':
     resolution: {integrity: sha512-ZOBkgDwEdoYVlSeRbYYXs0S9MejQofiVYoTbKzy/6GQa39/q5tQU2IX46+shYnUkpEl3wc+J6wRlar7r2EK2xA==}
 
@@ -1886,12 +1828,6 @@ packages:
 
   bun-types@1.2.16:
     resolution: {integrity: sha512-ciXLrHV4PXax9vHvUrkvun9VPVGOVwbbbBF/Ev1cXz12lyEZMoJpIJABOfPcN9gDJRaiKF9MVbSygLg4NXu3/A==}
-
-  bun@1.2.16:
-    resolution: {integrity: sha512-sjZH6rr1P6yu44+XPA8r+ZojwmK9Kbz9lO6KAA/4HRIupdpC31k7b93crLBm19wEYmd6f2+3+57/7tbOcmHbGg==}
-    cpu: [arm64, x64, aarch64]
-    os: [darwin, linux, win32]
-    hasBin: true
 
   cacheable-lookup@7.0.0:
     resolution: {integrity: sha512-+qJyx4xiKra8mZrcwhjMRMUhD5NR1R8esPkzIYxX96JiecFoxAXFuz/GpR3+ev4PE1WamHip78wV0vcmPQtp8w==}
@@ -4361,8 +4297,8 @@ packages:
       uglify-js:
         optional: true
 
-  terser@5.43.0:
-    resolution: {integrity: sha512-CqNNxKSGKSZCunSvwKLTs8u8sGGlp27sxNZ4quGh0QeNuyHM0JSEM/clM9Mf4zUp6J+tO2gUXhgXT2YMMkwfKQ==}
+  terser@5.43.1:
+    resolution: {integrity: sha512-+6erLbBm0+LROX2sPXlUYx/ux5PyE9K/a92Wrt6oA+WDAoFTdpHE5tCYCI5PNzq2y8df4rA+QgHLJuR4jNymsg==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -5775,39 +5711,6 @@ snapshots:
     dependencies:
       consola: 3.4.2
 
-  '@oven/bun-darwin-aarch64@1.2.16':
-    optional: true
-
-  '@oven/bun-darwin-x64-baseline@1.2.16':
-    optional: true
-
-  '@oven/bun-darwin-x64@1.2.16':
-    optional: true
-
-  '@oven/bun-linux-aarch64-musl@1.2.16':
-    optional: true
-
-  '@oven/bun-linux-aarch64@1.2.16':
-    optional: true
-
-  '@oven/bun-linux-x64-baseline@1.2.16':
-    optional: true
-
-  '@oven/bun-linux-x64-musl-baseline@1.2.16':
-    optional: true
-
-  '@oven/bun-linux-x64-musl@1.2.16':
-    optional: true
-
-  '@oven/bun-linux-x64@1.2.16':
-    optional: true
-
-  '@oven/bun-windows-x64-baseline@1.2.16':
-    optional: true
-
-  '@oven/bun-windows-x64@1.2.16':
-    optional: true
-
   '@paralleldrive/cuid2@2.2.2':
     dependencies:
       '@noble/hashes': 1.8.0
@@ -6689,20 +6592,6 @@ snapshots:
   bun-types@1.2.16:
     dependencies:
       '@types/node': 24.0.3
-
-  bun@1.2.16:
-    optionalDependencies:
-      '@oven/bun-darwin-aarch64': 1.2.16
-      '@oven/bun-darwin-x64': 1.2.16
-      '@oven/bun-darwin-x64-baseline': 1.2.16
-      '@oven/bun-linux-aarch64': 1.2.16
-      '@oven/bun-linux-aarch64-musl': 1.2.16
-      '@oven/bun-linux-x64': 1.2.16
-      '@oven/bun-linux-x64-baseline': 1.2.16
-      '@oven/bun-linux-x64-musl': 1.2.16
-      '@oven/bun-linux-x64-musl-baseline': 1.2.16
-      '@oven/bun-windows-x64': 1.2.16
-      '@oven/bun-windows-x64-baseline': 1.2.16
 
   cacheable-lookup@7.0.0: {}
 
@@ -9514,12 +9403,12 @@ snapshots:
       jest-worker: 27.5.1
       schema-utils: 4.3.2
       serialize-javascript: 6.0.2
-      terser: 5.43.0
+      terser: 5.43.1
       webpack: 5.99.6(@swc/core@1.12.3)
     optionalDependencies:
       '@swc/core': 1.12.3
 
-  terser@5.43.0:
+  terser@5.43.1:
     dependencies:
       '@jridgewell/source-map': 0.3.6
       acorn: 8.15.0

@@ -50,13 +50,14 @@ export function getCLIConfig(
 
     const dist = get(tsConfig, 'outDir', 'dist');
     const src = get(nestConfig, 'sourceRoot', 'src');
+    const homeDir = process.env.HOME;
     const paths = {
         cwd: cwdPath,
         dist,
         src,
         js: join(dist, nestConfig.entryFile ?? 'main.js'),
         ts: join(src, tsEntryFile ?? 'main.ts'),
-        bun: './node_modules/bun/bin/bun',
+        bun: `${homeDir}/.bun/bin/bun`,
         nest: './node_modules/@nestjs/cli/bin/nest.js',
     };
 
