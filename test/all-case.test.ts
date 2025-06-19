@@ -21,6 +21,8 @@ import { createOptions } from '@/options';
 import { generateRandomNumber, generateUniqueRandomNumbers } from './generate-mock-data';
 import { categoriesData, commentData, INIT_DATA, postData, tagData } from './test-data';
 
+const URL_PREFIX = '/api/v1/content';
+
 describe('nest app test', () => {
     let datasource: DataSource;
     let app: NestFastifyApplication;
@@ -79,7 +81,7 @@ describe('nest app test', () => {
                 ids.map(async (id) => {
                     const result = await app.inject({
                         method: 'GET',
-                        url: `/category/${id}`,
+                        url: `${URL_PREFIX}/category/${id}`,
                     });
                     categories.push(result.json());
                     return result.json();
@@ -119,7 +121,7 @@ describe('nest app test', () => {
         it('create category without name', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {},
             });
             expect(result.json()).toEqual({
@@ -135,7 +137,7 @@ describe('nest app test', () => {
         it('create category with long name', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: { name: 'A'.repeat(30) },
             });
             expect(result.json()).toEqual({
@@ -149,7 +151,7 @@ describe('nest app test', () => {
             const rootCategory = categories.find((c) => !c.parent);
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: { name: rootCategory.name },
             });
             expect(result.json()).toEqual({
@@ -163,7 +165,7 @@ describe('nest app test', () => {
             const testData = categories.find((item) => !isNil(item.parent));
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     name: testData.name,
                     parent: testData.parent.id,
@@ -179,7 +181,7 @@ describe('nest app test', () => {
         it('create category with invalid parent id format', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     name: 'New Category',
                     parent: 'invalid-uuid',
@@ -198,7 +200,7 @@ describe('nest app test', () => {
         it('create category with non-existent parent id', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     name: 'New Category',
                     parent: '74e655b3-b69a-42ae-a101-41c224386e74',
@@ -214,7 +216,7 @@ describe('nest app test', () => {
         it('create category with negative custom order', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     name: 'New Category',
                     customOrder: -1,
@@ -230,7 +232,7 @@ describe('nest app test', () => {
         it('create category with empty name', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: { name: '' },
             });
             expect(result.json()).toEqual({
@@ -243,7 +245,7 @@ describe('nest app test', () => {
         it('create category with whitespace name', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: { name: '   ' },
             });
             expect(result.json()).toEqual({
@@ -257,7 +259,7 @@ describe('nest app test', () => {
             const name = 'A'.repeat(25);
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: { name },
             });
             expect(result.statusCode).toEqual(201);
@@ -265,14 +267,14 @@ describe('nest app test', () => {
             expect(category.name).toBe(name);
             await app.inject({
                 method: 'DELETE',
-                url: `/category/${result.json().id}`,
+                url: `${URL_PREFIX}/category/${result.json().id}`,
             });
         });
 
         it('create category with name one char over limit (26 chars)', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: { name: 'A'.repeat(26) },
             });
             expect(result.json()).toEqual({
@@ -286,7 +288,7 @@ describe('nest app test', () => {
             const rootCategory = categories.find((c) => !c.parent);
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: { name: rootCategory.name },
             });
             expect(result.json()).toEqual({
@@ -302,7 +304,7 @@ describe('nest app test', () => {
 
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     name: existingChild.name,
                     parent: parentCategory.id,
@@ -322,7 +324,7 @@ describe('nest app test', () => {
 
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     name: childName,
                     parent: parent2.id,
@@ -331,14 +333,14 @@ describe('nest app test', () => {
             expect(result.statusCode).toEqual(201);
             await app.inject({
                 method: 'DELETE',
-                url: `/category/${result.json().id}`,
+                url: `${URL_PREFIX}/category/${result.json().id}`,
             });
         });
 
         it('create category with parent set to null string', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     name: 'Root Category',
                     parent: 'null', // 注意：这里传递字符串 'null'
@@ -349,14 +351,14 @@ describe('nest app test', () => {
             expect(category.parent).toBeNull();
             await app.inject({
                 method: 'DELETE',
-                url: `/category/${result.json().id}`,
+                url: `${URL_PREFIX}/category/${result.json().id}`,
             });
         });
 
         it('create category with parent set to null value', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     name: 'Root Category',
                     parent: null,
@@ -367,14 +369,14 @@ describe('nest app test', () => {
             expect(category.parent).toBeNull();
             await app.inject({
                 method: 'DELETE',
-                url: `/category/${result.json().id}`,
+                url: `${URL_PREFIX}/category/${result.json().id}`,
             });
         });
 
         it('create category with empty parent id', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     name: 'New Category',
                     parent: '',
@@ -393,7 +395,7 @@ describe('nest app test', () => {
         it('create category with malformed UUID parent id', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     name: 'New Category',
                     parent: 'not-a-valid-uuid-123',
@@ -412,7 +414,7 @@ describe('nest app test', () => {
         it('create category with customOrder as string', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     name: 'New Category',
                     customOrder: '10', // 字符串形式的数字
@@ -423,14 +425,14 @@ describe('nest app test', () => {
             expect(category.customOrder).toBe(10);
             await app.inject({
                 method: 'DELETE',
-                url: `/category/${result.json().id}`,
+                url: `${URL_PREFIX}/category/${result.json().id}`,
             });
         });
 
         it('create category with customOrder as float', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     name: 'New Category',
                     customOrder: 5.5,
@@ -446,7 +448,7 @@ describe('nest app test', () => {
         it('create category with customOrder as negative number', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     name: 'New Category',
                     customOrder: -1,
@@ -462,7 +464,7 @@ describe('nest app test', () => {
         it('create category with customOrder as zero', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     name: 'New Category',
                     customOrder: 0,
@@ -473,14 +475,14 @@ describe('nest app test', () => {
             expect(category.customOrder).toBe(0);
             await app.inject({
                 method: 'DELETE',
-                url: `/category/${result.json().id}`,
+                url: `${URL_PREFIX}/category/${result.json().id}`,
             });
         });
 
         it('create category with customOrder as large number', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     name: 'New Category',
                     customOrder: 999999,
@@ -489,7 +491,7 @@ describe('nest app test', () => {
             expect(result.statusCode).toEqual(201);
             await app.inject({
                 method: 'DELETE',
-                url: `/category/${result.json().id}`,
+                url: `${URL_PREFIX}/category/${result.json().id}`,
             });
         });
 
@@ -497,7 +499,7 @@ describe('nest app test', () => {
             const parent = categories.find((c) => !c.parent);
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     name: 'Valid New Category',
                     parent: parent.id,
@@ -511,7 +513,7 @@ describe('nest app test', () => {
             expect(category.customOrder).toBe(5);
             await app.inject({
                 method: 'DELETE',
-                url: `/category/${result.json().id}`,
+                url: `${URL_PREFIX}/category/${result.json().id}`,
             });
         });
 
@@ -520,7 +522,7 @@ describe('nest app test', () => {
             const category = categories[0];
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     name: 'Invalid Category',
                     parent: category.id,
@@ -535,7 +537,7 @@ describe('nest app test', () => {
         it('update category without id', async () => {
             const result = await app.inject({
                 method: 'PATCH',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: { name: 'Updated Category' },
             });
             expect(result.json()).toEqual({
@@ -552,7 +554,7 @@ describe('nest app test', () => {
         it('update category with invalid id format', async () => {
             const result = await app.inject({
                 method: 'PATCH',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     id: 'invalid-uuid',
                     name: 'Updated Category',
@@ -572,7 +574,7 @@ describe('nest app test', () => {
         it('update category with non-existent id', async () => {
             const result = await app.inject({
                 method: 'PATCH',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     id: '74e655b3-b69a-42ae-a101-41c224386e74',
                     name: 'Updated Category',
@@ -585,7 +587,7 @@ describe('nest app test', () => {
             const category = categories[0];
             const result = await app.inject({
                 method: 'PATCH',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     id: category.id,
                     name: 'A'.repeat(30),
@@ -604,7 +606,7 @@ describe('nest app test', () => {
 
             const result = await app.inject({
                 method: 'PATCH',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     id: child1.id,
                     name: child2.name,
@@ -621,7 +623,7 @@ describe('nest app test', () => {
             const category = categories[0];
             const result = await app.inject({
                 method: 'PATCH',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     id: category.id,
                     parent: 'invalid-uuid',
@@ -641,7 +643,7 @@ describe('nest app test', () => {
             const category = categories[0];
             const result = await app.inject({
                 method: 'PATCH',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     id: category.id,
                     parent: '74e655b3-b69a-42ae-a101-41c224386e74',
@@ -658,7 +660,7 @@ describe('nest app test', () => {
             const category = categories[0];
             const result = await app.inject({
                 method: 'PATCH',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: {
                     id: category.id,
                     customOrder: -1,
@@ -675,7 +677,7 @@ describe('nest app test', () => {
         it('query categories with invalid page', async () => {
             const result = await app.inject({
                 method: 'GET',
-                url: '/category?page=0',
+                url: `${URL_PREFIX}/category?page=0`,
             });
             expect(result.json()).toEqual({
                 message: ['The current page must be greater than 1.'],
@@ -687,7 +689,7 @@ describe('nest app test', () => {
         it('query categories with invalid limit', async () => {
             const result = await app.inject({
                 method: 'GET',
-                url: '/category?limit=0',
+                url: `${URL_PREFIX}/category?limit=0`,
             });
             expect(result.json()).toEqual({
                 message: ['The number of data displayed per page must be greater than 1.'],
@@ -707,7 +709,7 @@ describe('nest app test', () => {
         it('create tag without name', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/tag',
+                url: `${URL_PREFIX}/tag`,
                 body: {},
             });
             expect(result.json()).toEqual({
@@ -724,7 +726,7 @@ describe('nest app test', () => {
         it('create tag with long name', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/tag',
+                url: `${URL_PREFIX}/tag`,
                 body: { name: 'A'.repeat(256) },
             });
             expect(result.json()).toEqual({
@@ -738,7 +740,7 @@ describe('nest app test', () => {
             const existingTag = tags[0];
             const result = await app.inject({
                 method: 'POST',
-                url: '/tag',
+                url: `${URL_PREFIX}/tag`,
                 body: { name: existingTag.name },
             });
             expect(result.json()).toEqual({
@@ -751,7 +753,7 @@ describe('nest app test', () => {
         it('create tag with long description', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/tag',
+                url: `${URL_PREFIX}/tag`,
                 body: {
                     name: 'NewTag',
                     desc: 'A'.repeat(501),
@@ -768,7 +770,7 @@ describe('nest app test', () => {
         it('update tag without id', async () => {
             const result = await app.inject({
                 method: 'PATCH',
-                url: '/tag',
+                url: `${URL_PREFIX}/tag`,
                 body: { name: 'Updated Tag' },
             });
             expect(result.json()).toEqual({
@@ -785,7 +787,7 @@ describe('nest app test', () => {
         it('update tag with invalid id format', async () => {
             const result = await app.inject({
                 method: 'PATCH',
-                url: '/tag',
+                url: `${URL_PREFIX}/tag`,
                 body: {
                     id: 'invalid-uuid',
                     name: 'Updated Tag',
@@ -801,7 +803,7 @@ describe('nest app test', () => {
         it('update tag with non-existent id', async () => {
             const result = await app.inject({
                 method: 'PATCH',
-                url: '/tag',
+                url: `${URL_PREFIX}/tag`,
                 body: {
                     id: '74e655b3-b69a-42ae-a101-41c224386e74',
                     name: 'Updated Tag',
@@ -818,7 +820,7 @@ describe('nest app test', () => {
             const tag = tags[0];
             const result = await app.inject({
                 method: 'PATCH',
-                url: '/tag',
+                url: `${URL_PREFIX}/tag`,
                 body: {
                     id: tag.id,
                     name: 'A'.repeat(256),
@@ -835,7 +837,7 @@ describe('nest app test', () => {
             const [tag1, tag2] = tags;
             const result = await app.inject({
                 method: 'PATCH',
-                url: '/tag',
+                url: `${URL_PREFIX}/tag`,
                 body: {
                     id: tag1.id,
                     name: tag2.name,
@@ -852,7 +854,7 @@ describe('nest app test', () => {
             const tag = tags[0];
             const result = await app.inject({
                 method: 'PATCH',
-                url: '/tag',
+                url: `${URL_PREFIX}/tag`,
                 body: {
                     id: tag.id,
                     desc: 'A'.repeat(501),
@@ -878,7 +880,7 @@ describe('nest app test', () => {
         it('create post without title', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/posts',
+                url: `${URL_PREFIX}/posts`,
                 body: { body: 'Post content' },
             });
             expect(result.json()).toEqual({
@@ -894,7 +896,7 @@ describe('nest app test', () => {
         it('create post without body', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/posts',
+                url: `${URL_PREFIX}/posts`,
                 body: { title: 'New Post' },
             });
             expect(result.json()).toEqual({
@@ -907,7 +909,7 @@ describe('nest app test', () => {
         it('create post with long title', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/posts',
+                url: `${URL_PREFIX}/posts`,
                 body: {
                     title: 'A'.repeat(256),
                     body: 'Post content',
@@ -923,7 +925,7 @@ describe('nest app test', () => {
         it('create post with long summary', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/posts',
+                url: `${URL_PREFIX}/posts`,
                 body: {
                     title: 'New Post',
                     body: 'Content',
@@ -940,7 +942,7 @@ describe('nest app test', () => {
         it('create post with invalid category', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/posts',
+                url: `${URL_PREFIX}/posts`,
                 body: {
                     title: 'New Post',
                     body: 'Content',
@@ -957,7 +959,7 @@ describe('nest app test', () => {
         it('create post with non-existent category', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/posts',
+                url: `${URL_PREFIX}/posts`,
                 body: {
                     title: 'New Post',
                     body: 'Content',
@@ -974,7 +976,7 @@ describe('nest app test', () => {
         it('create post with invalid tag format', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/posts',
+                url: `${URL_PREFIX}/posts`,
                 body: {
                     title: 'New Post',
                     body: 'Content',
@@ -991,7 +993,7 @@ describe('nest app test', () => {
         it('create post with non-existent tag', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/posts',
+                url: `${URL_PREFIX}/posts`,
                 body: {
                     title: 'New Post',
                     body: 'Content',
@@ -1008,7 +1010,7 @@ describe('nest app test', () => {
         it('create post with long keyword', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/posts',
+                url: `${URL_PREFIX}/posts`,
                 body: {
                     title: 'New Post',
                     body: 'Content',
@@ -1025,7 +1027,7 @@ describe('nest app test', () => {
         it('create post with negative custom order', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/posts',
+                url: `${URL_PREFIX}/posts`,
                 body: {
                     title: 'New Post',
                     body: 'Content',
@@ -1043,7 +1045,7 @@ describe('nest app test', () => {
         it('update post without id', async () => {
             const result = await app.inject({
                 method: 'PATCH',
-                url: '/posts',
+                url: `${URL_PREFIX}/posts`,
                 body: { title: 'Updated Post' },
             });
             expect(result.json()).toEqual({
@@ -1059,7 +1061,7 @@ describe('nest app test', () => {
         it('update post with invalid id format', async () => {
             const result = await app.inject({
                 method: 'PATCH',
-                url: '/posts',
+                url: `${URL_PREFIX}/posts`,
                 body: {
                     id: 'invalid-uuid',
                     title: 'Updated Post',
@@ -1078,7 +1080,7 @@ describe('nest app test', () => {
         it('update post with non-existent id', async () => {
             const result = await app.inject({
                 method: 'PATCH',
-                url: '/posts',
+                url: `${URL_PREFIX}/posts`,
                 body: {
                     id: '74e655b3-b69a-42ae-a101-41c224386e74',
                     title: 'Updated Post non-existent id',
@@ -1095,7 +1097,7 @@ describe('nest app test', () => {
             const post = posts[0];
             const result = await app.inject({
                 method: 'PATCH',
-                url: '/posts',
+                url: `${URL_PREFIX}/posts`,
                 body: {
                     id: post.id,
                     title: 'A'.repeat(256),
@@ -1122,7 +1124,7 @@ describe('nest app test', () => {
             const post = posts[0];
             const result = await app.inject({
                 method: 'POST',
-                url: '/comment',
+                url: `${URL_PREFIX}/comment`,
                 body: { post: post.id },
             });
             expect(result.json()).toEqual({
@@ -1138,7 +1140,7 @@ describe('nest app test', () => {
         it('create comment without post', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/comment',
+                url: `${URL_PREFIX}/comment`,
                 body: { body: 'Test comment' },
             });
             expect(result.json()).toEqual({
@@ -1152,7 +1154,7 @@ describe('nest app test', () => {
             const post = posts[0];
             const result = await app.inject({
                 method: 'POST',
-                url: '/comment',
+                url: `${URL_PREFIX}/comment`,
                 body: {
                     body: 'A'.repeat(1001),
                     post: post.id,
@@ -1168,7 +1170,7 @@ describe('nest app test', () => {
         it('create comment with invalid post format', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/comment',
+                url: `${URL_PREFIX}/comment`,
                 body: {
                     body: 'Test comment',
                     post: 'invalid-uuid',
@@ -1184,7 +1186,7 @@ describe('nest app test', () => {
         it('create comment with non-existent post', async () => {
             const result = await app.inject({
                 method: 'POST',
-                url: '/comment',
+                url: `${URL_PREFIX}/comment`,
                 body: {
                     body: 'Test comment',
                     post: '74e655b3-b69a-42ae-a101-41c224386e74',
@@ -1201,7 +1203,7 @@ describe('nest app test', () => {
             const post = posts[0];
             const result = await app.inject({
                 method: 'POST',
-                url: '/comment',
+                url: `${URL_PREFIX}/comment`,
                 body: {
                     body: 'Test comment',
                     post: post.id,
@@ -1219,7 +1221,7 @@ describe('nest app test', () => {
             const post = posts[0];
             const result = await app.inject({
                 method: 'POST',
-                url: '/comment',
+                url: `${URL_PREFIX}/comment`,
                 body: {
                     body: 'Test comment',
                     post: post.id,
@@ -1251,7 +1253,7 @@ async function addCategory(
             const item = data[index];
             const result = await app.inject({
                 method: 'POST',
-                url: '/category',
+                url: `${URL_PREFIX}/category`,
                 body: { ...pick(item, ['name', 'customOrder']), parent: parentId },
             });
             const addedItem: CategoryEntity = result.json();
@@ -1269,7 +1271,7 @@ async function addTag(app: NestFastifyApplication, data: RecordAny[]): Promise<T
             const item = data[index];
             const result = await app.inject({
                 method: 'POST',
-                url: '/tag',
+                url: `${URL_PREFIX}/tag`,
                 body: item,
             });
             const addedItem: TagEntity = result.json();
@@ -1293,7 +1295,7 @@ async function addPost(
             item.tags = generateUniqueRandomNumbers(0, tags.length - 1, 3).map((idx) => tags[idx]);
             const result = await app.inject({
                 method: 'POST',
-                url: '/posts',
+                url: `${URL_PREFIX}/posts`,
                 body: item,
             });
             const addedItem: PostEntity = result.json();
@@ -1323,7 +1325,7 @@ async function addComment(
                     : undefined;
             const result = await app.inject({
                 method: 'POST',
-                url: '/comment',
+                url: `${URL_PREFIX}/comment`,
                 body: item,
             });
             const addedItem = result.json();

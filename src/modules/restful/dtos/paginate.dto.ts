@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { Min, IsNumber, IsOptional } from 'class-validator';
+import { IsNumber, IsOptional, Min } from 'class-validator';
 import { toNumber } from 'lodash';
 
 import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
@@ -14,7 +14,7 @@ export class PaginateDto implements PaginateOptions {
      * 当前页
      */
     @Transform(({ value }) => toNumber(value))
-    @Min(1, { message: '当前页必须大于1' })
+    @Min(1, { message: 'The current page must be greater than 1.' })
     @IsNumber()
     @IsOptional()
     page?: number = 1;
@@ -23,7 +23,7 @@ export class PaginateDto implements PaginateOptions {
      * 每页数据量
      */
     @Transform(({ value }) => toNumber(value))
-    @Min(1, { message: '每页显示数据必须大于1' })
+    @Min(1, { message: 'The number of data displayed per page must be greater than 1.' })
     @IsNumber()
     @IsOptional()
     limit?: number = 10;

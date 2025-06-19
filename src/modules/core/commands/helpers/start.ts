@@ -18,8 +18,6 @@ export async function start(
     config: CLIConfig,
 ): Promise<void> {
     console.log('command start...');
-    console.log(args);
-    console.log(config);
     const script = args.typescript ? config.paths.ts : config.paths.js;
     const params = [config.paths.bun, 'run'];
     if (args.watch) {
@@ -66,6 +64,7 @@ export async function startPM2(
     args: Arguments<StartCommandArguments>,
     config: CLIConfig,
 ): Promise<void> {
+    console.log('command startPM2...');
     const { name } = await configure.get<AppConfig>('app');
     const script = args.typescript ? config.paths.ts : config.paths.js;
     const pm2config = await getPm2Config(
