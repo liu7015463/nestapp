@@ -44,7 +44,6 @@ export class TypeormMigrationGenerate {
                         downSql.query = TypeormMigrationGenerate.prettifyQuery(downSql.query);
                     });
                 }
-                console.log('sqlInMemory', sqlInMemory);
                 sqlInMemory.upQueries.forEach((upQuery) => {
                     upSqls.push(
                         `        await queryRunner.query(\`${upQuery.query.replace(
