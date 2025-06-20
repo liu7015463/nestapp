@@ -84,7 +84,7 @@ export type DBOptions = RecordAny & {
 };
 
 type DBAdditionalOption = {
-    path?: {
+    paths?: {
         migration?: string;
     };
 };

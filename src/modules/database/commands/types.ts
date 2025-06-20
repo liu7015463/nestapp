@@ -20,7 +20,7 @@ export interface MigrationCreateOptions {
 /**
  * 生成迁移命令参数
  */
-export type MigrationGenerateArguments = TypeOrmArguments & MigrationCreateOptions;
+export type MigrationGenerateArguments = TypeOrmArguments & MigrationGenerateOptions;
 
 /**
  * 生成迁移处理器选项
@@ -31,4 +31,27 @@ export interface MigrationGenerateOptions {
     pretty?: boolean;
     dryrun?: boolean;
     check?: boolean;
+}
+
+/**
+ * 运行迁移的命令参数
+ */
+export type MigrationRunArguments = TypeOrmArguments & MigrationRunOptions;
+
+/**
+ * 运行迁移处理器选项
+ */
+export interface MigrationRunOptions extends MigrationRevertOptions {
+    refresh?: boolean;
+
+    onlydrop?: boolean;
+}
+
+/**
+ * 恢复迁移处理器选项
+ */
+export interface MigrationRevertOptions {
+    transaction?: string;
+
+    fake?: boolean;
 }

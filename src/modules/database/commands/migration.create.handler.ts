@@ -30,7 +30,7 @@ export async function MigrationCreateHandler(
         }
         const runner = new TypeormMigrationCreate();
         console.log();
-        await runner.handler({ name: cname, dir: dbConfig.path.migration });
+        await runner.handler({ name: cname, dir: dbConfig.paths.migration });
         spinner.start(chalk.greenBright.underline('\n 👍 Finished create migration'));
     } catch (e) {
         await panic({ spinner, message: 'Create migration failed!', error: e });
