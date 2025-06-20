@@ -1,7 +1,16 @@
+import { Type } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 import { isArray, isNil } from 'lodash';
 import { DataSource, ObjectLiteral, ObjectType, Repository, SelectQueryBuilder } from 'typeorm';
 
-import { OrderQueryType, PaginateOptions, PaginateReturn } from '@/modules/database/types';
+import { Configure } from '@/modules/config/configure';
+import {
+    DBOptions,
+    OrderQueryType,
+    PaginateOptions,
+    PaginateReturn,
+} from '@/modules/database/types';
 
 import { CUSTOM_REPOSITORY_METADATA } from './constants';
 
@@ -97,3 +106,48 @@ export const getCustomRepository = <P extends Repository<T>, T extends ObjectLit
     const base = dataSource.getRepository<ObjectType<any>>(entity);
     return new Repo(base.target, base.manager, base.queryRunner) as P;
 };
+
+export const addEntities = async (
+    configure: Configure,
+    entities: EntityClassOrSchema[] = [],
+    dataSource = 'default',
+) => {
+    const database = await configure.get<DBOptions>('database');
+    if (isNil(database)) {
+        throw new Error('Database not exists');
+    }
+    const dbConfig = database.connections.find(({ name }) => name === dataSource);
+    if (isNil(dbConfig)) {
+        throw new Error(`Database connection ${dataSource} not exists`);
+    }
+
+    const oldEntities = (dbConfig.entities ?? []) as ObjectLiteral[];
+    const newEntities = database.connections.map((conn) =>
+        conn.name === dataSource ? { ...conn, entities: [...oldEntities, ...entities] } : conn,
+    );
+    configure.set('database.connections', newEntities);
+    return TypeOrmModule.forFeature(entities, dataSource);
+};
+
+export async function addSubscribers(
+    configure: Configure,
+    subscribers: Type<any>[] = [],
+    dataSource = 'default',
+) {
+    const database = await configure.get<DBOptions>('database');
+    if (isNil(database)) {
+        throw new Error('Database not exists');
+    }
+    const dbConfig = database.connections.find(({ name }) => name === dataSource);
+    if (isNil(dbConfig)) {
+        throw new Error(`Database connection ${dataSource} not exists`);
+    }
+    const oldSubscribers = (dbConfig.subscribers ?? []) as any[];
+    const newSubscribers = database.connections.map((conn) =>
+        conn.name === dataSource
+            ? { ...conn, subscribers: [...oldSubscribers, subscribers] }
+            : conn,
+    );
+    configure.set('database.connections', newSubscribers);
+    return subscribers;
+}

@@ -1,4 +1,5 @@
 import { Optional } from '@nestjs/common';
+import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { isNil } from 'lodash';
 import {
     DataSource,
@@ -16,6 +17,10 @@ import {
     TransactionStartEvent,
     UpdateEvent,
 } from 'typeorm';
+
+import { Configure } from '@/modules/config/configure';
+
+import { app } from '@/modules/core/helpers/app';
 
 import { RepositoryType } from '../types';
 import { getCustomRepository } from '../utils';
@@ -36,10 +41,23 @@ export abstract class BaseSubscriber<T extends ObjectLiteral>
 {
     protected abstract entity: ObjectType<T>;
 
-    protected constructor(@Optional() protected dataSource?: DataSource) {
+    protected constructor(
+        @Optional() protected dataSource?: DataSource,
+        @Optional() protected _configure?: Configure,
+    ) {
         if (!isNil(this.dataSource)) {
             this.dataSource.subscribers.push(this);
         }
+    }
+
+    get configure() {
+        return isNil(this._configure)
+            ? this.container.get(Configure, { strict: false })
+            : this._configure;
+    }
+
+    get container(): NestFastifyApplication {
+        return app.container;
     }
 
     protected getDataSource(event: SubscriberEvent<T>) {

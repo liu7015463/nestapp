@@ -2,8 +2,8 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import {
     FindTreeOptions,
     ObjectLiteral,
-    SelectQueryBuilder,
     Repository,
+    SelectQueryBuilder,
     TreeRepository,
 } from 'typeorm';
 
@@ -70,13 +70,21 @@ export type RepositoryType<T extends ObjectLiteral> =
     | BaseTreeRepository<T>;
 
 export type DBConfig = {
-    common: RecordAny;
+    common: RecordAny & DBAdditionalOption;
     connections: Array<TypeOrmModuleOptions & { name?: string }>;
 };
 
-export type TypeormOption = Omit<TypeOrmModuleOptions, 'name' | 'migrations'> & { name: string };
+export type TypeormOption = Omit<TypeOrmModuleOptions, 'name' | 'migrations'> & {
+    name: string;
+} & DBAdditionalOption;
 
 export type DBOptions = RecordAny & {
     common: RecordAny;
     connections: TypeormOption[];
+};
+
+type DBAdditionalOption = {
+    path?: {
+        migration?: string;
+    };
 };

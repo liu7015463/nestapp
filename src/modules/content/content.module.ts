@@ -9,12 +9,15 @@ import { SearchService } from '@/modules/content/services';
 import { SanitizeService } from '@/modules/content/services/SanitizeService';
 
 import { PostService } from '@/modules/content/services/post.service';
-import { PostSubscriber } from '@/modules/content/subscribers/post.subscriber';
+
 import { DatabaseModule } from '@/modules/database/database.module';
+
+import { addSubscribers } from '@/modules/database/utils';
 
 import { Configure } from '../config/configure';
 
 import { defauleContentConfig } from './config';
+import * as subscribers from './subscribers';
 import { ContentConfig } from './types';
 
 @Module({})
@@ -23,7 +26,7 @@ export class ContentModule {
         const config = await configure.get<ContentConfig>('content', defauleContentConfig);
         const providers: ModuleMetadata['providers'] = [
             ...Object.values(services),
-            PostSubscriber,
+            ...(await addSubscribers(configure, Object.values(subscribers))),
             {
                 provide: PostService,
                 inject: [

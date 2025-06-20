@@ -1,3 +1,5 @@
+import { resolve } from 'path';
+
 import { ConfigureFactory, ConfigureRegister } from '../config/types';
 import { createConnectionOptions } from '../config/utils';
 import { deepMerge } from '../core/helpers';
@@ -18,7 +20,11 @@ export const createDBConfig: (
 export const createDBOptions = (options: DBConfig) => {
     const newOptions: DBOptions = {
         common: deepMerge(
-            { charset: 'utf8mb4', logging: ['error'] },
+            {
+                charset: 'utf8mb4',
+                logging: ['error'],
+                paths: { migration: resolve(__dirname, '../../database/migrations') },
+            },
             options.common ?? {},
             'replace',
         ),
@@ -29,7 +35,7 @@ export const createDBOptions = (options: DBConfig) => {
         const newOption = { ...connection, entities };
         return deepMerge(
             newOptions.common,
-            { ...newOption, autoLoadEntities: true } as any,
+            { ...newOption, autoLoadEntities: true, synchronize: false } as any,
             'replace',
         ) as TypeormOption;
     });
