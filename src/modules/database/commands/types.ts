@@ -55,3 +55,8 @@ export interface MigrationRevertOptions {
 
     fake?: boolean;
 }
+
+/**
+ * 恢复迁移的命令参数
+ */
+export type MigrationRevertArguments = TypeOrmArguments & MigrationRevertOptions;

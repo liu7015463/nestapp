@@ -7,9 +7,9 @@ import { panic } from '../core/helpers';
 
 @Module({})
 export class MeiliModule {
-    static forRoot(configure: Configure): DynamicModule {
+    static async forRoot(configure: Configure): Promise<DynamicModule> {
         if (!configure.has('meili')) {
-            panic({ message: 'MeilliSearch config not exists' });
+            await panic({ message: 'MeiliSearch config not exists' });
         }
         return {
             global: true,

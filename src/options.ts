@@ -10,6 +10,7 @@ import { isNil } from 'lodash';
 import * as configs from './config';
 import { ContentModule } from './modules/content/content.module';
 import { CreateOptions } from './modules/core/types';
+import * as dbCommands from './modules/database/commands';
 import { DatabaseModule } from './modules/database/database.module';
 import { MeiliModule } from './modules/meilisearch/meili.module';
 import { Restful } from './modules/restful/restful';
@@ -17,13 +18,13 @@ import { RestfulModule } from './modules/restful/restful.module';
 import { ApiConfig } from './modules/restful/types';
 
 export const createOptions: CreateOptions = {
-    commands: () => [],
+    commands: () => [...Object.values(dbCommands)],
     config: { factories: configs as any, storage: { enable: true } },
     modules: async (configure) => [
-        DatabaseModule.forRoot(configure),
-        MeiliModule.forRoot(configure),
-        RestfulModule.forRoot(configure),
-        ContentModule.forRoot(configure),
+        await DatabaseModule.forRoot(configure),
+        await MeiliModule.forRoot(configure),
+        await RestfulModule.forRoot(configure),
+        await ContentModule.forRoot(configure),
     ],
     globals: {},
     builder: async ({ configure, BootModule }) => {
