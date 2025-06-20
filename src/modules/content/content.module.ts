@@ -1,7 +1,5 @@
 import { DynamicModule, Module, ModuleMetadata } from '@nestjs/common';
 
-import { TypeOrmModule } from '@nestjs/typeorm';
-
 import * as entities from '@/modules/content/entities';
 import * as repositories from '@/modules/content/repositories';
 import * as services from '@/modules/content/services';
@@ -12,7 +10,7 @@ import { PostService } from '@/modules/content/services/post.service';
 
 import { DatabaseModule } from '@/modules/database/database.module';
 
-import { addSubscribers } from '@/modules/database/utils';
+import { addEntities, addSubscribers } from '@/modules/database/utils';
 
 import { Configure } from '../config/configure';
 
@@ -70,7 +68,7 @@ export class ContentModule {
         return {
             module: ContentModule,
             imports: [
-                TypeOrmModule.forFeature(Object.values(entities)),
+                await addEntities(configure, Object.values(entities)),
                 DatabaseModule.forRepository(Object.values(repositories)),
             ],
             providers,
