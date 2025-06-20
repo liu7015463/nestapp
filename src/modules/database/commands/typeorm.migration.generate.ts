@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { resolve } from 'path';
 
 import chalk from 'chalk';
@@ -5,12 +6,11 @@ import { upperFirst } from 'lodash';
 import { format } from 'mysql2';
 import { DataSource } from 'typeorm';
 
-import { CommandUtils } from 'typeorm/commands/CommandUtils';
-import { PlatformTools } from 'typeorm/platform/PlatformTools';
-
-import { camelCase } from 'typeorm/util/StringUtils';
-
 import { MigrationGenerateOptions } from '@/modules/database/commands/types';
+
+const { CommandUtils } = require('typeorm/commands/CommandUtils');
+const { PlatformTools } = require('typeorm/platform/PlatformTools');
+const { camelCase } = require('typeorm/util/StringUtils');
 
 type HandlerOptions = MigrationGenerateOptions & { dataSource: DataSource } & { dir: string };
 
@@ -44,6 +44,7 @@ export class TypeormMigrationGenerate {
                         downSql.query = TypeormMigrationGenerate.prettifyQuery(downSql.query);
                     });
                 }
+                console.log('sqlInMemory', sqlInMemory);
                 sqlInMemory.upQueries.forEach((upQuery) => {
                     upSqls.push(
                         `        await queryRunner.query(\`${upQuery.query.replace(

@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { resolve } from 'path';
 
 import chalk from 'chalk';
-import { CommandUtils } from 'typeorm/commands/CommandUtils';
-import { PlatformTools } from 'typeorm/platform/PlatformTools';
-import { camelCase } from 'typeorm/util/StringUtils';
 
 import { MigrationCreateOptions } from '@/modules/database/commands/types';
+
+const { CommandUtils } = require('typeorm/commands/CommandUtils');
+const { PlatformTools } = require('typeorm/platform/PlatformTools');
+const { camelCase } = require('typeorm/util/StringUtils');
 
 type HandleOptions = MigrationCreateOptions & { dir: string };
 
