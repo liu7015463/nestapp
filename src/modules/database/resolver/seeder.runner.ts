@@ -7,12 +7,17 @@ import { DataSource, EntityManager } from 'typeorm';
 import YAML from 'yaml';
 
 import { BaseSeeder } from '@/modules/database/base/BaseSeeder';
+import { DBFactory } from '@/modules/database/commands/types';
 
 /**
  * 默认的Seed Runner
  */
 export class SeederRunner extends BaseSeeder {
-    protected async run(dataSource: DataSource, em?: EntityManager): Promise<any> {
+    protected async run(
+        factory: DBFactory,
+        dataSource: DataSource,
+        em: EntityManager,
+    ): Promise<any> {
         let seeders: Type<any>[] = ((await this.getDBConfig()) as any).seeders ?? [];
         const seedLockFile = resolve(__dirname, '../../../..', 'seed-lock.yml');
         ensureFileSync(seedLockFile);

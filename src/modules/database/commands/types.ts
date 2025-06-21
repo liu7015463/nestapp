@@ -1,8 +1,10 @@
 import { Ora } from 'ora';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, EntityManager, EntityTarget } from 'typeorm';
 import { Arguments } from 'yargs';
 
 import { Configure } from '@/modules/config/configure';
+import { DataFactory } from '@/modules/database/resolver/data.factory';
+import { DBFactoryOption } from '@/modules/database/types';
 
 /**
  * 基础数据库命令参数类型
@@ -121,9 +123,40 @@ export interface SeederLoadParams {
      * 是否忽略锁定
      */
     ignoreLock: boolean;
+    /**
+     * Factory解析器
+     */
+    factory?: DBFactory;
+    /**
+     * Factory函数列表
+     */
+    factories: FactoryOptions;
 }
 
 /**
  * 数据填充命令参数
  */
 export type SeederArguments = TypeOrmArguments & SeederOptions;
+
+/**
+ * Factory解析器
+ */
+export interface DBFactory {
+    <P>(entity: EntityTarget<P>): <T>(options?: T) => DataFactory<P, T>;
+}
+
+/**
+ * 数据填充函数映射对象
+ */
+export type FactoryOptions = {
+    [entityName: string]: DBFactoryOption<any, any>;
+};
+
+/**
+ * Factory构造器
+ */
+export type DBFactoryBuilder = (
+    configure: Configure,
+    dataSource: DataSource,
+    factories: { [entityName: string]: DBFactoryOption<any, any> },
+) => DBFactory;

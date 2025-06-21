@@ -2,11 +2,13 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import {
     FindTreeOptions,
     ObjectLiteral,
+    ObjectType,
     Repository,
     SelectQueryBuilder,
     TreeRepository,
 } from 'typeorm';
 
+import { Configure } from '@/modules/config/configure';
 import { SeederConstructor } from '@/modules/database/commands/types';
 import { OrderType, SelectTrashMode } from '@/modules/database/constants';
 
@@ -102,4 +104,24 @@ type DBAdditionalOption = {
      * 数据填充入口类
      */
     seedRunner?: SeederConstructor;
+    /**
+     * 定义数据工厂列表
+     */
+    factories?: (() => DBFactoryOption<any, any>)[];
+};
+
+export type DBFactoryHandler<P, T> = (configure: Configure, options: T) => Promise<P>;
+
+export type DBFactoryOption<P, T> = {
+    entity: ObjectType<P>;
+    handler: DBFactoryHandler<P, T>;
+};
+
+export type DefineFactory = <P, T>(
+    entity: ObjectType<P>,
+    handler: DBFactoryHandler<P, T>,
+) => () => DBFactoryOption<P, T>;
+
+export type FactoryOverride<Entity> = {
+    [Property in keyof Entity]: Entity[Property];
 };

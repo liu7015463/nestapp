@@ -7,6 +7,7 @@ import {
     DataSource,
     DataSourceOptions,
     EntityManager,
+    EntityTarget,
     ObjectLiteral,
     ObjectType,
     Repository,
@@ -14,9 +15,17 @@ import {
 } from 'typeorm';
 
 import { Configure } from '@/modules/config/configure';
-import { Seeder, SeederConstructor, SeederOptions } from '@/modules/database/commands/types';
+import {
+    DBFactoryBuilder,
+    FactoryOptions,
+    Seeder,
+    SeederConstructor,
+    SeederOptions,
+} from '@/modules/database/commands/types';
+import { DataFactory } from '@/modules/database/resolver/data.factory';
 import {
     DBOptions,
+    DefineFactory,
     OrderQueryType,
     PaginateOptions,
     PaginateReturn,
@@ -206,6 +215,13 @@ export async function runSeeder(
     const dataSource: DataSource = new DataSource({ ...dbConfig } as DataSourceOptions);
 
     await dataSource.initialize();
+
+    const factoryMaps: FactoryOptions = {};
+    for (const factory of dbConfig.factories) {
+        const { entity, handler } = factory();
+        factoryMaps[entity.name] = { entity, handler };
+    }
+
     if (typeof args.transaction === 'boolean' && !args.transaction) {
         const em = await resetForeignKey(dataSource.manager, dataSource.options.type);
         await seeder.load({
@@ -214,6 +230,8 @@ export async function runSeeder(
             configure,
             connection: args.connection ?? 'default',
             ignoreLock: args.ignorelock,
+            factory: factoryBuilder(configure, dataSource, factoryMaps),
+            factories: factoryMaps,
         });
         await resetForeignKey(em, dataSource.options.type, false);
     } else {
@@ -229,6 +247,8 @@ export async function runSeeder(
                 configure,
                 connection: args.connection ?? 'default',
                 ignoreLock: args.ignorelock,
+                factory: factoryBuilder(configure, dataSource, factoryMaps),
+                factories: factoryMaps,
             });
             await resetForeignKey(em, dataSource.options.type, false);
             await queryRunner.commitTransaction();
@@ -245,3 +265,40 @@ export async function runSeeder(
     }
     return dataSource;
 }
+
+/**
+ * 定义factory用于生成数据
+ * @param entity
+ * @param handler
+ */
+export const defineFactory: DefineFactory = (entity, handler) => () => ({ entity, handler });
+
+/**
+ * 获取Entity类名
+ * @param entity
+ */
+export function entityName<T>(entity: EntityTarget<T>): string {
+    if (isNil(entity)) {
+        throw new Error('Entity is not defined');
+    }
+    if (entity instanceof Function) {
+        return entity.name;
+    }
+    return new (entity as any)().constructor.name;
+}
+
+export const factoryBuilder: DBFactoryBuilder =
+    (configure, dataSource, factories) => (entity) => (settings) => {
+        const name = entityName(entity);
+        if (!factories[name]) {
+            throw new Error(`has none factory for entity named ${name}`);
+        }
+        return new DataFactory(
+            name,
+            configure,
+            entity,
+            dataSource.createEntityManager(),
+            factories[name].handler,
+            settings,
+        );
+    };

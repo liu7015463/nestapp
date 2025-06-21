@@ -6,12 +6,14 @@ import { DataSource, EntityManager, EntityTarget, ObjectLiteral } from 'typeorm'
 import { Configure } from '@/modules/config/configure';
 import { panic } from '@/modules/core/helpers';
 import {
+    DBFactory,
     Seeder,
     SeederConstructor,
     SeederLoadParams,
     SeederOptions,
 } from '@/modules/database/commands/types';
-import { DBOptions } from '@/modules/database/types';
+import { DBFactoryOption, DBOptions } from '@/modules/database/types';
+import { factoryBuilder } from '@/modules/database/utils';
 
 /**
  * 数据填充基类
@@ -23,6 +25,7 @@ export abstract class BaseSeeder implements Seeder {
     protected configure: Configure;
     protected ignoreLock: boolean;
     protected truncates: EntityTarget<ObjectLiteral>[] = [];
+    protected factories: { [entityName: string]: DBFactoryOption<any, any> };
 
     constructor(
         protected readonly spinner: Ora,
@@ -34,12 +37,13 @@ export abstract class BaseSeeder implements Seeder {
      * @param params
      */
     async load(params: SeederLoadParams): Promise<any> {
-        const { connection, dataSource, em, configure, ignoreLock } = params;
+        const { connection, dataSource, em, configure, ignoreLock, factory, factories } = params;
         this.connection = connection;
         this.dataSource = dataSource;
         this.em = em;
         this.configure = configure;
         this.ignoreLock = ignoreLock;
+        this.factories = factories;
 
         if (this.ignoreLock) {
             for (const option of this.truncates) {
@@ -47,16 +51,21 @@ export abstract class BaseSeeder implements Seeder {
             }
         }
 
-        return this.run(this.dataSource);
+        return this.run(factory, this.dataSource);
     }
 
     /**
      * 运行seeder的关键方法
+     * @param factory
      * @param dataSource
      * @param em
      * @protected
      */
-    protected abstract run(dataSource: DataSource, em?: EntityManager): Promise<any>;
+    protected abstract run(
+        factory?: DBFactory,
+        dataSource?: DataSource,
+        em?: EntityManager,
+    ): Promise<any>;
 
     protected async getDBConfig() {
         const { connections = [] }: DBOptions = await this.configure.get<DBOptions>('database');
@@ -80,6 +89,8 @@ export abstract class BaseSeeder implements Seeder {
             em: this.em,
             configure: this.configure,
             ignoreLock: this.ignoreLock,
+            factories: this.factories,
+            factory: factoryBuilder(this.configure, this.dataSource, this.factories),
         });
     }
 }

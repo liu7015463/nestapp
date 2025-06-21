@@ -14,7 +14,13 @@ export const createDBConfig: (
     register,
     hook: (configure, value) => createDBOptions(value),
     defaultRegister: () => ({
-        common: { charset: 'utf8mb4', logging: ['error'], seeders: [], seedRunner: SeederRunner },
+        common: {
+            charset: 'utf8mb4',
+            logging: ['error'],
+            seeders: [],
+            seedRunner: SeederRunner,
+            factories: [],
+        },
         connections: [],
     }),
 });
