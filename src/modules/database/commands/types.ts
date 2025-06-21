@@ -122,3 +122,8 @@ export interface SeederLoadParams {
      */
     ignoreLock: boolean;
 }
+
+/**
+ * 数据填充命令参数
+ */
+export type SeederArguments = TypeOrmArguments & SeederOptions;
