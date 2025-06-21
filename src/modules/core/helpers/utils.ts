@@ -88,3 +88,40 @@ export async function panic(option: PanicOption | string) {
         process.exit(1);
     }
 }
+
+/**
+ * 获取小于N的随机整数
+ * @param count
+ */
+export function getRandomIndex(count: number) {
+    return Math.floor(Math.random() * count);
+}
+
+/**
+ * 从列表中获取一个随机项
+ * @param list
+ */
+export function getRandomItemData<T extends RecordAny>(list: T[]) {
+    if (isNil(list) || list.length === 0) {
+        throw new Error('list is empty');
+    }
+    return list[getRandomIndex(list.length)];
+}
+
+/**
+ * 从列表中获取多个随机项组成一个新列表
+ * @param list
+ */
+export function getRandomListData<T extends RecordAny>(list: T[]) {
+    if (isNil(list) || list.length === 0) {
+        throw new Error('list is empty');
+    }
+    const result: T[] = [];
+    for (let i = 0; i < getRandomIndex(list.length); i++) {
+        const random = getRandomItemData(list);
+        if (!result.find((p) => p.id === random.id)) {
+            result.push(random);
+        }
+    }
+    return result.length === 0 ? [list[0]] : result;
+}

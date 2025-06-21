@@ -3,6 +3,7 @@ import { isPromise } from 'node:util/types';
 import { isNil } from 'lodash';
 import { EntityManager, EntityTarget } from 'typeorm';
 
+import { Configure } from '@/modules/config/configure';
 import { panic } from '@/modules/core/helpers';
 import { DBFactoryHandler, FactoryOverride } from '@/modules/database/types';
 
@@ -11,7 +12,7 @@ export class DataFactory<P, T> {
 
     constructor(
         public name: string,
-        public config: Configure,
+        public configure: Configure,
         public entity: EntityTarget<P>,
         protected em: EntityManager,
         protected factory: DBFactoryHandler<P, T>,
@@ -95,7 +96,7 @@ export class DataFactory<P, T> {
                             entity[attr] = await (item as any).make();
                         }
                     } catch (error) {
-                        const message = `Could not make ${(subEntityFactory as any).name}`;
+                        const message = `Could not make ${(item as any).name}`;
                         await panic({ message, error });
                         throw new Error(message);
                     }

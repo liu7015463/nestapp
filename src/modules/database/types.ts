@@ -123,5 +123,5 @@ export type DefineFactory = <P, T>(
 ) => () => DBFactoryOption<P, T>;
 
 export type FactoryOverride<Entity> = {
-    [Property in keyof Entity]: Entity[Property];
+    [Property in keyof Entity]?: Entity[Property];
 };

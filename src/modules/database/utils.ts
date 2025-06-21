@@ -1,3 +1,4 @@
+import * as fakerjs from '@faker-js/faker';
 import { Type } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
@@ -15,6 +16,7 @@ import {
 } from 'typeorm';
 
 import { Configure } from '@/modules/config/configure';
+import { AppConfig } from '@/modules/core/types';
 import {
     DBFactoryBuilder,
     FactoryOptions,
@@ -302,3 +304,21 @@ export const factoryBuilder: DBFactoryBuilder =
             settings,
         );
     };
+
+/**
+ * 本地化假数据
+ * @param configure
+ */
+export async function getFakerLocales(configure: Configure) {
+    const app = await configure.get<AppConfig>('app');
+    const locales: fakerjs.LocaleDefinition[] = [];
+    const locale = app.locale as keyof typeof fakerjs;
+    const fallbackLocale = app.fallbackLocale as keyof typeof fakerjs;
+    if (!isNil(fakerjs[locale])) {
+        locales.push(fakerjs[locale] as fakerjs.LocaleDefinition);
+    }
+    if (!isNil(fakerjs[fallbackLocale])) {
+        locales.push(fakerjs[fallbackLocale] as fakerjs.LocaleDefinition);
+    }
+    return locales;
+}
