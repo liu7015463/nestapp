@@ -21,7 +21,7 @@ type Condition = {
 
 @ValidatorConstraint({ name: 'treeDataUniqueExist', async: true })
 @Injectable()
-export class TreeUniqueExistContraint implements ValidatorConstraintInterface {
+export class TreeUniqueExistConstraint implements ValidatorConstraintInterface {
     constructor(private dataSource: DataSource) {}
 
     async validate(value: any, args: ValidationArguments) {
@@ -93,7 +93,7 @@ export function IsTreeUniqueExist(
             propertyName,
             options: validationOptions,
             constraints: [params],
-            validator: TreeUniqueExistContraint,
+            validator: TreeUniqueExistConstraint,
         });
     };
 }

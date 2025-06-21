@@ -87,4 +87,9 @@ type DBAdditionalOption = {
     paths?: {
         migration?: string;
     };
+
+    /**
+     * 是否在启动应用后自动运行迁移
+     */
+    autoMigrate?: boolean;
 };

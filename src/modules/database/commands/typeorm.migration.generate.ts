@@ -96,7 +96,7 @@ export class TypeormMigrationGenerate {
                 );
             } else {
                 await CommandUtils.createFile(filePath, fileContent);
-
+                console.log();
                 console.log(
                     chalk.green(
                         `Migration ${chalk.blue(filePath)} has been generated successfully.`,

@@ -22,9 +22,8 @@ export class TypeormMigrationCreate {
             const fileName = `${timestamp}-${args.name}`;
             const filePath = `${directory}/${fileName}`;
             await CommandUtils.createFile(`${filePath}.ts`, fileContent);
-            console.log(
-                `Migration ${chalk.blue(`${filePath}.ts`)} has been generated successfully.`,
-            );
+            console.log();
+            console.log(`Migration ${chalk.blue(`${filePath}.ts`)} has been created successfully.`);
         } catch (e) {
             PlatformTools.logCmdErr('Error during migration creation:', e);
             process.exit(1);

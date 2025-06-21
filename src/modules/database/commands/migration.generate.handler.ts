@@ -30,6 +30,7 @@ export async function MigrationGenerateHandler(
         }
         console.log();
         const runner = new TypeormMigrationGenerate();
+        console.log('dbConfig', dbConfig);
         const dataSource = new DataSource({ ...dbConfig } as DataSourceOptions);
         console.log();
         await runner.handler({

@@ -5,6 +5,8 @@ import { DataSource, ObjectType } from 'typeorm';
 
 import { CUSTOM_REPOSITORY_METADATA } from '@/modules/database/constants';
 
+import { AutoMigrateResolver } from '@/modules/database/resolver/auto.migrate';
+
 import { Configure } from '../config/configure';
 
 import { panic } from '../core/helpers';
@@ -12,7 +14,7 @@ import { panic } from '../core/helpers';
 import {
     DataExistConstraint,
     TreeUniqueConstraint,
-    TreeUniqueExistContraint,
+    TreeUniqueExistConstraint,
     UniqueConstraint,
     UniqueExistConstraint,
 } from './constraints';
@@ -34,7 +36,8 @@ export class DatabaseModule {
             UniqueConstraint,
             UniqueExistConstraint,
             TreeUniqueConstraint,
-            TreeUniqueExistContraint,
+            TreeUniqueExistConstraint,
+            AutoMigrateResolver,
         ];
         return {
             global: true,
