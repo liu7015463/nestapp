@@ -2,14 +2,25 @@ import { Type } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 import { isArray, isNil } from 'lodash';
-import { DataSource, ObjectLiteral, ObjectType, Repository, SelectQueryBuilder } from 'typeorm';
+import { Ora } from 'ora';
+import {
+    DataSource,
+    DataSourceOptions,
+    EntityManager,
+    ObjectLiteral,
+    ObjectType,
+    Repository,
+    SelectQueryBuilder,
+} from 'typeorm';
 
 import { Configure } from '@/modules/config/configure';
+import { Seeder, SeederConstructor, SeederOptions } from '@/modules/database/commands/types';
 import {
     DBOptions,
     OrderQueryType,
     PaginateOptions,
     PaginateReturn,
+    TypeormOption,
 } from '@/modules/database/types';
 
 import { CUSTOM_REPOSITORY_METADATA } from './constants';
@@ -150,4 +161,87 @@ export async function addSubscribers(
     );
     configure.set('database.connections', newSubscribers);
     return subscribers;
+}
+
+/**
+ * 忽略外键
+ * @param em EntityManager实例
+ * @param type 数据库类型
+ * @param disabled 是否禁用外键
+ */
+export async function resetForeignKey(
+    em: EntityManager,
+    type = 'mysql',
+    disabled = true,
+): Promise<EntityManager> {
+    let key: string;
+    let query: string;
+    if (type === 'sqlite') {
+        key = disabled ? 'OFF' : 'ON';
+        query = `PRAGMA foreign_keys = ${key}`;
+    } else {
+        key = disabled ? '0' : '1';
+        query = `SET FOREIGN_KEY_CHECKS = ${key}`;
+    }
+    await em.query(query);
+    return em;
+}
+
+/**
+ * 数据填充函数
+ * @param Clazz 填充类
+ * @param args 填充命令参数
+ * @param spinner Ora雪碧图标
+ * @param configure 配置对象
+ * @param dbConfig 当前数据库连接池的配置
+ */
+export async function runSeeder(
+    Clazz: SeederConstructor,
+    args: SeederOptions,
+    spinner: Ora,
+    configure: Configure,
+    dbConfig: TypeormOption,
+): Promise<DataSource> {
+    const seeder: Seeder = new Clazz(spinner, args);
+    const dataSource: DataSource = new DataSource({ ...dbConfig } as DataSourceOptions);
+
+    await dataSource.initialize();
+    if (typeof args.transaction === 'boolean' && !args.transaction) {
+        const em = await resetForeignKey(dataSource.manager, dataSource.options.type);
+        await seeder.load({
+            dataSource,
+            em,
+            configure,
+            connection: args.connection ?? 'default',
+            ignoreLock: args.ignorelock,
+        });
+        await resetForeignKey(em, dataSource.options.type, false);
+    } else {
+        // 在事务中运行
+        const queryRunner = dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        try {
+            const em = await resetForeignKey(dataSource.manager, dataSource.options.type);
+            await seeder.load({
+                dataSource,
+                em,
+                configure,
+                connection: args.connection ?? 'default',
+                ignoreLock: args.ignorelock,
+            });
+            await resetForeignKey(em, dataSource.options.type, false);
+            await queryRunner.commitTransaction();
+        } catch (e) {
+            console.error(e);
+            await queryRunner.rollbackTransaction();
+        } finally {
+            await queryRunner.release();
+        }
+    }
+
+    if (dataSource && dataSource.isInitialized) {
+        await dataSource.destroy();
+    }
+    return dataSource;
 }

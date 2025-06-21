@@ -1,6 +1,7 @@
 import { ModuleMetadata, PipeTransform, Type } from '@nestjs/common';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 
+import dayjs from 'dayjs';
 import { Ora } from 'ora';
 import { StartOptions } from 'pm2';
 import { CommandModule } from 'yargs';
@@ -53,15 +54,52 @@ export interface AppConfig {
 
     https: boolean;
 
+    /**
+     * 语言,默认zh-cn
+     */
     locale: string;
 
+    /**
+     * 备用语言
+     */
     fallbackLocale: string;
+
+    /**
+     * 时区,默认Asia/Shanghai
+     */
+    timezone: string;
 
     url?: string;
 
     prefix?: string;
 
     pm2?: Omit<StartOptions, 'name' | 'cwd' | 'script' | 'args' | 'interpreter' | 'watch'>;
+}
+
+/**
+ * 时间参数选项类型
+ */
+export interface TimeOptions {
+    /**
+     * 时间属性，如果不传入则获取当前属性
+     */
+    date?: dayjs.ConfigType;
+    /**
+     * 输出时间格式
+     */
+    format?: dayjs.OptionType;
+    /**
+     * 语言，如果不传入则使用app配置中设置的默认语言
+     */
+    locale?: string;
+    /**
+     * 是否开启严格模式
+     */
+    strict?: boolean;
+    /**
+     * 时区。如果不传入则使用app配置中设置的默认时区
+     */
+    zonetime?: string;
 }
 
 export interface PanicOption {

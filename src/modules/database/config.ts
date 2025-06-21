@@ -1,5 +1,7 @@
 import { resolve } from 'path';
 
+import { SeederRunner } from '@/modules/database/resolver/seeder.runner';
+
 import { ConfigureFactory, ConfigureRegister } from '../config/types';
 import { createConnectionOptions } from '../config/utils';
 import { deepMerge } from '../core/helpers';
@@ -12,7 +14,7 @@ export const createDBConfig: (
     register,
     hook: (configure, value) => createDBOptions(value),
     defaultRegister: () => ({
-        common: { charset: 'utf8mb4', logging: ['error'] },
+        common: { charset: 'utf8mb4', logging: ['error'], seeders: [], seedRunner: SeederRunner },
         connections: [],
     }),
 });

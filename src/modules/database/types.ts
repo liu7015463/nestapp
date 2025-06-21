@@ -7,6 +7,7 @@ import {
     TreeRepository,
 } from 'typeorm';
 
+import { SeederConstructor } from '@/modules/database/commands/types';
 import { OrderType, SelectTrashMode } from '@/modules/database/constants';
 
 import { BaseRepository } from './base/repository';
@@ -92,4 +93,13 @@ type DBAdditionalOption = {
      * 是否在启动应用后自动运行迁移
      */
     autoMigrate?: boolean;
+
+    /**
+     * 数据填充类列表
+     */
+    seeders?: SeederConstructor[];
+    /**
+     * 数据填充入口类
+     */
+    seedRunner?: SeederConstructor;
 };
