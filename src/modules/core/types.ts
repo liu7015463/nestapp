@@ -1,4 +1,5 @@
 import { ModuleMetadata, PipeTransform, Type } from '@nestjs/common';
+import { IAuthGuard } from '@nestjs/passport';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import dayjs from 'dayjs';
@@ -28,6 +29,11 @@ export interface CreateOptions {
         interceptor?: Type<any> | null;
 
         filter?: Type<any> | null;
+
+        /**
+         * 全局守卫
+         */
+        guard?: Type<IAuthGuard>;
     };
 
     providers?: ModuleMetadata['providers'];

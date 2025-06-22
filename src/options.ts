@@ -16,6 +16,7 @@ import { MeiliModule } from './modules/meilisearch/meili.module';
 import { Restful } from './modules/restful/restful';
 import { RestfulModule } from './modules/restful/restful.module';
 import { ApiConfig } from './modules/restful/types';
+import { JwtAuthGuard } from './modules/user/guards/jwt.auth.guard';
 
 export const createOptions: CreateOptions = {
     commands: () => [...Object.values(dbCommands)],
@@ -26,7 +27,7 @@ export const createOptions: CreateOptions = {
         await RestfulModule.forRoot(configure),
         await ContentModule.forRoot(configure),
     ],
-    globals: {},
+    globals: { guard: JwtAuthGuard },
     builder: async ({ configure, BootModule }) => {
         const container = await NestFactory.create<NestFastifyApplication>(
             BootModule,

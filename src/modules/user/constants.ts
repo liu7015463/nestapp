@@ -38,3 +38,5 @@ export const TokenConst = {
     USER_REFRESH_TOKEN_EXPIRED: 'USER_REFRESH_TOKEN_EXPIRED',
     DEFAULT_USER_REFRESH_TOKEN_EXPIRED: 'my-refresh-secret',
 };
+
+export const ALLOW_GUEST = 'allowGuest';
