@@ -19,11 +19,11 @@ export interface JwtConfig {
     /**
      * token过期时间
      */
-    token_expired: number;
+    tokenExpired: number;
     /**
      * refresh token
      */
-    refresh_token_expired: number;
+    refreshTokenExpired: number;
 }
 
 /**

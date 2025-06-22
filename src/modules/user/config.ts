@@ -12,8 +12,8 @@ export function defaultUserConfig(configure: Configure): UserConfig {
     return {
         hash: 10,
         jwt: {
-            token_expired: configure.env.get('USER_TOKEN_EXPIRED', (v) => toNumber(v), 1800),
-            refresh_token_expired: configure.env.get(
+            tokenExpired: configure.env.get('USER_TOKEN_EXPIRED', (v) => toNumber(v), 1800),
+            refreshTokenExpired: configure.env.get(
                 'USER_REFRESH_TOKEN_EXPIRED',
                 (v) => toNumber(v),
                 3600 * 30,

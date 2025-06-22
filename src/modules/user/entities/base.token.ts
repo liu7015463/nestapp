@@ -15,7 +15,7 @@ export abstract class BaseToken extends BaseEntity {
     @Column({
         comment: '令牌过期时间',
     })
-    expired_at: Date;
+    expiredAt: Date;
 
     @CreateDateColumn({
         comment: '令牌创建时间',

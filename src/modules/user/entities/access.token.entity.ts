@@ -13,7 +13,7 @@ export class AccessTokenEntity extends BaseToken {
      * 关联的刷新令牌
      */
     @OneToOne(() => RefreshTokenEntity, (token) => token.accessToken, { cascade: true })
-    refreshToken: string;
+    refreshToken: RefreshTokenEntity;
 
     /**
      * 关联用户
