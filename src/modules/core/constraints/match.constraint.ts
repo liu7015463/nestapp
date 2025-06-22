@@ -21,7 +21,7 @@ export class MatchConstraint implements ValidatorConstraintInterface {
     }
 }
 
-export function isMatch(
+export function IsMatch(
     relatedProperty: string,
     reverse = false,
     validationOptions?: ValidationOptions,
