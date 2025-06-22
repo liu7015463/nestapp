@@ -1,5 +1,6 @@
-import { Entity, OneToOne } from 'typeorm';
+import { Entity, ManyToOne, OneToOne, Relation } from 'typeorm';
 
+import { UserEntity } from '@/modules/user/entities/UserEntity';
 import { BaseToken } from '@/modules/user/entities/base.token';
 import { RefreshTokenEntity } from '@/modules/user/entities/refresh.token.entity';
 
@@ -13,4 +14,10 @@ export class AccessTokenEntity extends BaseToken {
      */
     @OneToOne(() => RefreshTokenEntity, (token) => token.accessToken, { cascade: true })
     refreshToken: string;
+
+    /**
+     * 关联用户
+     */
+    @ManyToOne(() => UserEntity, (user) => user.accessTokens, { onDelete: 'CASCADE' })
+    user: Relation<UserEntity>;
 }

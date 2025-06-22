@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 
 import { CommentEntity, PostEntity } from '@/modules/content/entities';
+import { AccessTokenEntity } from '@/modules/user/entities/access.token.entity';
 
 /**
  * 用户实体
@@ -94,4 +95,10 @@ export class UserEntity {
      */
     @OneToMany(() => CommentEntity, (comment) => comment.author, { cascade: true })
     comments: Relation<CommentEntity>[];
+
+    /**
+     * 登录token
+     */
+    @OneToMany(() => AccessTokenEntity, (token) => token.user, { cascade: true })
+    accessTokens: Relation<AccessTokenEntity>[];
 }
