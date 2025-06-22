@@ -31,3 +31,10 @@ export enum UserOrderType {
     CREATED = 'createdAt',
     UPDATED = 'updatedAt',
 }
+
+export const TokenConst = {
+    USER_TOKEN_SECRET: 'USER_TOKEN_SECRET',
+    DEFAULT_USER_TOKEN_SECRET: 'my-access-secret',
+    USER_REFRESH_TOKEN_EXPIRED: 'USER_REFRESH_TOKEN_EXPIRED',
+    DEFAULT_USER_REFRESH_TOKEN_EXPIRED: 'my-refresh-secret',
+};

@@ -16,6 +16,8 @@ import { AccessTokenEntity } from '@/modules/user/entities/access.token.entity';
 import { RefreshTokenEntity } from '@/modules/user/entities/refresh.token.entity';
 import { JwtConfig, JwtPayload, UserConfig } from '@/modules/user/types';
 
+import { TokenConst } from '../constants';
+
 /**
  * 令牌服务
  */
@@ -85,7 +87,10 @@ export class TokenService {
         const refreshToken = new RefreshTokenEntity();
         refreshToken.value = jwt.sign(
             refreshTokenPayload,
-            this.configure.env.get('USER_REFRESH_TOKEN_EXPIRED', 'my-refresh-secret'),
+            this.configure.env.get(
+                TokenConst.USER_REFRESH_TOKEN_EXPIRED,
+                TokenConst.DEFAULT_USER_REFRESH_TOKEN_EXPIRED,
+            ),
         );
         refreshToken.expiredAt = now.add(config.refreshTokenExpired, 'second').toDate();
         refreshToken.accessToken = accessToken;
@@ -136,7 +141,10 @@ export class TokenService {
     async verifyAccessToken(token: AccessTokenEntity) {
         const result = jwt.verify(
             token.value,
-            this.configure.env.get('USER_TOKEN_SECRET', 'my-access-secret'),
+            this.configure.env.get(
+                TokenConst.USER_TOKEN_SECRET,
+                TokenConst.DEFAULT_USER_TOKEN_SECRET,
+            ),
         );
         if (result) {
             return token.user;
@@ -152,7 +160,10 @@ export class TokenService {
                     defaultUserConfig(configure),
                 );
                 const options: JwtModuleOptions = {
-                    secret: configure.env.get('USER_TOKEN_SECRET', 'my-access-secret'),
+                    secret: configure.env.get(
+                        TokenConst.USER_TOKEN_SECRET,
+                        TokenConst.DEFAULT_USER_TOKEN_SECRET,
+                    ),
                     verifyOptions: {
                         ignoreExpiration: !configure.env.isProd(),
                     },
