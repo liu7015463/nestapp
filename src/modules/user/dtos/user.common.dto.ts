@@ -61,7 +61,7 @@ export class UserCommonDto {
     )
     @IsMatchPhone(
         undefined,
-        { strictMode: trus },
+        { strictMode: true },
         { message: '手机格式错误,示例: +86.15005255555', always: true },
     )
     @IsOptional({

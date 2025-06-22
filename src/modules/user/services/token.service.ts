@@ -1,8 +1,12 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { Injectable } from '@nestjs/common';
 
 import { JwtService } from '@nestjs/jwt';
 
 import dayjs from 'dayjs';
+import { FastifyReply as Response } from 'fastify';
+import jwt from 'jsonwebtoken';
+import { v4 as uuid } from 'uuid';
 
 import { Configure } from '@/modules/config/configure';
 import { getTime } from '@/modules/core/helpers/time';
@@ -11,7 +15,6 @@ import { UserEntity } from '@/modules/user/entities/UserEntity';
 import { AccessTokenEntity } from '@/modules/user/entities/access.token.entity';
 import { RefreshTokenEntity } from '@/modules/user/entities/refresh.token.entity';
 import { JwtConfig, JwtPayload } from '@/modules/user/types';
-
 /**
  * 令牌服务
  */
@@ -79,7 +82,7 @@ export class TokenService {
         const config = await getUserConfig<JwtConfig>(this.configure, 'jwt');
         const refreshTokenPayload = { uuid: uuid() };
         const refreshToken = new RefreshTokenEntity();
-        refreshToken.value = this.jwtService.sign(
+        refreshToken.value = jwt.sign(
             refreshTokenPayload,
             this.configure.env.get('USER_REFRESH_TOKEN_EXPIRED', 'my-refresh-secret'),
         );
@@ -130,7 +133,7 @@ export class TokenService {
      * @param token
      */
     async verifyAccessToken(token: AccessTokenEntity) {
-        const result = this.jwtService.verify(
+        const result = jwt.verify(
             token.value,
             this.configure.env.get('USER_TOKEN_SECRET', 'my-access-secret'),
         );

@@ -1,15 +1,17 @@
 import { PickType } from '@nestjs/swagger';
 
-import { Length } from 'class-validator';
+import { IsDefined, IsUUID, Length } from 'class-validator';
 
 import { IsPassword } from '@/modules/core/constraints/password.constraint';
 import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
 import { UserCommonDto } from '@/modules/user/dtos/user.common.dto';
 
+import { UserValidateGroup } from '../constants';
+
 /**
  * 更新用户信息
  */
-@DtoValidation({ whitelist: false, groups: [UserValidateGroup.ACCOUNT_UPDATE] })
+@DtoValidation({ groups: [UserValidateGroup.ACCOUNT_UPDATE] })
 export class UpdateAccountDto extends PickType(UserCommonDto, ['username', 'nickname']) {
     /**
      * 待更新的用户ID

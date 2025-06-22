@@ -4,7 +4,7 @@ import { IsDefined, IsEnum, IsUUID } from 'class-validator';
 
 import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
 import { PaginateWithTrashedDto } from '@/modules/restful/dtos/paginate-width-trashed.dto';
-import { UserOrderType } from '@/modules/user/constants';
+import { UserOrderType, UserValidateGroup } from '@/modules/user/constants';
 import { UserCommonDto } from '@/modules/user/dtos/user.common.dto';
 
 /**
