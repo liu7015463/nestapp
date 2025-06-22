@@ -1,4 +1,5 @@
 import { Exclude, Expose, Type } from 'class-transformer';
+import type { Relation } from 'typeorm';
 import {
     BaseEntity,
     Column,
@@ -11,9 +12,8 @@ import {
     TreeParent,
 } from 'typeorm';
 
-import type { Relation } from 'typeorm';
-
 import { PostEntity } from '@/modules/content/entities/post.entity';
+import { UserEntity } from '@/modules/user/entities/UserEntity';
 
 @Exclude()
 @Entity('content_comment')
@@ -50,4 +50,11 @@ export class CommentEntity extends BaseEntity {
     @Expose({ groups: ['comment-tree'] })
     @TreeChildren({ cascade: true })
     children: Relation<CommentEntity>[];
+
+    @ManyToOne(() => UserEntity, (user) => user.comments, {
+        nullable: false,
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
+    author: Relation<UserEntity>;
 }

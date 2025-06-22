@@ -4,9 +4,13 @@ import {
     CreateDateColumn,
     DeleteDateColumn,
     Entity,
+    OneToMany,
     PrimaryColumn,
+    Relation,
     UpdateDateColumn,
 } from 'typeorm';
+
+import { CommentEntity, PostEntity } from '@/modules/content/entities';
 
 /**
  * 用户实体
@@ -78,4 +82,16 @@ export class UserEntity {
     @Type(() => Date)
     @DeleteDateColumn({ comment: '用户销户时间' })
     deletedAt?: Date;
+
+    /**
+     * 用户发表文章
+     */
+    @OneToMany(() => PostEntity, (post) => post.author, { cascade: true })
+    posts: Relation<PostEntity>[];
+
+    /**
+     * 用户发表评论
+     */
+    @OneToMany(() => CommentEntity, (comment) => comment.author, { cascade: true })
+    comments: Relation<CommentEntity>[];
 }

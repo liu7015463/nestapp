@@ -1,4 +1,5 @@
 import { Exclude, Expose, Type } from 'class-transformer';
+import type { Relation } from 'typeorm';
 import {
     BaseEntity,
     Column,
@@ -13,12 +14,11 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 
-import type { Relation } from 'typeorm';
-
 import { PostBodyType } from '@/modules/content/constants';
 import { CategoryEntity } from '@/modules/content/entities/category.entity';
 import { CommentEntity } from '@/modules/content/entities/comment.entity';
 import { TagEntity } from '@/modules/content/entities/tag.entity';
+import { UserEntity } from '@/modules/user/entities/UserEntity';
 
 @Exclude()
 @Entity('content_posts')
@@ -89,4 +89,11 @@ export class PostEntity extends BaseEntity {
 
     @OneToMany(() => CommentEntity, (comment) => comment.post, { cascade: true })
     comments: Relation<CommentEntity>[];
+
+    @ManyToOne(() => UserEntity, (user) => user.posts, {
+        nullable: false,
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
+    author: Relation<UserEntity>;
 }
