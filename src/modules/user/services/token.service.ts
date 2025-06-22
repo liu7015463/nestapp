@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { Injectable } from '@nestjs/common';
 
-import { JwtService } from '@nestjs/jwt';
+import { JwtModule, JwtModuleOptions, JwtService } from '@nestjs/jwt';
 
 import dayjs from 'dayjs';
 import { FastifyReply as Response } from 'fastify';
@@ -10,11 +10,12 @@ import { v4 as uuid } from 'uuid';
 
 import { Configure } from '@/modules/config/configure';
 import { getTime } from '@/modules/core/helpers/time';
-import { getUserConfig } from '@/modules/user/config';
+import { defaultUserConfig, getUserConfig } from '@/modules/user/config';
 import { UserEntity } from '@/modules/user/entities/UserEntity';
 import { AccessTokenEntity } from '@/modules/user/entities/access.token.entity';
 import { RefreshTokenEntity } from '@/modules/user/entities/refresh.token.entity';
-import { JwtConfig, JwtPayload } from '@/modules/user/types';
+import { JwtConfig, JwtPayload, UserConfig } from '@/modules/user/types';
+
 /**
  * 令牌服务
  */
@@ -141,5 +142,26 @@ export class TokenService {
             return token.user;
         }
         return null;
+    }
+
+    static JwtModuleFactory(configure: Configure) {
+        return JwtModule.registerAsync({
+            useFactory: async (): Promise<JwtModuleOptions> => {
+                const config = await configure.get<UserConfig>(
+                    'user',
+                    defaultUserConfig(configure),
+                );
+                const options: JwtModuleOptions = {
+                    secret: configure.env.get('USER_TOKEN_SECRET', 'my-access-secret'),
+                    verifyOptions: {
+                        ignoreExpiration: !configure.env.isProd(),
+                    },
+                };
+                if (configure.env.isProd()) {
+                    options.signOptions = { expiresIn: `${config.jwt.tokenExpired}s` };
+                }
+                return options;
+            },
+        });
     }
 }

@@ -4,6 +4,7 @@ import { deepMerge } from '@/modules/core/helpers';
 
 export class SanitizeService {
     protected config: sanitizeHtml.IOptions = {};
+
     constructor() {
         this.config = {
             allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'code']),

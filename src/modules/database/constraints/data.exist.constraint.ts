@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import {
+    registerDecorator,
     ValidationArguments,
+    ValidationOptions,
     ValidatorConstraint,
     ValidatorConstraintInterface,
-    ValidationOptions,
-    registerDecorator,
 } from 'class-validator';
 import { isArray, isNil } from 'lodash';
-import { ObjectType, Repository, DataSource } from 'typeorm';
+import { DataSource, ObjectType, Repository } from 'typeorm';
 
 type Condition = {
     entity: ObjectType<any>;
@@ -52,6 +52,7 @@ export class DataExistConstraint implements ValidatorConstraintInterface {
         const item = await repo.findOne({ where: { [map]: value } });
         return !!item;
     }
+
     defaultMessage?(validationArguments?: ValidationArguments): string {
         if (!validationArguments.constraints[0]) {
             return 'Model not been specified!';

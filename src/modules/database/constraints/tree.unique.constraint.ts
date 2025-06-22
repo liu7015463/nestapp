@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import {
+    registerDecorator,
+    ValidationArguments,
+    ValidationOptions,
     ValidatorConstraint,
     ValidatorConstraintInterface,
-    ValidationArguments,
-    registerDecorator,
-    ValidationOptions,
 } from 'class-validator';
-import { merge, isNil } from 'lodash';
+import { isNil, merge } from 'lodash';
 import { DataSource, ObjectType } from 'typeorm';
 
 type Condition = {

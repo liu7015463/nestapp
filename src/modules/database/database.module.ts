@@ -24,7 +24,7 @@ import { DBOptions } from './types';
 export class DatabaseModule {
     static async forRoot(configure: Configure): Promise<DynamicModule> {
         if (!configure.has('database')) {
-            panic({ message: 'Database config not exists' });
+            await panic({ message: 'Database config not exists' });
         }
         const { connections } = await configure.get<DBOptions>('database');
         const imports: ModuleMetadata['imports'] = [];
@@ -46,6 +46,7 @@ export class DatabaseModule {
             providers,
         };
     }
+
     static forRepository<T extends Type<any>>(
         repositories: T[],
         datasourceName?: string,

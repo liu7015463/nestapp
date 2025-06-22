@@ -1,8 +1,8 @@
 import {
-    ValidationArguments,
-    ValidatorConstraintInterface,
-    ValidationOptions,
     registerDecorator,
+    ValidationArguments,
+    ValidationOptions,
+    ValidatorConstraintInterface,
 } from 'class-validator';
 
 type ModelType = 1 | 2 | 3 | 4 | 5;
@@ -30,6 +30,7 @@ export class PasswordConstraint implements ValidatorConstraintInterface {
                 return /\d/.test(value) && /[A-Za-z]/.test(value);
         }
     }
+
     defaultMessage?(validationArguments?: ValidationArguments): string {
         return "($value) 's format error";
     }

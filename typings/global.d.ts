@@ -15,20 +15,20 @@ declare type RePartial<T> = {
     [P in keyof T]?: T[P] extends (infer U)[] | undefined
         ? RePartial<U>[]
         : T[P] extends object | undefined
-        ? T[P] extends ((...args: any[]) => any) | ClassType<T[P]> | undefined
-            ? T[P]
-            : RePartial<T[P]>
-        : T[P];
+          ? T[P] extends ((...args: any[]) => any) | ClassType<T[P]> | undefined
+              ? T[P]
+              : RePartial<T[P]>
+          : T[P];
 };
 
 declare type ReRequired<T> = {
     [P in keyof T]-?: T[P] extends (infer U)[] | undefined
         ? ReRequired<U>[]
         : T[P] extends object | undefined
-        ? T[P] extends ((...args: any[]) => any) | ClassType<T[P]> | undefined
-            ? T[P]
-            : ReRequired<T[P]>
-        : T[P];
+          ? T[P] extends ((...args: any[]) => any) | ClassType<T[P]> | undefined
+              ? T[P]
+              : ReRequired<T[P]>
+          : T[P];
 };
 
 declare type WrapperType<T> = T;

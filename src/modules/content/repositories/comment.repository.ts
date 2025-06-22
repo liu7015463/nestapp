@@ -8,6 +8,7 @@ import { QueryHook } from '@/modules/database/types';
 type FindCommentTreeOptions = FindTreeOptions & {
     addQuery?: QueryHook<CommentEntity>;
 };
+
 @CustomRepository(CommentEntity)
 export class CommentRepository extends BaseTreeRepository<CommentEntity> {
     protected _qbName = 'comment';

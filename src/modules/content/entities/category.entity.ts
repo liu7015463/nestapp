@@ -1,4 +1,5 @@
 import { Exclude, Expose, Type } from 'class-transformer';
+import type { Relation } from 'typeorm';
 import {
     BaseEntity,
     Column,
@@ -9,8 +10,6 @@ import {
     TreeChildren,
     TreeParent,
 } from 'typeorm';
-
-import type { Relation } from 'typeorm';
 
 import { PostEntity } from '@/modules/content/entities/post.entity';
 

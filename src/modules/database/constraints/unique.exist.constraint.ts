@@ -18,6 +18,7 @@ type Condition = {
 
     property?: string;
 };
+
 @Injectable()
 @ValidatorConstraint({ name: 'dataUniqueExist', async: true })
 export class UniqueExistConstraint implements ValidatorConstraintInterface {
@@ -48,6 +49,7 @@ export class UniqueExistConstraint implements ValidatorConstraintInterface {
             }),
         );
     }
+
     defaultMessage?(args?: ValidationArguments): string {
         const { entity, property } = args.constraints[0];
         const queryProperty = property ?? args.property;

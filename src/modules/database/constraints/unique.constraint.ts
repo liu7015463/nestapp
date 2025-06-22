@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import {
     registerDecorator,
     ValidationArguments,
+    ValidationOptions,
     ValidatorConstraint,
     ValidatorConstraintInterface,
-    ValidationOptions,
 } from 'class-validator';
 import { isNil, merge } from 'lodash';
 import { DataSource, ObjectType } from 'typeorm';
@@ -39,6 +39,7 @@ export class UniqueConstraint implements ValidatorConstraintInterface {
             return false;
         }
     }
+
     defaultMessage?(validationArguments?: ValidationArguments): string {
         const { entity, property } = validationArguments.constraints[0];
         const queryProperty = property ?? validationArguments.property;

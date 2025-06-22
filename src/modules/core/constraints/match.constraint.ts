@@ -13,6 +13,7 @@ export class MatchConstraint implements ValidatorConstraintInterface {
         const relatedValue = (validationArguments.object as any)[relatedProperty];
         return (value === relatedValue) !== reverse;
     }
+
     defaultMessage?(validationArguments?: ValidationArguments): string {
         const [relatedProperty, reverse] = validationArguments.constraints;
         return `${relatedProperty} and ${validationArguments.property} ${

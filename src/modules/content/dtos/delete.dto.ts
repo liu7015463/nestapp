@@ -1,4 +1,4 @@
-import { IsUUID, IsDefined } from 'class-validator';
+import { IsDefined, IsUUID } from 'class-validator';
 
 import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
 
