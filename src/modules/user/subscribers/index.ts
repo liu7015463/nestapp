@@ -1,1 +1,1 @@
-export * from './UserSubscriber';
+export * from './user.subscriber';

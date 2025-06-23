@@ -41,7 +41,7 @@ export abstract class BaseSubscriber<T extends ObjectLiteral>
 {
     protected abstract entity: ObjectType<T>;
 
-    protected constructor(
+    constructor(
         @Optional() protected dataSource?: DataSource,
         @Optional() protected _configure?: Configure,
     ) {
