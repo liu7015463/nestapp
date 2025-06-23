@@ -1,6 +1,6 @@
 import { BaseRepository } from '@/modules/database/base/repository';
 import { CustomRepository } from '@/modules/database/decorators/repository.decorator';
-import { UserEntity } from '@/modules/user/entities/UserEntity';
+import { UserEntity } from '@/modules/user/entities/user.entity';
 
 @CustomRepository(UserEntity)
 export class UserRepository extends BaseRepository<UserEntity> {

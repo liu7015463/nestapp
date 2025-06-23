@@ -8,9 +8,10 @@ import { BaseService } from '@/modules/database/base/service';
 
 import { QueryHook } from '@/modules/database/types';
 
+import { UserRepository } from '@/modules/user/repositories';
+
 import { CreateUserDto, QueryUserDto, UpdateUserDto } from '../dtos/user.dto';
-import { UserEntity } from '../entities/UserEntity';
-import { UserRepository } from '../repositories/UserRepository';
+import { UserEntity } from '../entities/user.entity';
 
 @Injectable()
 export class UserService extends BaseService<UserEntity, UserRepository> {

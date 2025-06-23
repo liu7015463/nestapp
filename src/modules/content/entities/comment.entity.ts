@@ -13,7 +13,7 @@ import {
 } from 'typeorm';
 
 import { PostEntity } from '@/modules/content/entities/post.entity';
-import { UserEntity } from '@/modules/user/entities/UserEntity';
+import { UserEntity } from '@/modules/user/entities/user.entity';
 
 @Exclude()
 @Entity('content_comment')

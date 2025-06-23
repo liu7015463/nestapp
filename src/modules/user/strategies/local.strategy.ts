@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '@/modules/user/services';
 
 /**
  * 用户认证本地策略

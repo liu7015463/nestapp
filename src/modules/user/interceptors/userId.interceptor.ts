@@ -1,8 +1,9 @@
-import { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { isNil } from 'lodash';
 import { Observable } from 'rxjs';
 
-export class UserInterceptor implements NestInterceptor {
+@Injectable()
+export class UserIdInterceptor implements NestInterceptor {
     intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> {
         const request: any = context.switchToHttp().getRequest();
         if (!isNil(request.user?.id)) {

@@ -9,12 +9,12 @@ import { Configure } from '@/modules/config/configure';
 
 import { getTime } from '@/modules/core/helpers/time';
 import { RegisterDto } from '@/modules/user/dtos/auth.dto';
-import { UserEntity } from '@/modules/user/entities/UserEntity';
+import { UserEntity } from '@/modules/user/entities/user.entity';
+import { UserRepository } from '@/modules/user/repositories';
 import { TokenService } from '@/modules/user/services/token.service';
 import { decrypt } from '@/modules/user/utils';
 
 import { UpdatePasswordDto } from '../dtos/account.dto';
-import { UserRepository } from '../repositories/UserRepository';
 
 import { UserService } from './user.service';
 

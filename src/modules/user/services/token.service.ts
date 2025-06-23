@@ -11,9 +11,9 @@ import { v4 as uuid } from 'uuid';
 import { Configure } from '@/modules/config/configure';
 import { getTime } from '@/modules/core/helpers/time';
 import { defaultUserConfig, getUserConfig } from '@/modules/user/config';
-import { UserEntity } from '@/modules/user/entities/UserEntity';
 import { AccessTokenEntity } from '@/modules/user/entities/access.token.entity';
 import { RefreshTokenEntity } from '@/modules/user/entities/refresh.token.entity';
+import { UserEntity } from '@/modules/user/entities/user.entity';
 import { JwtConfig, JwtPayload, UserConfig } from '@/modules/user/types';
 
 import { TokenConst } from '../constants';

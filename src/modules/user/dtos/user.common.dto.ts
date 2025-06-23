@@ -6,7 +6,7 @@ import { IsPassword } from '@/modules/core/constraints/password.constraint';
 import { IsMatchPhone } from '@/modules/core/constraints/phone.number.constraint';
 import { IsUnique, IsUniqueExist } from '@/modules/database/constraints';
 import { UserValidateGroup } from '@/modules/user/constants';
-import { UserEntity } from '@/modules/user/entities/UserEntity';
+import { UserEntity } from '@/modules/user/entities/user.entity';
 
 /**
  * 用户模块DTO的通用基础字段

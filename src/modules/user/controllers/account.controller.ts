@@ -18,7 +18,7 @@ import { Guest } from '../decorators/guest.decorator';
 import { RequestUser } from '../decorators/user.request.decorator';
 import { UpdateAccountDto, UpdatePasswordDto } from '../dtos/account.dto';
 import { CredentialDto, RegisterDto } from '../dtos/auth.dto';
-import { UserEntity } from '../entities/UserEntity';
+import { UserEntity } from '../entities/user.entity';
 import { LocalAuthGuard } from '../guards/local.auth.guard';
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../services/user.service';

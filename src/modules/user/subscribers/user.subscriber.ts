@@ -3,7 +3,7 @@ import { randomBytes } from 'node:crypto';
 import { EventSubscriber, InsertEvent, UpdateEvent } from 'typeorm';
 
 import { BaseSubscriber } from '@/modules/database/base/subscriber';
-import { UserEntity } from '@/modules/user/entities/UserEntity';
+import { UserEntity } from '@/modules/user/entities/user.entity';
 import { encrypt } from '@/modules/user/utils';
 
 @EventSubscriber()
