@@ -50,7 +50,7 @@ export class UserEntity {
      * 用户手机号
      */
     @Expose()
-    @Column({ comment: '用户手机号', length: 64, nullable: false, unique: true })
+    @Column({ comment: '用户手机号', length: 64, nullable: true, unique: true })
     phone?: string;
 
     /**

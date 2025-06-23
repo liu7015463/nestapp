@@ -1,6 +1,6 @@
 import { join } from 'path';
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
 import { DataSource, DataSourceOptions } from 'typeorm';
@@ -11,7 +11,7 @@ import { TypeormMigrationRun } from '@/modules/database/commands/typeorm.migrati
 import { DBOptions } from '@/modules/database/types';
 
 @Injectable()
-export class AutoMigrateResolver {
+export class AutoMigrateResolver implements OnModuleInit {
     constructor(private ref: ModuleRef) {}
 
     async onModuleInit() {

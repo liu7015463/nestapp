@@ -1,6 +1,6 @@
 import { BadGatewayException, ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { plainToClass } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 
 import { validateOrReject } from 'class-validator';
 
@@ -14,7 +14,7 @@ export class LocalAuthGuard extends AuthGuard('local') {
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
         try {
-            await validateOrReject(plainToClass(CredentialDto, request.body), {
+            await validateOrReject(plainToInstance(CredentialDto, request.body), {
                 validationError: { target: false },
             });
         } catch (error) {
