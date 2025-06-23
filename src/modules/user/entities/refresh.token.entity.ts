@@ -1,4 +1,5 @@
-import { Entity, JoinColumn, OneToOne, Relation } from 'typeorm';
+import type { Relation } from 'typeorm';
+import { Entity, JoinColumn, OneToOne } from 'typeorm';
 
 import { AccessTokenEntity } from '@/modules/user/entities/access.token.entity';
 import { BaseToken } from '@/modules/user/entities/base.token';

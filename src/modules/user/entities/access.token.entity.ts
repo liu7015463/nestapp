@@ -1,4 +1,5 @@
-import { Entity, ManyToOne, OneToOne, Relation } from 'typeorm';
+import type { Relation } from 'typeorm';
+import { Entity, ManyToOne, OneToOne } from 'typeorm';
 
 import { BaseToken } from '@/modules/user/entities/base.token';
 import { RefreshTokenEntity } from '@/modules/user/entities/refresh.token.entity';

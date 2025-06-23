@@ -1,4 +1,5 @@
 import { Exclude, Expose, Type } from 'class-transformer';
+import type { Relation } from 'typeorm';
 import {
     Column,
     CreateDateColumn,
@@ -6,7 +7,6 @@ import {
     Entity,
     OneToMany,
     PrimaryColumn,
-    Relation,
     UpdateDateColumn,
 } from 'typeorm';
 
