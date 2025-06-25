@@ -5,12 +5,15 @@ import {
     CreateDateColumn,
     DeleteDateColumn,
     Entity,
+    ManyToMany,
     OneToMany,
     PrimaryColumn,
     UpdateDateColumn,
 } from 'typeorm';
 
 import { CommentEntity, PostEntity } from '@/modules/content/entities';
+import { PermissionEntity } from '@/modules/rbac/entities/permission.entity';
+import { RoleEntity } from '@/modules/rbac/entities/role.entity';
 import { AccessTokenEntity } from '@/modules/user/entities/access.token.entity';
 
 /**
@@ -101,4 +104,18 @@ export class UserEntity {
      */
     @OneToMany(() => AccessTokenEntity, (token) => token.user, { cascade: true })
     accessTokens: Relation<AccessTokenEntity>[];
+
+    /**
+     * 用户权限
+     */
+    @Expose()
+    @ManyToMany(() => PermissionEntity, (permission) => permission.users, { cascade: true })
+    permissions: Relation<PermissionEntity>[];
+
+    /**
+     * 用户角色
+     */
+    @Expose()
+    @ManyToMany(() => RoleEntity, (role) => role.users, { cascade: true })
+    roles: Relation<RoleEntity>[];
 }
