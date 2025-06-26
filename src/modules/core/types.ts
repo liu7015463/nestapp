@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-duplicate-type-constituents */
 import { ModuleMetadata, PipeTransform, Type } from '@nestjs/common';
 import { IAuthGuard } from '@nestjs/passport';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
@@ -5,6 +6,7 @@ import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import dayjs from 'dayjs';
 import { Ora } from 'ora';
 import { StartOptions } from 'pm2';
+import { ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { CommandModule } from 'yargs';
 
 import { Configure } from '../config/configure';
@@ -130,4 +132,13 @@ export type CommandCollection = Array<CommandItem<any, any>>;
 
 export interface CreateOption {
     commands: () => CommandCollection;
+}
+
+export interface DynamicRelation {
+    relation:
+        | ReturnType<typeof OneToOne>
+        | ReturnType<typeof OneToMany>
+        | ReturnType<typeof ManyToOne>
+        | ReturnType<typeof ManyToMany>;
+    column: string;
 }
