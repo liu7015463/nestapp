@@ -1,8 +1,12 @@
 import { MongoAbility } from '@casl/ability';
-import { FastifyRekquest as Request } from 'fastify';
+import { FastifyRequest as Request } from 'fastify';
 import { ObjectLiteral } from 'typeorm';
 
 import { PermissionAction } from './constants';
+
+function getRequestData(request: Request, key: string): string[] {
+    return [];
+}
 
 export async function checkOwnerPermission<T extends ObjectLiteral>(
     ability: MongoAbility,

@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { Injectable } from '@nestjs/common';
 
 import { JwtModule, JwtModuleOptions, JwtService } from '@nestjs/jwt';
@@ -14,6 +13,7 @@ import { defaultUserConfig, getUserConfig } from '@/modules/user/config';
 import { AccessTokenEntity } from '@/modules/user/entities/access.token.entity';
 import { RefreshTokenEntity } from '@/modules/user/entities/refresh.token.entity';
 import { UserEntity } from '@/modules/user/entities/user.entity';
+import { AccessTokenRepository, RefreshTokenRepository } from '@/modules/user/repositories';
 import { JwtConfig, JwtPayload, UserConfig } from '@/modules/user/types';
 
 import { TokenConst } from '../constants';
@@ -26,6 +26,8 @@ export class TokenService {
     constructor(
         protected configure: Configure,
         protected jwtService: JwtService,
+        private accessTokenRepository: AccessTokenRepository,
+        private refreshTokenRepository: RefreshTokenRepository,
     ) {}
 
     /**
@@ -41,7 +43,7 @@ export class TokenService {
                 return null;
             }
             const token = await this.generateAccessToken(user, now);
-            await accessToken.remove();
+            await this.accessTokenRepository.remove(accessToken);
             response.header('token', token.accessToken.value);
             return token;
         }
@@ -65,7 +67,8 @@ export class TokenService {
         accessToken.value = signed;
         accessToken.user = user;
         accessToken.expiredAt = now.add(config.tokenExpired, 'second').toDate();
-        await accessToken.save();
+
+        await this.accessTokenRepository.save(accessToken);
         const refreshToken = await this.generateRefreshToken(
             accessToken,
             await getTime(this.configure),
@@ -94,7 +97,7 @@ export class TokenService {
         );
         refreshToken.expiredAt = now.add(config.refreshTokenExpired, 'second').toDate();
         refreshToken.accessToken = accessToken;
-        await refreshToken.save();
+        await this.refreshTokenRepository.save(refreshToken);
         return refreshToken;
     }
 
@@ -103,7 +106,10 @@ export class TokenService {
      * @param value
      */
     async checkAccessToken(value: string) {
-        return AccessTokenEntity.findOne({ where: { value }, relations: ['user', 'refreshToken'] });
+        return this.accessTokenRepository.findOne({
+            where: { value },
+            relations: ['user', 'refreshToken'],
+        });
     }
 
     /**
@@ -111,9 +117,9 @@ export class TokenService {
      * @param value
      */
     async removeAccessToken(value: string) {
-        const accessToken = await AccessTokenEntity.findOne({ where: { value } });
+        const accessToken = await this.accessTokenRepository.findOne({ where: { value } });
         if (accessToken) {
-            await accessToken.remove();
+            await this.accessTokenRepository.remove(accessToken);
         }
     }
 
@@ -122,15 +128,15 @@ export class TokenService {
      * @param value
      */
     async removeRefreshToken(value: string) {
-        const refreshToken = await RefreshTokenEntity.findOne({
+        const refreshToken = await this.refreshTokenRepository.findOne({
             where: { value },
             relations: ['accessToken'],
         });
         if (refreshToken) {
             if (refreshToken.accessToken) {
-                await refreshToken.accessToken.remove();
+                await this.accessTokenRepository.remove(refreshToken.accessToken);
             }
-            await refreshToken.remove();
+            await this.refreshTokenRepository.remove(refreshToken);
         }
     }
 
