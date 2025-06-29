@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { ForbiddenException, Injectable } from '@nestjs/common';
 
 import { FastifyRequest as Request } from 'fastify';

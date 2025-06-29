@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { AbilityTuple, MongoAbility, MongoQuery, RawRuleFrom } from '@casl/ability';
 
 import { ModuleRef } from '@nestjs/core';
