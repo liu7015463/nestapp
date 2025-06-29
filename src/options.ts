@@ -7,7 +7,6 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { existsSync } from 'fs-extra';
 import { isNil } from 'lodash';
 
-import { JwtAuthGuard } from '@/modules/user/guards';
 import { UserModule } from '@/modules/user/user.module';
 
 import * as configs from './config';
@@ -16,6 +15,7 @@ import { CreateOptions } from './modules/core/types';
 import * as dbCommands from './modules/database/commands';
 import { DatabaseModule } from './modules/database/database.module';
 import { MeiliModule } from './modules/meilisearch/meili.module';
+import { RbacGuard } from './modules/rbac/guards/rbac.guard';
 import { Restful } from './modules/restful/restful';
 import { RestfulModule } from './modules/restful/restful.module';
 import { ApiConfig } from './modules/restful/types';
@@ -30,7 +30,7 @@ export const createOptions: CreateOptions = {
         await ContentModule.forRoot(configure),
         await UserModule.forRoot(configure),
     ],
-    globals: { guard: JwtAuthGuard },
+    globals: { guard: RbacGuard },
     builder: async ({ configure, BootModule }) => {
         const container = await NestFactory.create<NestFastifyApplication>(
             BootModule,

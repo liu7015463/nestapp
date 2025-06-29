@@ -68,6 +68,7 @@ export class RbacResolver<P extends AbilityTuple = AbilityTuple, T extends Mongo
         if (!this.setuped) {
             this.options = options;
             this.setuped = true;
+            console.log(this.options);
         }
         return this;
     }
