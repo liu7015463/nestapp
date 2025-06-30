@@ -1,6 +1,7 @@
 import { AbilityTuple, MongoQuery, RawRuleFrom } from '@casl/ability';
 import { Exclude, Expose } from 'class-transformer';
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn, Relation } from 'typeorm';
+import type { Relation } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { UserEntity } from '@/modules/user/entities';
 
@@ -53,7 +54,7 @@ export class PermissionEntity<
      * 权限角色
      */
     @Expose({ groups: ['permission-list', 'permission-detail'] })
-    @ManyToMany(() => RoleEntity, (role) => role.permissions, { cascade: true })
+    @ManyToMany(() => RoleEntity, (role) => role.permissions)
     @JoinTable()
     roles: Relation<RoleEntity>[];
 

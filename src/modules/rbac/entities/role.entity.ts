@@ -1,4 +1,5 @@
 import { Exclude, Expose, Type } from 'class-transformer';
+import type { Relation } from 'typeorm';
 import {
     BaseEntity,
     Column,
@@ -7,7 +8,6 @@ import {
     JoinTable,
     ManyToMany,
     PrimaryGeneratedColumn,
-    Relation,
 } from 'typeorm';
 
 import { UserEntity } from '@/modules/user/entities';

@@ -7,6 +7,7 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { existsSync } from 'fs-extra';
 import { isNil } from 'lodash';
 
+import { RbacModule } from '@/modules/rbac/rbac.module';
 import { UserModule } from '@/modules/user/user.module';
 
 import * as configs from './config';
@@ -29,6 +30,7 @@ export const createOptions: CreateOptions = {
         await RestfulModule.forRoot(configure),
         await ContentModule.forRoot(configure),
         await UserModule.forRoot(configure),
+        await RbacModule.forRoot(configure),
     ],
     globals: { guard: RbacGuard },
     builder: async ({ configure, BootModule }) => {
