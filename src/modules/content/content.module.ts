@@ -13,6 +13,8 @@ import { DatabaseModule } from '@/modules/database/database.module';
 
 import { addEntities, addSubscribers } from '@/modules/database/utils';
 
+import { UserRepository } from '@/modules/user/repositories';
+
 import { Configure } from '../config/configure';
 
 import { defauleContentConfig } from './config';
@@ -34,6 +36,7 @@ export class ContentModule {
                     repositories.CategoryRepository,
                     repositories.TagRepository,
                     services.CategoryService,
+                    UserRepository,
                     { token: services.SearchService, optional: true },
                 ],
                 useFactory(
@@ -42,12 +45,14 @@ export class ContentModule {
                     tagRepository: repositories.TagRepository,
                     categoryService: services.CategoryService,
                     searchService: SearchService,
+                    userRepository: UserRepository,
                 ) {
                     return new PostService(
                         postRepository,
                         categoryRepository,
                         categoryService,
                         tagRepository,
+                        userRepository,
                         searchService,
                         config.searchType,
                     );

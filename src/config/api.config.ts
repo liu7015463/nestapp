@@ -1,11 +1,14 @@
 import { Configure } from '@/modules/config/configure';
 import { ConfigureFactory } from '@/modules/config/types';
-import * as contentControllers from '@/modules/content/controllers';
+import { createContentApi } from '@/modules/content/routes';
+import { createRbacApi } from '@/modules/rbac/routes';
 import { ApiConfig, VersionOption } from '@/modules/restful/types';
 import { createUserApi } from '@/modules/user/routes';
 
 export const v1 = async (configure: Configure): Promise<VersionOption> => {
+    const contentApi = createContentApi();
     const userApi = createUserApi();
+    const rbacApi = createRbacApi();
     return {
         routes: [
             {
@@ -14,21 +17,26 @@ export const v1 = async (configure: Configure): Promise<VersionOption> => {
                 controllers: [],
                 doc: {
                     description: 'app name desc',
+                    tags: [...contentApi.tags.app, ...rbacApi.tags.app, ...userApi.tags.app],
+                },
+                children: [...contentApi.routes.app, ...rbacApi.routes.app, ...userApi.routes.app],
+            },
+            {
+                name: 'manager',
+                path: 'manager',
+                controllers: [],
+                doc: {
+                    description: '后台管理接口',
                     tags: [
-                        { name: '分类操作', description: '对分类进行CRUD操作' },
-                        { name: '标签操作', description: '对标签进行CRUD操作' },
-                        { name: '文章操作', description: '对文章进行CRUD操作' },
-                        { name: '评论操作', description: '对评论进行CRUD操作' },
-                        ...userApi.tags.app,
+                        ...contentApi.tags.manager,
+                        ...rbacApi.tags.manager,
+                        ...userApi.tags.manager,
                     ],
                 },
                 children: [
-                    {
-                        name: 'app.content',
-                        path: 'content',
-                        controllers: Object.values(contentControllers),
-                    },
-                    ...userApi.routes.app,
+                    ...contentApi.routes.manager,
+                    ...rbacApi.routes.manager,
+                    ...userApi.routes.manager,
                 ],
             },
         ],

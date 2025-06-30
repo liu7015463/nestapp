@@ -1,32 +1,28 @@
-import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    ParseUUIDPipe,
-    Patch,
-    Post,
-    Query,
-    SerializeOptions,
-} from '@nestjs/common';
+import { Controller, Get, Param, ParseUUIDPipe, Query, SerializeOptions } from '@nestjs/common';
 
-import { DeleteDto } from '@/modules/content/dtos/delete.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 import { Depends } from '@/modules/restful/decorators/depend.decorator';
 
 import { PaginateDto } from '@/modules/restful/dtos/paginate.dto';
 
+import { Guest } from '@/modules/user/decorators/guest.decorator';
+
 import { ContentModule } from '../content.module';
-import { CreateTagDto, UpdateTagDto } from '../dtos/tag.dto';
 import { TagService } from '../services';
 
+@ApiTags('标签查询')
 @Depends(ContentModule)
 @Controller('tag')
 export class TagController {
     constructor(protected service: TagService) {}
 
+    /**
+     * 分页查询标签列表
+     * @param options
+     */
     @Get()
+    @Guest()
     @SerializeOptions({})
     async list(
         @Query()
@@ -35,33 +31,14 @@ export class TagController {
         return this.service.paginate(options);
     }
 
+    /**
+     * 查询标签详情
+     * @param id
+     */
     @Get(':id')
+    @Guest()
     @SerializeOptions({})
     async detail(@Param('id', new ParseUUIDPipe()) id: string) {
         return this.service.detail(id);
-    }
-
-    @Post()
-    @SerializeOptions({})
-    async store(
-        @Body()
-        data: CreateTagDto,
-    ) {
-        return this.service.create(data);
-    }
-
-    @Patch()
-    @SerializeOptions({})
-    async update(
-        @Body()
-        date: UpdateTagDto,
-    ) {
-        return this.service.update(date);
-    }
-
-    @Delete()
-    @SerializeOptions({})
-    async delete(@Body() data: DeleteDto) {
-        return this.service.delete(data.ids);
     }
 }

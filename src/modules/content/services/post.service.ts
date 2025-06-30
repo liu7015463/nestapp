@@ -5,7 +5,12 @@ import { isArray, isFunction, omit, pick } from 'lodash';
 import { EntityNotFoundError, In, IsNull, Not, SelectQueryBuilder } from 'typeorm';
 
 import { PostOrder } from '@/modules/content/constants';
-import { CreatePostDto, QueryPostDto, UpdatePostDto } from '@/modules/content/dtos/post.dto';
+import {
+    CreatePostDto,
+    FrontendCreatePostDto,
+    QueryPostDto,
+    UpdatePostDto,
+} from '@/modules/content/dtos/post.dto';
 import { PostEntity } from '@/modules/content/entities/post.entity';
 import { CategoryRepository } from '@/modules/content/repositories';
 import { PostRepository } from '@/modules/content/repositories/post.repository';
@@ -15,6 +20,10 @@ import { BaseService } from '@/modules/database/base/service';
 import { SelectTrashMode } from '@/modules/database/constants';
 import { QueryHook } from '@/modules/database/types';
 import { paginate } from '@/modules/database/utils';
+
+import { UserEntity } from '@/modules/user/entities';
+
+import { UserRepository } from '@/modules/user/repositories';
 
 import { TagRepository } from '../repositories/tag.repository';
 
@@ -33,6 +42,7 @@ export class PostService extends BaseService<PostEntity, PostRepository, FindPar
         protected categoryRepository: CategoryRepository,
         protected categoryService: CategoryService,
         protected tagRepository: TagRepository,
+        protected userRepository: UserRepository,
         protected searchService?: SearchService,
         protected searchType: SearchType = 'mysql',
     ) {
@@ -61,11 +71,19 @@ export class PostService extends BaseService<PostEntity, PostRepository, FindPar
         return item;
     }
 
-    async create(data: CreatePostDto) {
+    /**
+     * 创建文章
+     * @param data
+     * @param author
+     */
+    async create(data: CreatePostDto | FrontendCreatePostDto, author: ClassToPlain<UserEntity>) {
         let publishedAt: Date | null;
         if (!isNil(data.publish)) {
             publishedAt = data.publish ? new Date() : null;
         }
+        const authorId = isNil((data as CreatePostDto).author)
+            ? author.id
+            : (data as CreatePostDto).author;
         const createPostDto = {
             ...omit(data, ['publish']),
             category: isNil(data.category)
@@ -73,6 +91,7 @@ export class PostService extends BaseService<PostEntity, PostRepository, FindPar
                 : await this.categoryRepository.findOneOrFail({ where: { id: data.category } }),
             tags: isArray(data.tags) ? await this.tagRepository.findBy({ id: In(data.tags) }) : [],
             publishedAt,
+            author: await this.userRepository.findOneByOrFail({ id: authorId }),
         };
         const item = await this.repository.save(createPostDto);
         const result = await this.detail(item.id);
@@ -82,12 +101,20 @@ export class PostService extends BaseService<PostEntity, PostRepository, FindPar
         return result;
     }
 
+    /**
+     * 更新文章
+     * @param data
+     */
     async update(data: UpdatePostDto) {
         let publishedAt: Date | null;
         if (!isNil(data.publish)) {
             publishedAt = data.publish ? new Date() : null;
         }
         const post = await this.detail(data.id);
+        if (!isNil(data.author)) {
+            post.author = await this.userRepository.findOneByOrFail({ id: data.author });
+            await this.repository.save(post);
+        }
         if (data.category !== undefined) {
             post.category = isNil(data.category)
                 ? null
@@ -102,7 +129,7 @@ export class PostService extends BaseService<PostEntity, PostRepository, FindPar
                 .addAndRemove(data.tags, post.tags ?? []);
         }
         await this.repository.update(data.id, {
-            ...omit(data, ['id', 'publish', 'tags', 'category']),
+            ...omit(data, ['id', 'publish', 'tags', 'category', 'author']),
             publishedAt,
         });
         const result = await this.detail(data.id);

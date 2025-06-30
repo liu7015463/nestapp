@@ -1,15 +1,4 @@
-import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    ParseUUIDPipe,
-    Patch,
-    Post,
-    Query,
-    SerializeOptions,
-} from '@nestjs/common';
+import { Controller, Get, Param, ParseUUIDPipe, Query, SerializeOptions } from '@nestjs/common';
 
 import { ApiTags } from '@nestjs/swagger';
 
@@ -17,11 +6,12 @@ import { Depends } from '@/modules/restful/decorators/depend.decorator';
 
 import { PaginateDto } from '@/modules/restful/dtos/paginate.dto';
 
+import { Guest } from '@/modules/user/decorators/guest.decorator';
+
 import { ContentModule } from '../content.module';
-import { CreateCategoryDto, UpdateCategoryDto } from '../dtos/category.dto';
 import { CategoryService } from '../services';
 
-@ApiTags('Category Operate')
+@ApiTags('分类查询')
 @Depends(ContentModule)
 @Controller('category')
 export class CategoryController {
@@ -31,6 +21,7 @@ export class CategoryController {
      * Search category tree
      */
     @Get('tree')
+    @Guest()
     @SerializeOptions({ groups: ['category-tree'] })
     async tree() {
         return this.service.findTrees();
@@ -41,6 +32,7 @@ export class CategoryController {
      * @param options
      */
     @Get()
+    @Guest()
     @SerializeOptions({ groups: ['category-list'] })
     async list(
         @Query()
@@ -54,32 +46,9 @@ export class CategoryController {
      * @param id
      */
     @Get(':id')
+    @Guest()
     @SerializeOptions({ groups: ['category-detail'] })
     async detail(@Param('id', new ParseUUIDPipe()) id: string) {
         return this.service.detail(id);
-    }
-
-    @Post()
-    @SerializeOptions({ groups: ['category-detail'] })
-    async store(
-        @Body()
-        data: CreateCategoryDto,
-    ) {
-        return this.service.create(data);
-    }
-
-    @Patch()
-    @SerializeOptions({ groups: ['category-detail'] })
-    async update(
-        @Body()
-        data: UpdateCategoryDto,
-    ) {
-        return this.service.update(data);
-    }
-
-    @Delete(':id')
-    @SerializeOptions({ groups: ['category-detail'] })
-    async delete(@Param('id', new ParseUUIDPipe()) id: string) {
-        return this.service.delete([id]);
     }
 }

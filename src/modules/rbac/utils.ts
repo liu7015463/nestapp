@@ -16,7 +16,7 @@ export async function checkOwnerPermission<T extends ObjectLiteral>(
         getData: (items: string[]) => Promise<T[]>;
         permission?: string;
     },
-) {
+): Promise<boolean> {
     const { request, key, getData, permission } = options;
     const models = await getData(getRequestData(request, key));
     return models.every((model) => ability.can(permission ?? PermissionAction.OWNER, model));

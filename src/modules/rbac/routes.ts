@@ -4,7 +4,7 @@ import * as controllers from './controllers';
 import * as manageControllers from './controllers/manager';
 
 export const createRbacApi = () => {
-    const routes: Record<'app' | 'manage', RouteOption[]> = {
+    const routes: Record<'app' | 'manager', RouteOption[]> = {
         app: [
             {
                 name: 'app.rbac',
@@ -12,7 +12,7 @@ export const createRbacApi = () => {
                 controllers: Object.values(controllers),
             },
         ],
-        manage: [
+        manager: [
             {
                 name: 'manage.rbac',
                 path: 'rbac',
@@ -20,9 +20,9 @@ export const createRbacApi = () => {
             },
         ],
     };
-    const tags: Record<'app' | 'manage', Array<string | TagOption>> = {
+    const tags: Record<'app' | 'manager', Array<string | TagOption>> = {
         app: [{ name: '角色查询', description: '查询角色信息' }],
-        manage: [
+        manager: [
             { name: '角色管理', description: '管理角色信息' },
             { name: '权限信息', description: '查询权限信息' },
         ],
