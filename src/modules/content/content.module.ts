@@ -1,6 +1,7 @@
 import { DynamicModule, Module, ModuleMetadata } from '@nestjs/common';
 
 import * as entities from '@/modules/content/entities';
+import { ContentRbac } from '@/modules/content/rbac';
 import * as repositories from '@/modules/content/repositories';
 import * as services from '@/modules/content/services';
 import { SearchService } from '@/modules/content/services';
@@ -23,6 +24,7 @@ export class ContentModule {
     static async forRoot(configure: Configure): Promise<DynamicModule> {
         const config = await configure.get<ContentConfig>('content', defauleContentConfig);
         const providers: ModuleMetadata['providers'] = [
+            ContentRbac,
             ...Object.values(services),
             ...(await addSubscribers(configure, Object.values(subscribers))),
             {

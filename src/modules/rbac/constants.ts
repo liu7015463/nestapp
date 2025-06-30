@@ -13,5 +13,5 @@ export enum PermissionAction {
     UPDATE = 'update',
     DELETE = 'delete',
     MANAGE = 'manage',
-    OWNER = 'onwer',
+    OWNER = 'owner',
 }
