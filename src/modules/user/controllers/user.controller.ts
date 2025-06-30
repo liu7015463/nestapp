@@ -1,26 +1,18 @@
-import {
-    Body,
-    Controller,
-    Delete,
-    Get,
-    Param,
-    ParseUUIDPipe,
-    Patch,
-    Post,
-    SerializeOptions,
-} from '@nestjs/common';
+import { Controller, Get, Param, ParseUUIDPipe, Query, SerializeOptions } from '@nestjs/common';
 
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 
-import { DeleteWithTrashDto, RestoreDto } from '@/modules/content/dtos/delete.with.trash.dto';
+import { IsNull, Not } from 'typeorm';
+
+import { SelectTrashMode } from '@/modules/database/constants';
 import { Depends } from '@/modules/restful/decorators/depend.decorator';
+import { UserService } from '@/modules/user/services';
 import { UserModule } from '@/modules/user/user.module';
 
 import { Guest } from '../decorators/guest.decorator';
-import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto';
-import { UserService } from '../services/user.service';
+import { FrontedQueryUserDto } from '../dtos/user.dto';
 
-@ApiTags('用户管理')
+@ApiTags('用户查询')
 @Depends(UserModule)
 @Controller('users')
 export class UserController {
@@ -32,8 +24,8 @@ export class UserController {
     @Get()
     @Guest()
     @SerializeOptions({ groups: ['user-list'] })
-    async list() {
-        return this.service.list();
+    async list(@Query() options: FrontedQueryUserDto) {
+        return this.service.list({ ...options, trashed: SelectTrashMode.NONE });
     }
 
     /**
@@ -44,52 +36,6 @@ export class UserController {
     @Guest()
     @SerializeOptions({ groups: ['user-detail'] })
     async detail(@Param('id', new ParseUUIDPipe()) id: string) {
-        return this.service.detail(id);
-    }
-
-    /**
-     * 新增用户
-     * @param data
-     */
-    @Post()
-    @ApiBearerAuth()
-    @SerializeOptions({ groups: ['user-detail'] })
-    async store(@Body() data: CreateUserDto) {
-        return this.service.create(data);
-    }
-
-    /**
-     * 更新用户
-     * @param data
-     */
-    @Patch()
-    @ApiBearerAuth()
-    @SerializeOptions({ groups: ['user-detail'] })
-    async update(@Body() data: UpdateUserDto) {
-        return this.service.update(data);
-    }
-
-    /**
-     * 批量删除用户
-     * @param data
-     */
-    @Delete()
-    @ApiBearerAuth()
-    @SerializeOptions({ groups: ['user-list'] })
-    async delete(@Body() data: DeleteWithTrashDto) {
-        const { ids, trash } = data;
-        return this.service.delete(ids, trash);
-    }
-
-    /**
-     * 批量恢复用户
-     * @param data
-     */
-    @Patch('restore')
-    @ApiBearerAuth()
-    @SerializeOptions({ groups: ['user-list'] })
-    async restore(@Body() data: RestoreDto) {
-        const { ids } = data;
-        return this.service.restore(ids);
+        return this.service.detail(id, async (qb) => qb.andWhere({ deletedAt: Not(IsNull()) }));
     }
 }

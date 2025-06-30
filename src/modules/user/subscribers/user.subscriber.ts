@@ -1,8 +1,9 @@
 import { randomBytes } from 'node:crypto';
 
-import { EventSubscriber, InsertEvent, UpdateEvent } from 'typeorm';
+import { EventSubscriber, InsertEvent, LoadEvent, UpdateEvent } from 'typeorm';
 
 import { BaseSubscriber } from '@/modules/database/base/subscriber';
+import { RoleEntity } from '@/modules/rbac/entities';
 import { UserEntity } from '@/modules/user/entities/user.entity';
 import { encrypt } from '@/modules/user/utils';
 
@@ -35,5 +36,22 @@ export class UserSubscriber extends BaseSubscriber<UserEntity> {
         if (this.isUpdated('password', event)) {
             event.entity.password = await encrypt(this.configure, event.entity.password);
         }
+    }
+
+    async afterLoad(user: UserEntity, event: LoadEvent<any>): Promise<void> {
+        let permissions = user.permissions ?? [];
+        for (const role of user.roles ?? []) {
+            const roleEntity = await this.getManage(event).findOneOrFail(RoleEntity, {
+                relations: ['permissions'],
+                where: { id: role.id },
+            });
+            permissions = [...permissions, ...(roleEntity.permissions ?? [])];
+        }
+        user.permissions = permissions.reduce((o, n) => {
+            if (o.find(({ name }) => name === n.name)) {
+                return o;
+            }
+            return [...o, n];
+        }, []);
     }
 }

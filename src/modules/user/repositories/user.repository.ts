@@ -7,6 +7,9 @@ export class UserRepository extends BaseRepository<UserEntity> {
     protected _qbName: string = 'user';
 
     buildBaseQuery() {
-        return this.createQueryBuilder(this.qbName).orderBy(`${this.qbName}.createdAt`, 'DESC');
+        return this.createQueryBuilder(this.qbName)
+            .orderBy(`${this.qbName}.createdAt`, 'DESC')
+            .leftJoinAndSelect(`${this.qbName}.roles`, 'roles')
+            .leftJoinAndSelect(`${this.qbName}.permissions`, 'permissions');
     }
 }

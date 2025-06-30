@@ -18,6 +18,8 @@ import {
     UpdateEvent,
 } from 'typeorm';
 
+import { LoadEvent } from 'typeorm/subscriber/event/LoadEvent';
+
 import { Configure } from '@/modules/config/configure';
 
 import { app } from '@/modules/core/helpers/app';
@@ -72,7 +74,7 @@ export abstract class BaseSubscriber<T extends ObjectLiteral>
         return this.entity;
     }
 
-    async afterLoad(entity: any) {
+    async afterLoad(entity: any, event?: LoadEvent<T>) {
         if ('parent' in entity && isNil(entity.depth)) {
             entity.depth = 0;
         }
