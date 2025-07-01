@@ -9,8 +9,6 @@ import { addEntities, addSubscribers } from '@/modules/database/utils';
 
 import { RbacModule } from '@/modules/rbac/rbac.module';
 
-import { RoleRepository } from '@/modules/rbac/repositories';
-
 import * as entities from './entities';
 import * as guards from './guards';
 import * as interceptors from './interceptors';
@@ -32,7 +30,6 @@ export class UserModule {
                 DatabaseModule.forRepository(Object.values(repositories)),
             ],
             providers: [
-                RoleRepository,
                 ...Object.values(interceptors),
                 ...Object.values(services),
                 ...Object.values(strategies),
