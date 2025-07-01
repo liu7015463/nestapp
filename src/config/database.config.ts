@@ -5,7 +5,16 @@ import { ContentFactory } from '@/modules/database/factories/content.factory';
 import ContentSeeder from '@/modules/database/seeders/content.seeder';
 
 export const database = createDBConfig((configure) => ({
-    common: { synchronize: true },
+    common: {
+        synchronize: true,
+        // 启用详细日志以便调试 SQL 错误
+        logging:
+            configure.env.get('NODE_ENV') === 'development'
+                ? ['query', 'error', 'schema', 'warn', 'info', 'log']
+                : ['error'],
+        // 启用最大日志记录
+        maxQueryExecutionTime: 1000,
+    },
     connections: [
         {
             type: 'mysql',

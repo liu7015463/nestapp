@@ -34,7 +34,7 @@ export class PermissionService extends BaseService<
     ) {
         const qb = await super.buildListQB(queryBuilder, options, callback);
         if (!isNil(options.role)) {
-            qb.andWhere('role.id IN (:...roles', { roles: [options.role] });
+            qb.andWhere('role.id IN (:...roles)', { roles: [options.role] });
         }
         return qb;
     }

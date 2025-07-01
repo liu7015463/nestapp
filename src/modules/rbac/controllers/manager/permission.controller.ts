@@ -13,7 +13,7 @@ import { PaginateWithTrashedDto } from '@/modules/restful/dtos/paginate-width-tr
 const permission: PermissionChecker = async (ab) =>
     ab.can(PermissionAction.MANAGE, PermissionEntity.name);
 
-@ApiTags('权限查询')
+@ApiTags('权限管理')
 @ApiBearerAuth()
 @Depends(RbacModule)
 @Controller('permissions')

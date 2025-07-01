@@ -132,10 +132,10 @@ export class UserService extends BaseService<UserEntity, UserRepository> {
         const { orderBy } = options;
         const qb = await super.buildListQB(queryBuilder, options, callback);
         if (!isNil(options.role)) {
-            qb.andWhere('roles.id IN (:...roles', { roles: [options.role] });
+            qb.andWhere('roles.id IN (:...roles)', { roles: [options.role] });
         }
         if (!isNil(options.permission)) {
-            qb.andWhere('permissions.id IN (:...permissions', {
+            qb.andWhere('permissions.id IN (:...permissions)', {
                 permissions: [options.permission],
             });
         }

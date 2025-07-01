@@ -27,7 +27,7 @@ import { PaginateDto } from '@/modules/restful/dtos/paginate.dto';
 
 const permission: PermissionChecker = async (ab) => ab.can(PermissionAction.MANAGE, TagEntity.name);
 
-@ApiTags('标签查询')
+@ApiTags('标签管理')
 @Depends(ContentModule)
 @Controller('tag')
 export class TagController {

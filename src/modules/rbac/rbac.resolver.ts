@@ -243,7 +243,7 @@ export class RbacResolver<P extends AbilityTuple = AbilityTuple, T extends Mongo
         const superUsers = await manager
             .createQueryBuilder(UserEntity, 'user')
             .leftJoinAndSelect('user.roles', 'roles')
-            .where('roles.id IN (:...ids', { ids: [superRole.id] })
+            .where('roles.id IN (:...ids)', { ids: [superRole.id] })
             .getMany();
 
         if (superUsers.length < 1) {

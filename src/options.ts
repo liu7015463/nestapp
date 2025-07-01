@@ -12,6 +12,7 @@ import { UserModule } from '@/modules/user/user.module';
 
 import * as configs from './config';
 import { ContentModule } from './modules/content/content.module';
+import { GlobalExceptionFilter } from './modules/core/filters/global-exception.filter';
 import { CreateOptions } from './modules/core/types';
 import * as dbCommands from './modules/database/commands';
 import { DatabaseModule } from './modules/database/database.module';
@@ -32,7 +33,10 @@ export const createOptions: CreateOptions = {
         await UserModule.forRoot(configure),
         await RbacModule.forRoot(configure),
     ],
-    globals: { guard: RbacGuard },
+    globals: {
+        guard: RbacGuard,
+        filter: GlobalExceptionFilter,
+    },
     builder: async ({ configure, BootModule }) => {
         const container = await NestFactory.create<NestFastifyApplication>(
             BootModule,
