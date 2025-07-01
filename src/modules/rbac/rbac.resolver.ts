@@ -4,6 +4,8 @@ import { InternalServerErrorException, OnApplicationBootstrap } from '@nestjs/co
 import { isArray, isNil, omit } from 'lodash';
 import { DataSource, EntityManager, In, Not } from 'typeorm';
 
+import { PermissionEntity } from '@/modules/rbac/entities';
+
 import { Configure } from '../config/configure';
 
 import { deepMerge } from '../core/helpers';
@@ -11,7 +13,6 @@ import { deepMerge } from '../core/helpers';
 import { UserEntity } from '../user/entities';
 
 import { SYSTEM_PERMISSION, SystemRoles } from './constants';
-import { PermissionEntity } from './entities/permission.entity';
 import { RoleEntity } from './entities/role.entity';
 import { PermissionType, Role } from './types';
 
