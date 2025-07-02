@@ -44,8 +44,8 @@ export class ContentModule {
                     categoryRepository: repositories.CategoryRepository,
                     tagRepository: repositories.TagRepository,
                     categoryService: services.CategoryService,
-                    searchService: SearchService,
                     userRepository: UserRepository,
+                    searchService: SearchService,
                 ) {
                     return new PostService(
                         postRepository,

@@ -2,6 +2,7 @@ import {
     Body,
     Controller,
     Delete,
+    ForbiddenException,
     Get,
     Param,
     ParseUUIDPipe,
@@ -18,6 +19,7 @@ import { PermissionAction } from '@/modules/rbac/constants';
 import { Permission } from '@/modules/rbac/decorators/permission.decorator';
 import { PermissionChecker } from '@/modules/rbac/types';
 import { Depends } from '@/modules/restful/decorators/depend.decorator';
+import { RequestUser } from '@/modules/user/decorators/user.request.decorator';
 import { CreateUserDto, FrontedQueryUserDto, UpdateUserDto } from '@/modules/user/dtos/user.dto';
 import { UserEntity } from '@/modules/user/entities';
 import { UserService } from '@/modules/user/services';
@@ -40,7 +42,7 @@ export class UserController {
     @Permission(permission)
     @SerializeOptions({ groups: ['user-list'] })
     async list(@Query() options: FrontedQueryUserDto) {
-        return this.service.list(options);
+        return this.service.paginate(options);
     }
 
     /**
@@ -78,13 +80,17 @@ export class UserController {
 
     /**
      * 批量删除用户
+     * @param user
      * @param data
      */
     @Delete()
     @Permission(permission)
     @SerializeOptions({ groups: ['user-list'] })
-    async delete(@Body() data: DeleteWithTrashDto) {
+    async delete(@RequestUser() user: UserEntity, @Body() data: DeleteWithTrashDto) {
         const { ids, trash } = data;
+        if (ids.includes(user.id)) {
+            throw new ForbiddenException();
+        }
         return this.service.delete(ids, trash);
     }
 

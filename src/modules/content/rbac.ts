@@ -3,7 +3,9 @@ import { ModuleRef } from '@nestjs/core';
 
 import { CategoryEntity, CommentEntity, PostEntity, TagEntity } from '@/modules/content/entities';
 import { PermissionAction, SystemRoles } from '@/modules/rbac/constants';
+import { PermissionEntity, RoleEntity } from '@/modules/rbac/entities';
 import { RbacResolver } from '@/modules/rbac/rbac.resolver';
+import { UserEntity } from '@/modules/user/entities';
 
 @Injectable()
 export class ContentRbac implements OnModuleInit {
@@ -71,6 +73,27 @@ export class ContentRbac implements OnModuleInit {
                 rule: {
                     action: PermissionAction.MANAGE,
                     subject: CommentEntity,
+                },
+            },
+            {
+                name: 'permission.manage',
+                rule: {
+                    action: PermissionAction.MANAGE,
+                    subject: PermissionEntity,
+                },
+            },
+            {
+                name: 'role.manage',
+                rule: {
+                    action: PermissionAction.MANAGE,
+                    subject: RoleEntity,
+                },
+            },
+            {
+                name: 'user.manage',
+                rule: {
+                    action: PermissionAction.MANAGE,
+                    subject: UserEntity,
                 },
             },
         ]);

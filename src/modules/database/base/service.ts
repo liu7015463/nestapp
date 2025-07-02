@@ -83,7 +83,7 @@ export abstract class BaseService<
 
     async detail(id: string, callback?: QueryHook<T>) {
         const qb = await this.buildItemQB(id, this.repository.buildBaseQB(), callback);
-        const item = qb.getOne();
+        const item = await qb.getOne();
         if (!item) {
             throw new NotFoundException(`${this.repository.qbName} ${id} NOT FOUND`);
         }

@@ -94,6 +94,7 @@ export class QueryUserDto extends PaginateWithTrashedDto {
      * 排序规则:可指定用户列表的排序规则,默认为按创建时间降序排序
      */
     @IsEnum(UserOrderType)
+    @IsOptional()
     orderBy?: UserOrderType;
 }
 

@@ -31,7 +31,7 @@ export const ContentFactory = defineFactory(
             post.publishedAt = (await getTime(configure)).toDate();
         }
         if (Math.random() > 0.5) {
-            post.deleteAt = (await getTime(configure)).toDate();
+            post.deletedAt = (await getTime(configure)).toDate();
         }
         if (category) {
             post.category = category;

@@ -48,7 +48,7 @@ export class SearchService implements OnModuleInit {
     }
 
     async search(text: string, param: SearchOption = {}): Promise<any> {
-        const option = { page: 1, limit: 10, trashed: SelectTrashMode.ONLY, ...param };
+        const option = { page: 1, limit: 10, trashed: SelectTrashMode.NONE, ...param };
         const limit = isNil(option.limit) || option.limit < 1 ? 1 : option.limit;
         const page = isNil(option.page) || option.page < 1 ? 1 : option.page;
         let filter = ['deletedAt IS NULL'];
@@ -64,7 +64,7 @@ export class SearchService implements OnModuleInit {
             .index(this.index)
             .search(text, { page, limit, sort: ['updatedAt:desc', 'commentCount:desc'], filter });
         return {
-            item: result.hits,
+            items: result.hits,
             currentPage: result.page,
             perPage: result.hitsPerPage,
             totalItems: result.estimatedTotalHits,

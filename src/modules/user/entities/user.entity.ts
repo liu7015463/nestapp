@@ -109,13 +109,16 @@ export class UserEntity {
      * 用户权限
      */
     @Expose()
-    @ManyToMany(() => PermissionEntity, (permission) => permission.users, { cascade: true })
+    @ManyToMany(() => PermissionEntity, (permission) => permission.users, {
+        cascade: true,
+        onDelete: 'CASCADE',
+    })
     permissions: Relation<PermissionEntity>[];
 
     /**
      * 用户角色
      */
     @Expose()
-    @ManyToMany(() => RoleEntity, (role) => role.users, { cascade: true })
+    @ManyToMany(() => RoleEntity, (role) => role.users, { cascade: true, onDelete: 'CASCADE' })
     roles: Relation<RoleEntity>[];
 }

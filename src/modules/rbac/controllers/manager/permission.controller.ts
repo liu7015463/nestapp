@@ -20,9 +20,6 @@ const permission: PermissionChecker = async (ab) =>
 export class PermissionController {
     constructor(private service: PermissionService) {}
 
-    permission: PermissionChecker = async (ab) =>
-        ab.can(PermissionAction.MANAGE, PermissionEntity.name);
-
     /**
      * 分页列表查询
      * @param options

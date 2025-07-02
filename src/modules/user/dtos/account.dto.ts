@@ -18,7 +18,7 @@ export class UpdateAccountDto extends PickType(UserCommonDto, ['username', 'nick
      */
     @IsUUID(undefined, { message: '用户ID格式不正确', groups: [UserValidateGroup.USER_UPDATE] })
     @IsDefined({ groups: ['update'], message: '用户ID必须指定' })
-    id: string;
+    id?: string;
 }
 
 /**

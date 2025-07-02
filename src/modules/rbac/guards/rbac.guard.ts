@@ -1,27 +1,28 @@
 import { createMongoAbility } from '@casl/ability';
-import { ExecutionContext, ForbiddenException } from '@nestjs/common';
+import { ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { ModuleRef, Reflector } from '@nestjs/core';
 
 import { isNil } from 'lodash';
 
+import { PermissionEntity } from '@/modules/rbac/entities';
 import { JwtAuthGuard } from '@/modules/user/guards';
 
 import { UserRepository } from '@/modules/user/repositories';
 import { TokenService } from '@/modules/user/services';
 
 import { PERMISSION_CHECKERS } from '../constants';
-import { PermissionEntity } from '../entities/permission.entity';
 import { RbacResolver } from '../rbac.resolver';
 
 import { CheckerParams, PermissionChecker } from '../types';
 
+@Injectable()
 export class RbacGuard extends JwtAuthGuard {
     constructor(
         protected reflector: Reflector,
         protected resolver: RbacResolver,
         protected tokenService: TokenService,
         protected userRepository: UserRepository,
-        protected modeleRef: ModuleRef,
+        protected moduleRef: ModuleRef,
     ) {
         super(reflector, tokenService);
     }
@@ -45,7 +46,7 @@ export class RbacGuard extends JwtAuthGuard {
             resolver: this.resolver,
             repository: this.userRepository,
             checkers,
-            moduleRef: this.modeleRef,
+            moduleRef: this.moduleRef,
             request: context.switchToHttp().getRequest(),
         });
         if (!result) {

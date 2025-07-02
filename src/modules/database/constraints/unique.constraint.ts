@@ -20,6 +20,9 @@ export class UniqueConstraint implements ValidatorConstraintInterface {
     constructor(private dataSource: DataSource) {}
 
     async validate(value: any, validationArguments?: ValidationArguments): Promise<boolean> {
+        if (isNil(value)) {
+            return true;
+        }
         const config: Omit<Condition, 'entity'> = { property: validationArguments.property };
         const condition = ('entity' in validationArguments.constraints[0]
             ? merge(config, validationArguments.constraints[0])

@@ -2,7 +2,7 @@ import { Controller, Get, Param, ParseUUIDPipe, Query, SerializeOptions } from '
 
 import { ApiTags } from '@nestjs/swagger';
 
-import { IsNull, Not } from 'typeorm';
+import { IsNull } from 'typeorm';
 
 import { SelectTrashMode } from '@/modules/database/constants';
 import { Depends } from '@/modules/restful/decorators/depend.decorator';
@@ -25,7 +25,7 @@ export class UserController {
     @Guest()
     @SerializeOptions({ groups: ['user-list'] })
     async list(@Query() options: FrontedQueryUserDto) {
-        return this.service.list({ ...options, trashed: SelectTrashMode.NONE });
+        return this.service.paginate({ ...options, trashed: SelectTrashMode.NONE });
     }
 
     /**
@@ -36,6 +36,6 @@ export class UserController {
     @Guest()
     @SerializeOptions({ groups: ['user-detail'] })
     async detail(@Param('id', new ParseUUIDPipe()) id: string) {
-        return this.service.detail(id, async (qb) => qb.andWhere({ deletedAt: Not(IsNull()) }));
+        return this.service.detail(id, async (qb) => qb.andWhere({ deletedAt: IsNull() }));
     }
 }

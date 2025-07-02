@@ -30,18 +30,21 @@ export class RoleEntity extends BaseEntity {
     /**
      * 角色名称
      */
+    @Expose()
     @Column({ comment: '角色名称' })
     name: string;
 
     /**
      * 显示名称
      */
+    @Expose()
     @Column({ comment: '显示名称', nullable: true })
     label?: string;
 
     /**
      * 角色描述
      */
+    @Expose({ groups: ['role-detail'] })
     @Column({ comment: '角色描述', nullable: true, type: 'text' })
     description?: string;
 

@@ -29,7 +29,7 @@ export async function getSearchItem(
                 'body',
                 'summary',
                 'commentCount',
-                'deleteAt',
+                'deletedAt',
                 'publishedAt',
                 'createdAt',
                 'updatedAt',

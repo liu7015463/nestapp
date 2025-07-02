@@ -205,9 +205,12 @@ export class RbacResolver<P extends AbilityTuple = AbilityTuple, T extends Mongo
 
         // 同步普通角色
         for (const role of roles) {
-            const rolePermissions = await manager.findBy(PermissionEntity, {
-                name: In(this.roles.find(({ name }) => name === role.name).permissions),
-            });
+            const rolePermissions =
+                isNil(role.permissions) || role.permissions.length <= 0
+                    ? []
+                    : await manager.findBy(PermissionEntity, {
+                          name: In(role.permissions.map(({ name }) => name)),
+                      });
             await roleRepo
                 .createQueryBuilder('role')
                 .relation(RoleEntity, 'permissions')

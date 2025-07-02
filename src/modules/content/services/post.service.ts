@@ -147,8 +147,8 @@ export class PostService extends BaseService<PostEntity, PostRepository, FindPar
             .getMany();
         let result: PostEntity[];
         if (trash) {
-            const directs = items.filter((item) => !isNil(item.deleteAt));
-            const softs = items.filter((item) => isNil(item.deleteAt));
+            const directs = items.filter((item) => !isNil(item.deletedAt));
+            const softs = items.filter((item) => isNil(item.deletedAt));
             result = [
                 ...(await this.repository.remove(directs)),
                 ...(await this.repository.softRemove(softs)),
@@ -172,7 +172,7 @@ export class PostService extends BaseService<PostEntity, PostRepository, FindPar
             .where('post.id IN (:...ids)', { ids })
             .withDeleted()
             .getMany();
-        const trashes = items.filter((item) => !isNil(item.deleteAt));
+        const trashes = items.filter((item) => !isNil(item.deletedAt));
         await this.searchService.update(trashes);
         const trashedIds = trashes.map((item) => item.id);
         if (trashedIds.length < 1) {
@@ -190,7 +190,7 @@ export class PostService extends BaseService<PostEntity, PostRepository, FindPar
         options: FindParams,
         callback?: QueryHook<PostEntity>,
     ) {
-        const { orderBy, isPublished, category, tag, trashed, search } = options;
+        const { orderBy, isPublished, category, tag, trashed, search, author } = options;
         if (typeof isPublished === 'boolean') {
             isPublished
                 ? qb.where({ publishedAt: Not(IsNull()) })
@@ -211,6 +211,9 @@ export class PostService extends BaseService<PostEntity, PostRepository, FindPar
         }
         if (tag) {
             qb.where('tags.id = :id', { id: tag });
+        }
+        if (author) {
+            qb.where('author.id = :id', { id: author });
         }
         if (callback) {
             return callback(qb);
@@ -252,6 +255,6 @@ export class PostService extends BaseService<PostEntity, PostRepository, FindPar
         const tree = await this.categoryRepository.findDescendantsTree(root);
         const flatDes = await this.categoryRepository.toFlatTrees(tree.children);
         const ids = [tree.id, ...flatDes.map((item) => item.id)];
-        return qb.where('categoryRepository.id IN (:...ids)', { ids });
+        return qb.where('category.id IN (:...ids)', { ids });
     }
 }

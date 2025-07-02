@@ -1,4 +1,4 @@
-import { createMeiliConfig } from '../modules/meilisearch/config';
+import { createMeiliConfig } from '@/modules/meilisearch/config';
 
 export const meili = createMeiliConfig((configure) => [
     {

@@ -38,7 +38,7 @@ export class UserCommonDto {
         { entity: UserEntity, ignore: 'id', ignoreKey: 'userId' },
         { groups: [UserValidateGroup.ACCOUNT_UPDATE], message: '该用户名已被注册' },
     )
-    @Length(4, 50, { always: true, message: '用户名长度必须为$constraint1到$constraint2' })
+    @Length(4, 30, { always: true, message: '用户名长度必须为$constraint1到$constraint2' })
     @IsOptional({ groups: [UserValidateGroup.USER_UPDATE, UserValidateGroup.ACCOUNT_UPDATE] })
     username: string;
 

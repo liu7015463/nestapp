@@ -104,7 +104,7 @@ export class PostController {
     @SerializeOptions({ groups: ['post-detail'] })
     async show(@Param('id', new ParseUUIDPipe()) id: string) {
         return this.postService.detail(id, async (qb) =>
-            qb.andWhere({ publishedAt: Not(IsNull()), deletedAt: Not(IsNull()) }),
+            qb.andWhere({ publishedAt: Not(IsNull()), deletedAt: IsNull() }),
         );
     }
 

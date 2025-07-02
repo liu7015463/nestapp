@@ -40,7 +40,6 @@ export class PostEntity extends BaseEntity {
     summary?: string;
 
     @Expose()
-    @Expose()
     @Column({ comment: '关键字', type: 'simple-array', nullable: true })
     keywords?: string[];
 
@@ -69,7 +68,7 @@ export class PostEntity extends BaseEntity {
     @Expose()
     @Type(() => Date)
     @DeleteDateColumn({ comment: '删除时间' })
-    deleteAt: Date;
+    deletedAt: Date;
 
     @Expose()
     commentCount: number;
