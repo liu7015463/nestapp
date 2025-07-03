@@ -13,7 +13,7 @@ import { UserModule } from '@/modules/user/user.module';
 import * as configs from './config';
 import { ContentModule } from './modules/content/content.module';
 import { GlobalExceptionFilter } from './modules/core/filters/global-exception.filter';
-import { CreateOptions } from './modules/core/types';
+import { CreateOptions, RedisOption, RedisOptions } from './modules/core/types';
 import * as dbCommands from './modules/database/commands';
 import { DatabaseModule } from './modules/database/database.module';
 import { MeiliModule } from './modules/meilisearch/meili.module';
@@ -52,12 +52,30 @@ export const createOptions: CreateOptions = {
             if (existsSync(join(__dirname, 'metadata.js'))) {
                 metadata = (await import(join(__dirname, 'metadata.js'))).default;
             }
-            if (existsSync(join(__dirname, 'metadata.ts'))) {
-                metadata = (await import(join(__dirname, 'metadata.ts'))).default;
-            }
             await restful.factoryDocs(container, metadata);
         }
 
         return container;
     },
+};
+
+/**
+ * 生成Redis配置
+ * @param options
+ */
+export const createRedisOptions = (options: RedisOptions) => {
+    const config: Array<RedisOption> = Array.isArray(options)
+        ? options
+        : [{ ...options, name: 'default' }];
+    if (config.length < 1) {
+        return undefined;
+    }
+    if (isNil(config.find(({ name }) => name === 'default'))) {
+        config[0].name = 'default';
+    }
+
+    return config.reduce<RedisOption[]>((o, n) => {
+        const names = o.map(({ name }) => name) as string[];
+        return names.includes(n.name) ? o : [...o, n];
+    }, []);
 };
