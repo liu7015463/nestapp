@@ -1,11 +1,11 @@
 import { Paramtype, SetMetadata } from '@nestjs/common';
-import { ClassTransformOptions } from 'class-transformer';
-import { ValidationOptions } from 'class-validator';
+import { ClassTransformOptions } from '@nestjs/common/interfaces/external/class-transform-options.interface';
+import { ValidatorOptions } from '@nestjs/common/interfaces/external/validator-options.interface';
 
 import { DTO_VALIDATION_OPTIONS } from '../contants';
 
 export const DtoValidation = (
-    options?: ValidationOptions & { transformOptions?: ClassTransformOptions } & {
+    options?: ValidatorOptions & { transformOptions?: ClassTransformOptions } & {
         type?: Paramtype;
     },
 ) => SetMetadata(DTO_VALIDATION_OPTIONS, options ?? {});

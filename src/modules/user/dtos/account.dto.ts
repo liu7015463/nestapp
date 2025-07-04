@@ -11,15 +11,8 @@ import { UserValidateGroup } from '../constants';
 /**
  * 更新用户信息
  */
-@DtoValidation({ groups: [UserValidateGroup.ACCOUNT_UPDATE] })
-export class UpdateAccountDto extends PickType(UserCommonDto, ['username', 'nickname']) {
-    /**
-     * 待更新的用户ID
-     */
-    @IsUUID(undefined, { message: '用户ID格式不正确', groups: [UserValidateGroup.USER_UPDATE] })
-    @IsDefined({ groups: ['update'], message: '用户ID必须指定' })
-    id?: string;
-}
+@DtoValidation({ groups: [UserValidateGroup.ACCOUNT_UPDATE], whitelist: false })
+export class UpdateAccountDto extends PickType(UserCommonDto, ['username', 'nickname']) {}
 
 /**
  * 更改用户密码

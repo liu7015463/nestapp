@@ -7,12 +7,15 @@ import {
     Request,
     SerializeOptions,
     UseGuards,
+    UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { pick } from 'lodash';
 
 import { Depends } from '@/modules/restful/decorators/depend.decorator';
+
+import { UserIdInterceptor } from '@/modules/user/interceptors';
 
 import { Guest } from '../decorators/guest.decorator';
 import { RequestUser } from '../decorators/user.request.decorator';
@@ -83,8 +86,13 @@ export class AccountController {
      */
     @Patch()
     @ApiBearerAuth()
+    @UseInterceptors(UserIdInterceptor)
     @SerializeOptions({ groups: ['user-detail'] })
-    async update(@RequestUser() user: ClassToPlain<UserEntity>, @Body() data: UpdateAccountDto) {
+    async update(
+        @RequestUser() user: ClassToPlain<UserEntity>,
+        @Body()
+        data: UpdateAccountDto,
+    ) {
         return this.userService.update({ id: user.id, ...pick(data, ['username', 'nickname']) });
     }
 

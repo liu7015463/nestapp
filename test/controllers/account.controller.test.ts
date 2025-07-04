@@ -324,7 +324,6 @@ describe('AccountController (App)', () => {
                 },
             });
             const { token } = loginResult.json();
-            console.log(token);
             const result = await app.inject({
                 method: 'POST',
                 url: `${URL_PREFIX}/account/logout`,
@@ -449,7 +448,6 @@ describe('AccountController (App)', () => {
                     username: `updated-account-${randomTag}`,
                 },
             });
-            console.log(result.json());
             expect(result.statusCode).toBe(200);
             const updatedUser = result.json();
             expect(updatedUser.username).toBe(`updated-account-${randomTag}`);
