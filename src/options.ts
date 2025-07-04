@@ -5,7 +5,7 @@ import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { existsSync } from 'fs-extra';
-import { isNil } from 'lodash';
+import { isArray, isNil, omit } from 'lodash';
 
 import { RbacModule } from '@/modules/rbac/rbac.module';
 import { UserModule } from '@/modules/user/user.module';
@@ -13,7 +13,13 @@ import { UserModule } from '@/modules/user/user.module';
 import * as configs from './config';
 import { ContentModule } from './modules/content/content.module';
 import { GlobalExceptionFilter } from './modules/core/filters/global-exception.filter';
-import { CreateOptions, RedisOption, RedisOptions } from './modules/core/types';
+import {
+    BullOptions,
+    CreateOptions,
+    QueueOptions,
+    RedisOption,
+    RedisOptions,
+} from './modules/core/types';
 import * as dbCommands from './modules/database/commands';
 import { DatabaseModule } from './modules/database/database.module';
 import { MeiliModule } from './modules/meilisearch/meili.module';
@@ -64,6 +70,9 @@ export const createOptions: CreateOptions = {
  * @param options
  */
 export const createRedisOptions = (options: RedisOptions) => {
+    if (isNil(options)) {
+        return undefined;
+    }
     const config: Array<RedisOption> = Array.isArray(options)
         ? options
         : [{ ...options, name: 'default' }];
@@ -78,4 +87,32 @@ export const createRedisOptions = (options: RedisOptions) => {
         const names = o.map(({ name }) => name) as string[];
         return names.includes(n.name) ? o : [...o, n];
     }, []);
+};
+
+/**
+ * 生成BullMQ模块的配置
+ * @param options
+ * @param redis
+ */
+export const createQueueOptions = (
+    options: QueueOptions,
+    redis: Array<RedisOption>,
+): BullOptions | undefined => {
+    if (isNil(options) || isNil(redis)) {
+        return undefined;
+    }
+    const names = redis.map(({ name }) => name);
+    if (names.length < 1 || !names.includes('default')) {
+        return undefined;
+    }
+    if (isArray(options)) {
+        return options.map((option) => ({
+            ...omit(option, 'redis'),
+            connection: redis.find(({ name: c }) => c === (option.redis ?? 'default')),
+        }));
+    }
+    return {
+        ...omit(options, 'redis'),
+        connection: redis.find(({ name: c }) => c === (options.redis ?? 'default')),
+    };
 };

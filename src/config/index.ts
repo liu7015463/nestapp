@@ -5,3 +5,5 @@ export * from './meili.config';
 export * from './api.config';
 export * from './sms.config';
 export * from './smtp.config';
+export * from './redis.config';
+export * from './queue.config';
