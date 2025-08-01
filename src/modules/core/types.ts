@@ -151,7 +151,7 @@ export interface DynamicRelation {
 /**
  * 嵌套对象
  */
-export type NestedRecord = Record<string, Record<string, any>>;
+export type NestedRecord = Record<string, RecordAny>;
 
 /**
  * core模块参数选项
@@ -159,6 +159,9 @@ export type NestedRecord = Record<string, Record<string, any>>;
 export interface CoreOptions {
     database?: () => TypeOrmModuleOptions;
     sms?: () => SmsOptions;
+    smtp?: () => SmtpOptions;
+    redis?: () => RedisOptions;
+    queue?: () => QueueOptions;
 }
 /**
  * 腾讯云短信驱动配置

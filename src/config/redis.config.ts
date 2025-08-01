@@ -1,6 +1,7 @@
 import { RedisOptions } from '@/modules/core/types';
 
 export const redis: () => RedisOptions = () => ({
-    host: '127.0.0.1',
+    host: '192.168.50.137',
     port: 6379,
+    password: '123456&Qw',
 });

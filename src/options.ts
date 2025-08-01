@@ -69,7 +69,7 @@ export const createOptions: CreateOptions = {
  * 生成Redis配置
  * @param options
  */
-export const createRedisOptions = (options: RedisOptions) => {
+export const createRedisOptions = (options: RedisOptions): RedisOption[] | undefined => {
     if (isNil(options)) {
         return undefined;
     }

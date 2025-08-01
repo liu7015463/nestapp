@@ -4,7 +4,13 @@ import { DynamicModule, Module, ModuleMetadata } from '@nestjs/common';
 import { isArray, isNil, omit } from 'lodash';
 
 import { RedisService, SmsService, SmtpService } from '@/modules/core/services';
-import { QueueOptions, RedisOptions, SmsOptions, SmtpOptions } from '@/modules/core/types';
+import type {
+    QueueOptions,
+    RedisOption,
+    RedisOptions,
+    SmsOptions,
+    SmtpOptions,
+} from '@/modules/core/types';
 
 import { createQueueOptions, createRedisOptions } from '@/options';
 
@@ -17,7 +23,9 @@ export class CoreModule {
         const providers: ModuleMetadata['providers'] = [];
         const exports: ModuleMetadata['exports'] = [];
         let imports: ModuleMetadata['imports'] = [];
-        const redis = createRedisOptions(await configure.get<RedisOptions>('redis'));
+        const redis: RedisOption[] | undefined = createRedisOptions(
+            await configure.get<RedisOptions>('redis'),
+        );
         if (!isNil(redis)) {
             providers.push({
                 provide: RedisService,
