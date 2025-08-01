@@ -63,6 +63,9 @@ export class UserEntity {
     @Column({ comment: '用户邮箱', length: 256, nullable: true, unique: true })
     email?: string;
 
+    @Column({ comment: '用户状态,是否激活', default: false })
+    actived?: boolean;
+
     /**
      * 用户创建时间
      */

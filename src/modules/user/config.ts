@@ -19,6 +19,23 @@ export function defaultUserConfig(configure: Configure): UserConfig {
                 3600 * 30,
             ),
         },
+        captcha: {
+            sms: {
+                login: {
+                    template: configure.env.get('SMS_LOGIN_CAPTCHA_CLOUD', 'your-id'),
+                },
+                register: {
+                    template: configure.env.get('SMS_REGISTER_CAPTCHA_CLOUD', 'your-id'),
+                },
+                'retrieve-password': {
+                    template: configure.env.get('SMS_RETRIEVE_PASSWORD_CAPTCHA_CLOUD', 'your-id'),
+                },
+            },
+            email: {
+                register: {},
+                'retrieve-password': {},
+            },
+        },
     };
 }
 

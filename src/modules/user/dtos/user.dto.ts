@@ -1,8 +1,10 @@
 import { OmitType, PartialType, PickType } from '@nestjs/swagger';
 
-import { IsDefined, IsEnum, IsOptional, IsUUID } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsBoolean, IsDefined, IsEnum, IsOptional, IsUUID } from 'class-validator';
 
 import { DtoValidation } from '@/modules/core/decorator/dto.validation.decorator';
+import { toBoolean } from '@/modules/core/helpers';
 import { IsDataExist } from '@/modules/database/constraints';
 import { PermissionEntity, RoleEntity } from '@/modules/rbac/entities';
 import { PaginateWithTrashedDto } from '@/modules/restful/dtos/paginate-width-trashed.dto';
@@ -69,6 +71,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
 /**
  * 查询用户列表的Query数据验证
  */
+@DtoValidation({ type: 'query', skipMissingProperties: true })
 export class QueryUserDto extends PaginateWithTrashedDto {
     /**
      * 角色ID:根据角色来过滤用户
@@ -96,6 +99,13 @@ export class QueryUserDto extends PaginateWithTrashedDto {
     @IsEnum(UserOrderType)
     @IsOptional()
     orderBy?: UserOrderType;
+
+    /**
+     * 过滤激活状态
+     */
+    @Transform(({ value }) => toBoolean(value))
+    @IsBoolean()
+    actived?: boolean;
 }
 
 /**

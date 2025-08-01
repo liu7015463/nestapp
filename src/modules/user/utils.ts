@@ -21,3 +21,10 @@ export async function encrypt(configure: Configure, password: string) {
 export function decrypt(password: string, hashed: string) {
     return bcrypt.compareSync(password, hashed);
 }
+
+/**
+ * 生成随机验证码
+ */
+export function generateCaptchaCode() {
+    return Math.random().toFixed(6).slice(-6);
+}
