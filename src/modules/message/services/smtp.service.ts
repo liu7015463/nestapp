@@ -9,8 +9,8 @@ import Mail from 'nodemailer/lib/mailer';
 import SMTPConnection from 'nodemailer/lib/smtp-connection';
 
 import { deepMerge } from '@/modules/core/helpers';
-import { SmtpOptions, SmtpSendParams } from '@/modules/core/types';
-
+import { SmtpSendParams } from '@/modules/message/types';
+import type { SmtpOptions } from '@/modules/message/types';
 /**
  * SMTP邮件发送驱动
  */

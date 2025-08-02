@@ -4,7 +4,7 @@ import Redis from 'ioredis';
 
 import { isNil } from 'lodash';
 
-import { RedisOption } from '@/modules/core/types';
+import type { RedisOption } from '@/modules/message/types';
 
 @Injectable()
 export class RedisService {

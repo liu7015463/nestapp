@@ -1,5 +1,5 @@
 import { Configure } from '@/modules/config/configure';
-import { SmsOptions } from '@/modules/core/types';
+import { SmsOptions } from '@/modules/message/types';
 
 export const sms: (configure: Configure) => SmsOptions = (configure) => ({
     sign: configure.env.get('SMS_CLOUD_SING', 'liuyi'),

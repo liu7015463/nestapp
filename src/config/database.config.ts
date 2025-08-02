@@ -8,7 +8,7 @@ export const database = createDBConfig((configure) => ({
     common: {
         synchronize: true,
         // 启用详细日志以便调试 SQL 错误
-        logging: configure.env.get('NODE_ENV') === 'development' ? ['error', 'query'] : ['error'],
+        logging: configure.env.get('NODE_ENV') === 'development' ? ['error'] : ['error'],
         // 启用最大日志记录
         maxQueryExecutionTime: 1000,
     },

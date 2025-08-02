@@ -1,7 +1,7 @@
 import path from 'path';
 
 import { Configure } from '@/modules/config/configure';
-import { SmtpOptions } from '@/modules/core/types';
+import { SmtpOptions } from '@/modules/message/types';
 
 export const smtp: (configure: Configure) => SmtpOptions = (configure) => ({
     host: configure.env.get('SMTP_HOST', 'localhost'),

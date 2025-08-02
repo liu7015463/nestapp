@@ -1,4 +1,4 @@
-import { QueueOptions } from '@/modules/core/types';
+import { QueueOptions } from '@/modules/message/types';
 
 export const queue: () => QueueOptions = () => ({
     redis: 'default',

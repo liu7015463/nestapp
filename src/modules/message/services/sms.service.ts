@@ -2,7 +2,9 @@ import { Injectable } from '@nestjs/common';
 import * as tencentcloud from 'tencentcloud-sdk-nodejs';
 
 import { deepMerge } from '@/modules/core/helpers';
-import { SmsOptions, SmsSendParams } from '@/modules/core/types';
+import { SmsSendParams } from '@/modules/message/types';
+
+import type { SmsOptions } from '@/modules/message/types';
 
 const SmsClient = tencentcloud.sms.v20210111.Client;
 

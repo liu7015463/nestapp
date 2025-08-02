@@ -1,4 +1,4 @@
-import { RedisOptions } from '@/modules/core/types';
+import { RedisOptions } from '@/modules/message/types';
 
 export const redis: () => RedisOptions = () => ({
     host: '192.168.50.137',
