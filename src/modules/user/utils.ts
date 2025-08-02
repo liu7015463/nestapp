@@ -14,6 +14,15 @@ export async function encrypt(configure: Configure, password: string) {
 }
 
 /**
+ * 加密明文密码
+ * @param password
+ */
+export function encryptByDefault(password: string) {
+    const hash: number = 10;
+    return bcrypt.hashSync(password, hash);
+}
+
+/**
  * 验证密码
  * @param password
  * @param hashed

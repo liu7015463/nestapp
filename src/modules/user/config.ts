@@ -20,9 +20,11 @@ export function defaultUserConfig(configure: Configure): UserConfig {
             ),
         },
         captcha: {
-            sms: {
+            phone: {
                 login: {
                     template: configure.env.get('SMS_LOGIN_CAPTCHA_CLOUD', 'your-id'),
+                    expired: configure.env.get('SMS_LOGIN_CAPTCHA_EXPIRED', (v) => toNumber(v), 60),
+                    limit: configure.env.get('SMS_LOGIN_CAPTCHA_LIMIT', (v) => toNumber(v), 60),
                 },
                 register: {
                     template: configure.env.get('SMS_REGISTER_CAPTCHA_CLOUD', 'your-id'),
@@ -32,6 +34,11 @@ export function defaultUserConfig(configure: Configure): UserConfig {
                 },
             },
             email: {
+                login: {
+                    template: configure.env.get('SMS_LOGIN_CAPTCHA_CLOUD', 'your-id'),
+                    expired: configure.env.get('SMS_LOGIN_CAPTCHA_EXPIRED', (v) => toNumber(v), 60),
+                    limit: configure.env.get('SMS_LOGIN_CAPTCHA_LIMIT', (v) => toNumber(v), 60),
+                },
                 register: {},
                 'retrieve-password': {},
             },

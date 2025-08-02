@@ -10,6 +10,8 @@ import utc from 'dayjs/plugin/utc';
 import { Configure } from '@/modules/config/configure';
 import { AppConfig, TimeOptions } from '@/modules/core/types';
 
+import { DEFAULT_LOCALE, DEFAULT_TIMEZONE } from '../contants';
+
 dayjs.extend(localeData);
 dayjs.extend(utc);
 dayjs.extend(advancedFormat);
@@ -27,4 +29,14 @@ export async function getTime(configure: Configure, options?: TimeOptions) {
     const config = await configure.get<AppConfig>('app');
     const now = dayjs(date, format, locale ?? config.locale, strict).clone();
     return now.tz(zonetime ?? config.timezone);
+}
+
+/**
+ * 获取一个dayjs时间对象
+ * @param options
+ */
+export async function getTimeDefault(options?: TimeOptions) {
+    const { date, format, locale, strict, zonetime } = options ?? {};
+    const now = dayjs(date, format, locale ?? DEFAULT_LOCALE, strict).clone();
+    return now.tz(zonetime ?? DEFAULT_TIMEZONE);
 }

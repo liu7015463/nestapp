@@ -58,7 +58,7 @@ export interface DefaultUserConfig {
  * 自定义验证码配置
  */
 export interface CustomCaptchaConfig {
-    [CaptchaType.SMS]?: {
+    [CaptchaType.PHONE]?: {
         [key in CaptchaActionType]?: Partial<SmsCaptchaOption>;
     };
     [CaptchaType.EMAIL]?: {
@@ -70,7 +70,7 @@ export interface CustomCaptchaConfig {
  * 默认验证码配置
  */
 export interface DefaultCaptchaConfig {
-    [CaptchaType.SMS]: {
+    [CaptchaType.PHONE]: {
         [key in CaptchaActionType]: CaptchaOption;
     };
     [CaptchaType.EMAIL]: {

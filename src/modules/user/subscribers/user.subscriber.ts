@@ -26,6 +26,9 @@ export class UserSubscriber extends BaseSubscriber<UserEntity> {
         if (!event.entity.username) {
             event.entity.username = await this.generateUserName(event);
         }
+        if (!event.entity.nickname) {
+            event.entity.nickname = event.entity.username;
+        }
         if (!event.entity.password) {
             event.entity.password = randomBytes(11).toString('hex').slice(0, 22);
         }

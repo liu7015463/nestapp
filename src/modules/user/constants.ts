@@ -87,7 +87,7 @@ export enum CaptchaActionType {
  * 验证码类型
  */
 export enum CaptchaType {
-    SMS = 'sms',
+    PHONE = 'phone',
     EMAIL = 'email',
 }
 
