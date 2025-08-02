@@ -99,7 +99,7 @@ export const SEND_CAPTCHA_QUEUE = 'send-captcha-queue';
 /**
  * 发送短信验证码任务处理名称
  */
-export const SMS_CAPTCHA_JOB = 'sms-captcha-job';
+export const PHONE_CAPTCHA_JOB = 'phone-captcha-job';
 
 /**
  * 发送邮件验证码任务处理名称

@@ -59,7 +59,7 @@ export interface DefaultUserConfig {
  */
 export interface CustomCaptchaConfig {
     [CaptchaType.PHONE]?: {
-        [key in CaptchaActionType]?: Partial<SmsCaptchaOption>;
+        [key in CaptchaActionType]?: Partial<PhoneCaptchaOption>;
     };
     [CaptchaType.EMAIL]?: {
         [key in CaptchaActionType]?: Partial<EmailCaptchaOption>;
@@ -89,7 +89,7 @@ export interface CaptchaOption {
 /**
  * 手机验证码选项
  */
-export interface SmsCaptchaOption extends CaptchaOption {
+export interface PhoneCaptchaOption extends CaptchaOption {
     template: string; // 云厂商短信推送模板ID
 }
 
@@ -106,7 +106,7 @@ export interface EmailCaptchaOption extends CaptchaOption {
  */
 export interface SendCaptchaQueueJob {
     captcha: { [key in keyof CaptchaEntity]: CaptchaEntity[key] };
-    option: SmsCaptchaOption | EmailCaptchaOption;
+    option: PhoneCaptchaOption | EmailCaptchaOption;
     otherVars?: RecordAny;
 }
 
