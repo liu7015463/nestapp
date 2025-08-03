@@ -1,3 +1,4 @@
+import { BullModule } from '@nestjs/bullmq';
 import { DynamicModule, forwardRef, Module } from '@nestjs/common';
 
 import { PassportModule } from '@nestjs/passport';
@@ -9,6 +10,9 @@ import { addEntities, addSubscribers } from '@/modules/database/utils';
 
 import { RbacModule } from '@/modules/rbac/rbac.module';
 
+import { MessageModule } from '../message/message.module';
+
+import { SEND_CAPTCHA_QUEUE } from './constants';
 import * as entities from './entities';
 import * as guards from './guards';
 import * as interceptors from './interceptors';
@@ -24,10 +28,14 @@ export class UserModule {
             module: UserModule,
             imports: [
                 PassportModule,
+                MessageModule,
                 forwardRef(() => RbacModule),
                 services.TokenService.JwtModuleFactory(configure),
                 await addEntities(configure, Object.values(entities)),
                 DatabaseModule.forRepository(Object.values(repositories)),
+                BullModule.registerQueue({
+                    name: SEND_CAPTCHA_QUEUE,
+                }),
             ],
             providers: [
                 ...Object.values(interceptors),

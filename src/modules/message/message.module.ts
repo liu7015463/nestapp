@@ -6,9 +6,9 @@ import { isArray, isNil, omit } from 'lodash';
 import { Configure } from '../config/configure';
 
 import { createQueueOptions, createRedisOptions } from './config';
-import { RedisService, SmtpService } from './services';
+import { RedisService, SmsService, SmtpService } from './services';
 import { QueueOptions, RedisOptions, SmtpOptions } from './types';
-import type { RedisOption } from './types';
+import { type RedisOption, SmsOptions } from './types';
 
 @Module({})
 export class MessageModule {
@@ -38,6 +38,15 @@ export class MessageModule {
                     imports.push(BullModule.forRoot(queues));
                 }
             }
+        }
+
+        const sms = await configure.get<SmsOptions>('sms');
+        if (sms) {
+            providers.push({
+                provide: SmsService,
+                useFactory: () => new SmsService(sms),
+            });
+            exports.push(SmsService);
         }
 
         const smtp = await configure.get<SmtpOptions>('smtp');

@@ -49,9 +49,7 @@ export class CaptchaWorkerService {
                 } else if (job.name === EMAIL_CAPTCHA_JOB) {
                     await this.sendEmail(job.data);
                 }
-                return await this.captchaRepository.save(
-                    omit(captcha, ['created_at', 'updated_at']),
-                );
+                return await this.captchaRepository.save(omit(captcha, ['createdAt', 'updatedAt']));
             }
             return false;
         } catch (err) {
