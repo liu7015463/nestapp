@@ -18,7 +18,15 @@ export class RedisService {
 
     async createClients() {
         this.options.map(async (option) => {
-            this.clients[option.name] = new Redis(option);
+            const redis = new Redis(option);
+            this.clients[option.name] = redis;
+            redis.on('connect', () => {
+                // 连接建立后，发送命令设置淘汰策略
+                redis
+                    .config('SET', 'maxmemory-policy', 'noeviction')
+                    .then(() => console.log('Set maxmemory-policy to noeviction'))
+                    .catch((err) => console.error('Failed to set maxmemory-policy', err));
+            });
         });
     }
 
