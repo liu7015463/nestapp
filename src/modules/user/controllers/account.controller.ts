@@ -15,16 +15,16 @@ import { pick } from 'lodash';
 
 import { Depends } from '@/modules/restful/decorators/depend.decorator';
 
+import { LocalAuthGuard } from '@/modules/user/guards';
 import { UserIdInterceptor } from '@/modules/user/interceptors';
+
+import { AuthService, UserService } from '@/modules/user/services';
 
 import { Guest } from '../decorators/guest.decorator';
 import { RequestUser } from '../decorators/user.request.decorator';
 import { UpdateAccountDto, UpdatePasswordDto } from '../dtos/account.dto';
 import { CredentialDto, RegisterDto } from '../dtos/auth.dto';
 import { UserEntity } from '../entities/user.entity';
-import { LocalAuthGuard } from '../guards/local.auth.guard';
-import { AuthService } from '../services/auth.service';
-import { UserService } from '../services/user.service';
 import { UserModule } from '../user.module';
 
 @ApiTags('账户操作')
@@ -55,7 +55,7 @@ export class AccountController {
     @Guest()
     @UseGuards(LocalAuthGuard)
     async login(@RequestUser() user: ClassToPlain<UserEntity>, @Body() _data: CredentialDto) {
-        return { token: await this.authService.createToken(user.id) };
+        return this.authService.createTokenDetail(user.id);
     }
 
     /**

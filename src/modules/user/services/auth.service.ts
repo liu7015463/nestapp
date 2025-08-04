@@ -95,6 +95,21 @@ export class AuthService {
         return accessToken.value;
     }
 
+    async createTokenDetail(id: string) {
+        const now = await getTime(this.configure);
+        let user: UserEntity;
+        try {
+            user = await this.userService.detail(id);
+        } catch (err) {
+            throw new ForbiddenException(err);
+        }
+        const { accessToken, refreshToken } = await this.tokenService.generateAccessToken(
+            user,
+            now,
+        );
+        return { userInfo: user, accessToken: accessToken.value, refreshToken: refreshToken.value };
+    }
+
     /**
      * 使用用户名密码注册用户
      * @param data
