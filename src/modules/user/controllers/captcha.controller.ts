@@ -1,5 +1,5 @@
 import { Body, Controller, Patch, Post, SerializeOptions } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { Depends } from '@/modules/restful/decorators/depend.decorator';
 

@@ -1,0 +1,106 @@
+doctype html
+html(lang="zh-CN")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title 注册验证码
+    style.
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        background-color: #ffffff;
+        border-radius: 8px;
+        padding: 40px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .logo {
+        font-size: 24px;
+        font-weight: bold;
+        color: #10b981;
+        margin-bottom: 10px;
+      }
+      .title {
+        font-size: 20px;
+        color: #1f2937;
+        margin-bottom: 20px;
+      }
+      .code-container {
+        background-color: #f0fdf4;
+        border: 2px dashed #bbf7d0;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        margin: 30px 0;
+      }
+      .code {
+        font-size: 32px;
+        font-weight: bold;
+        color: #10b981;
+        letter-spacing: 4px;
+        font-family: 'Courier New', monospace;
+      }
+      .info {
+        background-color: #dbeafe;
+        border-left: 4px solid #3b82f6;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+      .footer {
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #e5e7eb;
+        font-size: 14px;
+        color: #6b7280;
+        text-align: center;
+      }
+      .welcome {
+        background-color: #f0f9ff;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+        text-align: center;
+      }
+  body
+    .container
+      .header
+        .logo TANK-WEB
+        h1.title 欢迎注册
+      
+      .welcome
+        p
+          strong 🎉 欢迎加入TANK-WEB！
+        p 感谢您选择我们的服务，让我们一起开启精彩的旅程。
+      
+      p 您好！
+      p 您正在注册TANK-WEB账户，请使用以下验证码完成注册：
+      
+      .code-container
+        .code= code
+      
+      .info
+        p
+          strong 注册须知：
+        ul
+          li 验证码有效期为 
+            strong #{expired || 5} 分钟
+          li 请妥善保管您的账户信息
+          li 如果这不是您的操作，请忽略此邮件
+          li 注册成功后，您将享受我们的全部服务
+      
+      p 如果您在注册过程中遇到任何问题，请随时联系我们的客服团队。
+      
+      .footer
+        p 此邮件由系统自动发送，请勿回复。
+        p &copy; 2024 TANK-WEB. 保留所有权利。

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Job, Worker } from 'bullmq';
 import chalk from 'chalk';
-import { omit, isArray } from 'lodash';
+import { isArray, omit } from 'lodash';
 import { Repository } from 'typeorm';
 
 import { Configure } from '@/modules/config/configure';
@@ -10,9 +10,10 @@ import { SmsService, SmtpService } from '@/modules/message/services';
 
 import { RedisOptions, SmtpSendParams } from '@/modules/message/types';
 
-import { SEND_CAPTCHA_QUEUE, EMAIL_CAPTCHA_JOB, PHONE_CAPTCHA_JOB } from '../../constants';
-import { CaptchaEntity } from '../../entities/captcha.entity';
-import { SendCaptchaQueueJob, EmailCaptchaOption, PhoneCaptchaOption } from '../../types';
+import { CaptchaEntity } from '@/modules/user/entities';
+
+import { EMAIL_CAPTCHA_JOB, PHONE_CAPTCHA_JOB, SEND_CAPTCHA_QUEUE } from '../../constants';
+import { EmailCaptchaOption, PhoneCaptchaOption, SendCaptchaQueueJob } from '../../types';
 
 @Injectable()
 export class CaptchaWorkerService {
@@ -86,14 +87,14 @@ export class CaptchaWorkerService {
             captcha: { action, value, code },
             option,
         } = data;
-        const { template, subject } = option as EmailCaptchaOption;
+        const { template, subject, expired } = option as EmailCaptchaOption;
         return this.mailer.send<SmtpSendParams & { template?: string }>({
             name: action,
             subject,
             template,
             html: !template,
             to: [value],
-            vars: { code },
+            vars: { code, expired: Math.floor(expired / 60) },
         });
     }
 }

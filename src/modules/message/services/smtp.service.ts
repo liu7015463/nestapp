@@ -9,8 +9,9 @@ import Mail from 'nodemailer/lib/mailer';
 import SMTPConnection from 'nodemailer/lib/smtp-connection';
 
 import { deepMerge } from '@/modules/core/helpers';
-import { SmtpSendParams } from '@/modules/message/types';
 import type { SmtpOptions } from '@/modules/message/types';
+import { SmtpSendParams } from '@/modules/message/types';
+
 /**
  * SMTP邮件发送驱动
  */
@@ -83,11 +84,12 @@ export class SmtpService {
         const email = new Email(configd);
         const message = {
             ...pick(params, ['from', 'to', 'reply', 'attachments', 'subject']),
-            locals: params.vars,
         };
+        console.log('send email', message);
         return email.send({
             template: tplPath,
             message,
+            locals: params.vars,
         });
     }
 }

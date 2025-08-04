@@ -11,16 +11,16 @@ import { getTime } from '@/modules/core/helpers/time';
 
 import { getUserConfig } from '../../config';
 import {
-    SEND_CAPTCHA_QUEUE,
-    CaptchaType,
     CaptchaActionType,
+    CaptchaType,
     EMAIL_CAPTCHA_JOB,
     PHONE_CAPTCHA_JOB,
+    SEND_CAPTCHA_QUEUE,
 } from '../../constants';
 import {
-    PhoneCaptchaMessageDto,
-    EmailCaptchaMessageDto,
     CredentialCaptchaMessageDto,
+    EmailCaptchaMessageDto,
+    PhoneCaptchaMessageDto,
 } from '../../dtos/captcha.dto';
 import { UserEntity } from '../../entities';
 import { CaptchaEntity } from '../../entities/captcha.entity';
@@ -165,31 +165,28 @@ export class CaptchaQueueService {
             message ?? `send ${type === CaptchaType.PHONE ? 'phone' : 'email'} captcha failed`;
         try {
             // 获取验证码发送配置
-            const time = await getUserConfig<CaptchaOption | undefined>(
-                this.configure,
-                `captcha.time.${action}`,
-            );
-            const config = getUserConfig<CaptchaOption | undefined>(
+            const config = await getUserConfig<CaptchaOption | undefined>(
                 this.configure,
                 `captcha.${type}.${action}`,
             );
-            if (isNil(config) || isNil(time)) throw new BadRequestException(error);
+            if (isNil(config)) {
+                throw new BadRequestException(error);
+            }
             // 创建验证码模型实例
-            const captcha = await this.createCaptcha(data, action, type, time, captchaCode);
-            const expired = await getUserConfig<number>(
-                this.configure,
-                `captcha.time.${action}.expired`,
-            );
-            const otherVars =
+            const captcha = await this.createCaptcha(data, action, type, config, captchaCode);
+            const { expired } = config;
+            const otherVars: RecordAny =
                 action === CaptchaActionType.LOGIN ? { expired: Math.floor(expired / 60) } : {};
+            otherVars.code = captchaCode;
             const jobName = type === CaptchaType.EMAIL ? EMAIL_CAPTCHA_JOB : PHONE_CAPTCHA_JOB;
             // 加入异步发送任务
             await this.captchaQueue.add(jobName, {
                 captcha: instanceToPlain(captcha),
-                option: { ...config, ...time },
+                option: { ...config },
                 otherVars,
             });
         } catch (err) {
+            console.error(err);
             throw new BadRequestException(err);
         }
         return { result, log };

@@ -35,9 +35,17 @@ export function defaultUserConfig(configure: Configure): UserConfig {
             },
             email: {
                 login: {
-                    template: configure.env.get('SMS_LOGIN_CAPTCHA_CLOUD', 'your-id'),
-                    expired: configure.env.get('SMS_LOGIN_CAPTCHA_EXPIRED', (v) => toNumber(v), 60),
-                    limit: configure.env.get('SMS_LOGIN_CAPTCHA_LIMIT', (v) => toNumber(v), 60),
+                    template: configure.env.get('EMAIL_LOGIN_CAPTCHA_TEMPLATE', undefined),
+                    expired: configure.env.get(
+                        'EMAIL_LOGIN_CAPTCHA_EXPIRED',
+                        (v) => toNumber(v),
+                        300,
+                    ),
+                    limit: configure.env.get('EMAIL_LOGIN_CAPTCHA_LIMIT', (v) => toNumber(v), 60),
+                    subject: configure.env.get(
+                        'EMAIL_LOGIN_CAPTCHA_SUBJECT',
+                        '【TANK-WEB】登录验证码',
+                    ),
                 },
                 register: {},
                 'retrieve-password': {},

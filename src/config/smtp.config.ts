@@ -1,6 +1,7 @@
 import path from 'path';
 
 import { Configure } from '@/modules/config/configure';
+import { toBoolean } from '@/modules/core/helpers';
 import { SmtpOptions } from '@/modules/message/types';
 
 export const smtp: (configure: Configure) => SmtpOptions = (configure) => ({
@@ -9,7 +10,7 @@ export const smtp: (configure: Configure) => SmtpOptions = (configure) => ({
     password: configure.env.get('SMTP_PASSWORD', ''),
     from: configure.env.get('SMTP_FROM', 'TANK-WEB<support@localhost>'),
     port: configure.env.get('SMTP_PORT', (v) => Number(v), 25),
-    secure: configure.env.get('SMTP_SSL', (v) => JSON.parse(v), false),
+    secure: configure.env.get('SMTP_SSL', (v) => toBoolean(v), false),
     // Email模板路径
-    resource: path.resolve(__dirname, '../../assets/emails'),
+    resource: path.resolve(__dirname, '../assets/emails'),
 });
