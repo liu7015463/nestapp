@@ -4,8 +4,13 @@ import { ObjectLiteral } from 'typeorm';
 
 import { PermissionAction } from './constants';
 
-function getRequestData(request: Request, key: string): string[] {
-    return [];
+function getRequestData(request: Request, key: string = 'id'): string[] {
+    const result: string[] = [];
+    if (request.params && (request.params as any)[key]) {
+        result.push((request.params as any)[key]);
+    }
+    console.log('getRequestData result', result);
+    return result;
 }
 
 export async function checkOwnerPermission<T extends ObjectLiteral>(
