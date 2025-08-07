@@ -137,7 +137,7 @@ export class MenuService extends BaseService<MenuEntity, MenuRepository> {
             hidden?: boolean;
             externalLink?: string;
             component?: string;
-            order?: number;
+            customOrder?: number;
             type?: MenuPermissionType;
             permissionId?: string;
         }>,

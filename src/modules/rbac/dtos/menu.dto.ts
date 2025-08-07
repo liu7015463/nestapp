@@ -160,7 +160,7 @@ export class CreateMenuDto {
      */
     @Transform(({ value }) => toNumber(value))
     @IsOptional()
-    order?: number = 0;
+    customOrder?: number = 0;
 
     /**
      * 权限类型

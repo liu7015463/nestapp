@@ -158,4 +158,11 @@ export class MenuEntity extends BaseEntity {
     @ManyToOne(() => MenuEntity, { nullable: true, onDelete: 'CASCADE' })
     @JoinColumn({ name: 'parentId' })
     parent?: Relation<MenuEntity>;
+
+    /**
+     * 子菜单列表（用于树形结构）
+     */
+    @Expose()
+    @Type(() => MenuEntity)
+    children?: MenuEntity[];
 }

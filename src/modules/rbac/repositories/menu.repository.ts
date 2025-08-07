@@ -9,6 +9,8 @@ import { MenuEntity } from '../entities/menu.entity';
 export class MenuRepository extends BaseRepository<MenuEntity> {
     protected _qbName: string = 'menu';
 
+    protected orderBy = { name: 'customOrder', order: 'ASC' as const };
+
     buildBaseQB(): SelectQueryBuilder<MenuEntity> {
         return this.createQueryBuilder(this.qbName)
             .leftJoinAndSelect(`${this.qbName}.permission`, 'permission')
@@ -73,10 +75,17 @@ export class MenuRepository extends BaseRepository<MenuEntity> {
         const result: MenuEntity[] = [];
 
         for (const menu of menus) {
-            if (menu.parentId === parentId) {
+            // 处理 null 和 undefined 的情况
+            const menuParentId = menu.parentId;
+            const targetParentId = parentId;
+            const isMatch =
+                (menuParentId === null && targetParentId === undefined) ||
+                menuParentId === targetParentId;
+
+            if (isMatch) {
                 const children = this.buildTree(menus, menu.id);
                 if (children.length > 0) {
-                    (menu as any).children = children;
+                    menu.children = children;
                 }
                 result.push(menu);
             }
