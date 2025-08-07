@@ -25,6 +25,7 @@ export const createRbacApi = () => {
         manager: [
             { name: '角色管理', description: '管理角色信息' },
             { name: '权限管理', description: '管理权限信息' },
+            { name: '菜单管理', description: '管理菜单信息' },
         ],
     };
     return { routes, tags };

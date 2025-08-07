@@ -4,7 +4,7 @@ import { InternalServerErrorException, OnApplicationBootstrap } from '@nestjs/co
 import { isArray, isNil, omit } from 'lodash';
 import { DataSource, EntityManager, In, Not } from 'typeorm';
 
-import { PermissionEntity } from '@/modules/rbac/entities';
+import { MenuEntity, PermissionEntity } from '@/modules/rbac/entities';
 
 import { Configure } from '../config/configure';
 
@@ -14,7 +14,7 @@ import { UserEntity } from '../user/entities';
 
 import { SYSTEM_PERMISSION, SystemRoles } from './constants';
 import { RoleEntity } from './entities/role.entity';
-import { PermissionType, Role } from './types';
+import { Menu, MenuPermissionType, PermissionType, Role } from './types';
 
 const getSubject = <R extends SubjectType>(subject: R) => {
     if (typeof subject === 'string') {
@@ -58,6 +58,173 @@ export class RbacResolver<P extends AbilityTuple = AbilityTuple, T extends Mongo
                 subject: 'all',
             } as any,
         },
+        // 用户管理权限
+        {
+            name: 'user-manage',
+            label: '用户管理菜单',
+            description: '管理系统用户菜单',
+            rule: {
+                action: 'manage',
+                subject: 'MenuEntity',
+            } as any,
+        },
+        // 角色管理权限
+        {
+            name: 'role-manage',
+            label: '角色管理菜单',
+            description: '管理系统角色菜单',
+            rule: {
+                action: 'manage',
+                subject: 'MenuEntity',
+            } as any,
+        },
+        // 权限管理权限
+        {
+            name: 'permission-manage',
+            label: '权限管理菜单',
+            description: '管理系统权限菜单',
+            rule: {
+                action: 'manage',
+                subject: 'MenuEntity',
+            } as any,
+        },
+        // 菜单管理权限
+        {
+            name: 'menu-manage',
+            label: '菜单管理菜单',
+            description: '管理系统菜单',
+            rule: {
+                action: 'manage',
+                subject: 'MenuEntity',
+            } as any,
+        },
+        // 内容管理权限
+        {
+            name: 'content-manage',
+            label: '内容管理菜单',
+            description: '管理系统内容菜单',
+            rule: {
+                action: 'manage',
+                subject: 'PostEntity',
+            } as any,
+        },
+    ];
+
+    private _menus: Omit<Menu, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>[] = [
+        // 系统管理主菜单
+        {
+            name: '系统管理',
+            code: 'system',
+            caption: '系统管理',
+            icon: 'settings',
+            customOrder: 1000,
+            type: MenuPermissionType.MENU,
+        },
+        // 用户管理
+        {
+            name: '用户管理',
+            code: 'user-manage',
+            parentId: 'system',
+            caption: '用户管理',
+            icon: 'people',
+            path: '/system/users',
+            component: 'UserManage',
+            customOrder: 1010,
+            type: MenuPermissionType.MENU,
+        },
+        // 角色管理
+        {
+            name: '角色管理',
+            code: 'role-manage',
+            parentId: 'system',
+            caption: '角色管理',
+            icon: 'security',
+            path: '/system/roles',
+            component: 'RoleManage',
+            customOrder: 1020,
+            type: MenuPermissionType.MENU,
+        },
+        // 权限管理
+        {
+            name: '权限管理',
+            code: 'permission-manage',
+            parentId: 'system',
+            caption: '权限管理',
+            icon: 'key',
+            path: '/system/permissions',
+            component: 'PermissionManage',
+            customOrder: 1030,
+            type: MenuPermissionType.MENU,
+        },
+        // 菜单管理
+        {
+            name: '菜单管理',
+            code: 'menu-manage',
+            parentId: 'system',
+            caption: '菜单管理',
+            icon: 'menu',
+            path: '/system/menus',
+            component: 'MenuManage',
+            customOrder: 1040,
+            type: MenuPermissionType.MENU,
+        },
+        // 内容管理主菜单
+        {
+            name: '内容管理',
+            code: 'content',
+            caption: '内容管理',
+            icon: 'article',
+            customOrder: 2000,
+            type: MenuPermissionType.MENU,
+        },
+        // 文章管理
+        {
+            name: '文章管理',
+            code: 'content-manage',
+            parentId: 'content',
+            caption: '文章管理',
+            icon: 'description',
+            path: '/content/posts',
+            component: 'PostManage',
+            customOrder: 2010,
+            type: MenuPermissionType.MENU,
+        },
+        // 分类管理
+        {
+            name: '分类管理',
+            code: 'category-manage',
+            parentId: 'content',
+            caption: '分类管理',
+            icon: 'category',
+            path: '/content/categories',
+            component: 'CategoryManage',
+            customOrder: 2020,
+            type: MenuPermissionType.MENU,
+        },
+        // 标签管理
+        {
+            name: '标签管理',
+            code: 'tag-manage',
+            parentId: 'content',
+            caption: '标签管理',
+            icon: 'label',
+            path: '/content/tags',
+            component: 'TagManage',
+            customOrder: 2030,
+            type: MenuPermissionType.MENU,
+        },
+        // 评论管理
+        {
+            name: '评论管理',
+            code: 'comment-manage',
+            parentId: 'content',
+            caption: '评论管理',
+            icon: 'comment',
+            path: '/content/comments',
+            component: 'CommentManage',
+            customOrder: 2040,
+            type: MenuPermissionType.MENU,
+        },
     ];
 
     constructor(
@@ -82,8 +249,16 @@ export class RbacResolver<P extends AbilityTuple = AbilityTuple, T extends Mongo
         return this._permissions;
     }
 
+    get menus() {
+        return this._menus;
+    }
+
     addRoles(data: Role[]) {
         this._roles = [...this._roles, ...data];
+    }
+
+    addMenus(data: Omit<Menu, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>[]) {
+        this._menus = [...this._menus, ...data];
     }
 
     addPermissions(data: PermissionType<P, T>[]) {
@@ -109,6 +284,7 @@ export class RbacResolver<P extends AbilityTuple = AbilityTuple, T extends Mongo
         try {
             await this.syncRoles(queryRunner.manager);
             await this.syncPermissions(queryRunner.manager);
+            await this.syncMenus(queryRunner.manager);
             await this.syncSuperAdmin(queryRunner.manager);
             await queryRunner.commitTransaction();
         } catch (e) {
@@ -268,5 +444,101 @@ export class RbacResolver<P extends AbilityTuple = AbilityTuple, T extends Mongo
                     (firstUser.roles ?? []).map(({ id }) => id),
                 );
         }
+    }
+
+    /**
+     * 同步菜单
+     * @param manager
+     */
+    async syncMenus(manager: EntityManager) {
+        // 获取所有现有菜单
+        const existingMenus = await manager.find(MenuEntity);
+        const menuCodes = this.menus.map(({ code }) => code);
+
+        // 按层级排序菜单，确保父菜单先创建
+        const sortedMenus = this.sortMenusByLevel(this.menus);
+
+        // 创建或更新菜单
+        for (const menuData of sortedMenus) {
+            let menu = await manager.findOne(MenuEntity, { where: { code: menuData.code } });
+
+            // 查找关联的权限
+            let permission: PermissionEntity | null = null;
+            if (menuData.code !== 'system' && menuData.code !== 'content') {
+                permission = await manager.findOne(PermissionEntity, {
+                    where: { name: menuData.code },
+                });
+            }
+
+            // 查找父菜单ID
+            let parentId: string | undefined;
+            if (menuData.parentId) {
+                const parentMenu = await manager.findOne(MenuEntity, {
+                    where: { code: menuData.parentId },
+                });
+                parentId = parentMenu?.id;
+            }
+
+            if (isNil(menu)) {
+                // 创建新菜单
+                menu = manager.create(MenuEntity, {
+                    ...menuData,
+                    parentId,
+                    permission,
+                });
+                await manager.save(menu);
+            } else {
+                // 更新现有菜单
+                await manager.update(MenuEntity, menu.id, {
+                    ...menuData,
+                    parentId,
+                    permission,
+                });
+            }
+        }
+
+        // 删除不再需要的菜单
+        const toDels: string[] = [];
+        for (const menu of existingMenus) {
+            if (!menuCodes.includes(menu.code)) {
+                toDels.push(menu.id);
+            }
+        }
+        if (toDels.length > 0) {
+            await manager.delete(MenuEntity, toDels);
+        }
+    }
+
+    /**
+     * 按层级排序菜单，确保父菜单先创建
+     */
+    private sortMenusByLevel(
+        menus: Omit<Menu, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>[],
+    ): Omit<Menu, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>[] {
+        const result: Omit<Menu, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>[] = [];
+        const processed = new Set<string>();
+
+        // 递归添加菜单，确保父菜单先添加
+        const addMenu = (menuCode: string) => {
+            if (processed.has(menuCode)) return;
+
+            const menu = menus.find((m) => m.code === menuCode);
+            if (!menu) return;
+
+            // 如果有父菜单，先添加父菜单
+            if (menu.parentId && !processed.has(menu.parentId)) {
+                addMenu(menu.parentId);
+            }
+
+            result.push(menu);
+            processed.add(menuCode);
+        };
+
+        // 添加所有菜单
+        for (const menu of menus) {
+            addMenu(menu.code);
+        }
+
+        return result;
     }
 }
